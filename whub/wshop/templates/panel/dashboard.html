@@ -1,0 +1,278 @@
+{% extends "panel/base.html" %}
+{% load admin_extras %}
+
+{% block extra_css %}
+<style>
+.revenue-card {
+    background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(37,99,235,0.02));
+    border-color: rgba(37,99,235,0.18);
+}
+.revenue-value {
+    color: var(--blue);
+}
+
+.order-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.order-stat {
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    text-align: center;
+}
+
+.order-stat-value {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.order-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.alert-warning {
+    background: rgba(217,119,6,0.08);
+    color: #b45309;
+    border: 1px solid rgba(217,119,6,0.2);
+}
+
+.alert-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.mini-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mini-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(15,23,42,0.05);
+    font-size: 0.88rem;
+}
+
+.mini-list li:last-child {
+    border-bottom: 0;
+}
+
+.mini-list .label {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.mini-list .value {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.top-product-pos {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+@media (max-width: 1024px) {
+    .mini-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% if low_stock > 0 %}
+<div class="alert alert-warning">
+    <span class="alert-icon">&#9888;</span>
+    <span><strong>{{ low_stock }}</strong> watch{{ low_stock|pluralize }} have low stock (less than 5 units).</span>
+    <a href="{% url 'panel-products' %}" class="link" style="margin-left: auto;">Review</a>
+</div>
+{% endif %}
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Products</span>
+        <span class="stat-value">{{ total_products }}</span>
+        <span class="stat-change">Active listings</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Total Orders</span>
+        <span class="stat-value">{{ total_orders }}</span>
+        <span class="stat-change">{{ pending_orders }} pending</span>
+    </div>
+    <div class="stat-card revenue-card">
+        <span class="stat-label">Revenue</span>
+        <span class="stat-value revenue-value">${{ total_revenue|floatformat:0|intcomma }}</span>
+        <span class="stat-change">All time</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Low Stock</span>
+        <span class="stat-value" style="color: {% if low_stock > 0 %}var(--amber){% else %}var(--green){% endif %};">
+            {{ low_stock }}
+        </span>
+        <span class="stat-change">Below 5 units</span>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Recent Orders</span>
+            <a href="{% url 'panel-orders' %}" class="link">View all</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th class="text-right">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td>
+                            <span class="font-mono">#{{ order.id }}</span>
+                            <br>
+                            <span class="text-muted" style="font-size:0.78rem;">{{ order.created_at|date:"M d, Y" }}</span>
+                        </td>
+                        <td>{{ order.full_name }}</td>
+                        <td>
+                            <span class="badge
+                                {% if order.status == 'delivered' %}badge-success
+                                {% elif order.status == 'processing' %}badge-info
+                                {% elif order.status == 'shipped' %}badge-warning
+                                {% elif order.status == 'pending' %}badge-danger
+                                {% else %}badge-default{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="text-right font-mono">${{ order.total|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">No orders yet.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Top Selling Watches</span>
+        </div>
+        <div class="card-body">
+            <ul class="mini-list">
+                {% for item in top_products %}
+                <li>
+                    <span>
+                        <span class="top-product-pos">{{ forloop.counter }}</span>
+                        <strong>{{ item.watch__name }}</strong>
+                        <br>
+                        <span class="label">{{ item.watch__brand__name }}</span>
+                    </span>
+                    <span class="value">{{ item.total_sold }} sold</span>
+                </li>
+                {% empty %}
+                <li class="text-muted" style="justify-content:center;">No sales data yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Recently Added Watches</span>
+        <div style="display:flex;gap:8px;">
+            <a href="{% url 'panel-product-add' %}" class="btn btn-primary">+ Add Product</a>
+            <a href="{% url 'panel-products' %}" class="btn btn-secondary">View all products</a>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Watch</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th class="text-right">Price</th>
+                    <th class="text-center">Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for watch in recent_watches %}
+                <tr>
+                    <td>
+                        <a href="{% url 'panel-products' %}" class="link">{{ watch.name }}</a>
+                    </td>
+                    <td>{{ watch.brand.name }}</td>
+                    <td>{{ watch.category.name }}</td>
+                    <td class="text-right font-mono">${{ watch.price|floatformat:2 }}</td>
+                    <td class="text-center">
+                        <span class="badge
+                            {% if watch.stock == 0 %}badge-danger
+                            {% elif watch.stock < 5 %}badge-warning
+                            {% else %}badge-success{% endif %}">
+                            {{ watch.stock }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">No products yet.</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

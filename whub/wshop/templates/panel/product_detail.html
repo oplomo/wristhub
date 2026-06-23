@@ -1,0 +1,600 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: #1d4ed8;
+}
+
+.page-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-ghost {
+    color: var(--ink);
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: rgba(15,23,42,0.04);
+}
+
+.btn-danger {
+    color: #ffffff;
+    background: var(--red);
+    border-color: var(--red);
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 18px;
+}
+
+.field-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+}
+
+.field-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(15,23,42,0.05);
+}
+
+.field-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.field-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.field-value {
+    color: var(--ink);
+    font-size: 0.9rem;
+    text-align: right;
+    word-break: break-word;
+}
+
+.field-value strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-success {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+}
+
+.badge-warning {
+    background: rgba(217,119,6,0.08);
+    color: #b45309;
+}
+
+.badge-danger {
+    background: rgba(220,38,38,0.08);
+    color: #b91c1c;
+}
+
+.badge-info {
+    background: rgba(37,99,235,0.08);
+    color: #1d4ed8;
+}
+
+.badge-default {
+    background: rgba(100,116,139,0.08);
+    color: #475569;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--muted); }
+.font-mono {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+}
+
+.product-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.product-gallery img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #f3f4f6;
+    cursor: pointer;
+    transition: transform 140ms ease, border-color 140ms ease;
+}
+
+.product-gallery img:hover {
+    transform: scale(1.03);
+    border-color: var(--blue);
+}
+
+.product-gallery img.is-main {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px var(--blue);
+}
+
+.gallery-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #f3f4f6;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    cursor: pointer;
+}
+
+.lightbox.is-visible {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 140ms ease;
+}
+
+.lightbox-close:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background 140ms ease;
+}
+
+.action-card:hover {
+    background: #f8fafc;
+}
+
+.action-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.action-icon.edit {
+    background: rgba(37,99,235,0.08);
+    color: var(--blue);
+}
+
+.action-icon.active {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+}
+
+.action-icon.featured {
+    background: rgba(217,119,6,0.08);
+    color: #b45309;
+}
+
+.action-icon.delete {
+    background: rgba(220,38,38,0.08);
+    color: #b91c1c;
+}
+
+.empty-state {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+@media (max-width: 700px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+    .field-item {
+        flex-direction: column;
+        gap: 4px;
+    }
+    .field-value {
+        text-align: left;
+    }
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'panel-products' %}" class="back-link">← Back to Products</a>
+</div>
+
+<div class="page-title-row">
+    <div>
+        <h1 class="page-title">{{ watch.name }}</h1>
+        <p class="page-subtitle">{{ watch.brand.name }} · {{ watch.category.name }}</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{% url 'panel-product-toggle-featured' slug=watch.slug %}" class="btn {% if watch.featured %}btn-secondary{% else %}btn-primary{% endif %}">
+            {% if watch.featured %}★ Featured{% else %}☆ Make Featured{% endif %}
+        </a>
+        <a href="{% url 'panel-product-toggle-active' slug=watch.slug %}" class="btn {% if watch.is_active %}btn-secondary{% else %}btn-primary{% endif %}">
+            {% if watch.is_active %}● Active{% else %}○ Activate{% endif %}
+        </a>
+        <a href="{% url 'panel-product-delete' slug=watch.slug %}" class="btn btn-danger" onclick="return confirm('Delete {{ watch.name }}?');">Delete</a>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Product Details</span>
+        </div>
+        <div class="card-body">
+            <ul class="field-list">
+                <li class="field-item">
+                    <span class="field-label">Name</span>
+                    <span class="field-value"><strong>{{ watch.name }}</strong></span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Brand</span>
+                    <span class="field-value">{{ watch.brand.name }}</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Category</span>
+                    <span class="field-value">{{ watch.category.name }}</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Model</span>
+                    <span class="field-value"><span class="badge badge-default">{{ watch.model|title }}</span></span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Gender</span>
+                    <span class="field-value">{{ watch.gender|title }}</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Movement</span>
+                    <span class="field-value">{{ watch.movement|title }}</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Strap</span>
+                    <span class="field-value">{{ watch.strap_material|title }} · {{ watch.strap_color|title }}</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Case Size</span>
+                    <span class="field-value">{{ watch.case_size_mm }} mm</span>
+                </li>
+                <li class="field-item">
+                    <span class="field-label">Water Res.</span>
+                    <span class="field-value">{{ watch.water_resistance_m }} m</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Pricing &amp; Inventory</span>
+            </div>
+            <div class="card-body">
+                <ul class="field-list">
+                    <li class="field-item">
+                        <span class="field-label">Price</span>
+                        <span class="field-value font-mono" style="font-size:1.05rem;">${{ watch.price|floatformat:2 }}</span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Discount</span>
+                        <span class="field-value font-mono">{% if watch.discount_price %}${{ watch.discount_price|floatformat:2 }}{% else %}—{% endif %}</span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Current Price</span>
+                        <span class="field-value font-mono" style="font-weight:700;">${{ watch.current_price|floatformat:2 }}</span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Stock</span>
+                        <span class="field-value">
+                            <span class="badge
+                                {% if watch.stock == 0 %}badge-danger
+                                {% elif watch.stock < 5 %}badge-warning
+                                {% else %}badge-success{% endif %}">
+                                {{ watch.stock }} units
+                            </span>
+                        </span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Status</span>
+                        <span class="field-value">
+                            <span class="badge {% if watch.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                                {% if watch.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Featured</span>
+                        <span class="field-value">
+                            <span class="badge {% if watch.featured %}badge-info{% else %}badge-default{% endif %}">
+                                {% if watch.featured %}Yes{% else %}No{% endif %}
+                            </span>
+                        </span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">SKU</span>
+                        <span class="field-value font-mono">{{ watch.sku }}</span>
+                    </li>
+                    <li class="field-item">
+                        <span class="field-label">Created</span>
+                        <span class="field-value text-muted">{{ watch.created_at|date:"M d, Y H:i" }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Quick Actions</span>
+            </div>
+            <div class="card-body">
+                <div class="action-grid">
+                    <a href="{% url 'panel-product-toggle-featured' slug=watch.slug %}" class="action-card">
+                        <span class="action-icon featured">★</span>
+                        <span>{% if watch.featured %}Unfeature{% else %}Feature{% endif %}</span>
+                    </a>
+                    <a href="{% url 'panel-product-toggle-active' slug=watch.slug %}" class="action-card">
+                        <span class="action-icon active">●</span>
+                        <span>{% if watch.is_active %}Deactivate{% else %}Activate{% endif %}</span>
+                    </a>
+                    <a href="{% url 'panel-product-edit' slug=watch.slug %}" class="action-card">
+                        <span class="action-icon edit">✎</span>
+                        <span>Edit Product</span>
+                    </a>
+                    <a href="{% url 'panel-product-delete' slug=watch.slug %}" class="action-card" onclick="return confirm('Delete {{ watch.name }}?');">
+                        <span class="action-icon delete">🗑</span>
+                        <span style="color:var(--red);">Delete Product</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Images</span>
+    </div>
+    <div class="card-body">
+        {% with images=watch.images.all %}
+            {% if images %}
+                <div class="product-gallery">
+                    {% for image in images %}
+                        <img src="{{ image.image.url }}" 
+                             alt="{{ image.alt_text|default:watch.name }}"
+                             class="{% if image.is_primary %}is-main{% endif %}"
+                             data-full="{{ image.image.url }}"
+                             onclick="openLightbox(this)">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">No images uploaded yet. <a href="{% url 'panel-product-edit' slug=watch.slug %}#images-section" class="link">Add images</a></div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button type="button" class="lightbox-close" onclick="closeLightbox()" aria-label="Close">✕</button>
+    <img src="" alt="" id="lightboxImg" onclick="event.stopPropagation()">
+</div>
+
+<script>
+function openLightbox(img) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    lightboxImg.src = img.getAttribute('data-full') || img.src;
+    lightboxImg.alt = img.alt;
+    lightbox.classList.add('is-visible');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    lightbox.classList.remove('is-visible');
+    setTimeout(function() {
+        lightboxImg.src = '';
+    }, 200);
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
+</script>
+{% endblock %}

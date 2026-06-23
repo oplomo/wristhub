@@ -1,0 +1,348 @@
+{% extends "panel/base.html" %}
+{% load admin_extras %}
+
+{% block extra_css %}
+<style>
+.analytics-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.range-form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.range-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.range-button.is-active {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.stats-grid.analytics {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.stat-card.compact .stat-value {
+    font-size: 1.6rem;
+}
+
+.stat-card.compact .stat-change {
+    font-size: 0.74rem;
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.chart-card {
+    min-height: 320px;
+}
+
+.chart-svg {
+    width: 100%;
+    height: 230px;
+    display: block;
+}
+
+.insight-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.metric-tile {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(22,163,74,0.04));
+}
+
+.metric-tile strong {
+    display: block;
+    margin-bottom: 4px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+}
+
+.metric-tile span {
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+.split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.table-wrap.compact {
+    max-height: 360px;
+    overflow: auto;
+}
+
+.progress {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+
+.progress > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue);
+}
+
+@media (max-width: 1200px) {
+    .stats-grid.analytics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .chart-grid,
+    .split-grid,
+    .insight-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .stats-grid.analytics {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-toolbar">
+    <div>
+        <p class="page-subtitle">Live business intelligence for sales, product demand, inventory pressure, and visitor behavior.</p>
+        <p class="text-muted" style="font-size:0.86rem;">Range: {{ start|date:"M d, Y" }} - {{ end|date:"M d, Y" }}</p>
+    </div>
+    <form class="range-form">
+        {% for option in range_options %}
+            <a class="range-button{% if days == option %} is-active{% endif %}" href="?days={{ option }}">{{ option }}d</a>
+        {% endfor %}
+    </form>
+</div>
+
+<div class="stats-grid analytics">
+    <div class="stat-card compact">
+        <span class="stat-label">Revenue</span>
+        <span class="stat-value revenue-value">{{ revenue|floatformat:0|intcomma }}</span>
+        <span class="stat-change">${{ revenue|floatformat:2 }}</span>
+    </div>
+    <div class="stat-card compact">
+        <span class="stat-label">Orders</span>
+        <span class="stat-value">{{ orders.count|intcomma }}</span>
+        <span class="stat-change">{{ units_sold|intcomma }} units sold</span>
+    </div>
+    <div class="stat-card compact">
+        <span class="stat-label">Avg Order</span>
+        <span class="stat-value">{{ average_order|floatformat:0|intcomma }}</span>
+        <span class="stat-change">${{ average_order|floatformat:2 }}</span>
+    </div>
+    <div class="stat-card compact">
+        <span class="stat-label">Visitors</span>
+        <span class="stat-value">{{ visitors|intcomma }}</span>
+        <span class="stat-change">Unique sessions/users</span>
+    </div>
+    <div class="stat-card compact">
+        <span class="stat-label">Conversion</span>
+        <span class="stat-value">{{ conversion_rate|floatformat:1 }}%</span>
+        <span class="stat-change">Orders per visitor</span>
+    </div>
+    <div class="stat-card compact">
+        <span class="stat-label">Product Views</span>
+        <span class="stat-value">{{ product_events.count|intcomma }}</span>
+        <span class="stat-change">Tracked product pages</span>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="card chart-card">
+        <div class="card-header">
+            <span class="card-title">Revenue Trend</span>
+            <span class="badge badge-info">{{ days }} days</span>
+        </div>
+        <div class="card-body">{{ revenue_chart|safe }}</div>
+    </div>
+    <div class="card chart-card">
+        <div class="card-header">
+            <span class="card-title">Visitor Trend</span>
+            <span class="badge badge-warning">Traffic</span>
+        </div>
+        <div class="card-body">{{ visitor_chart|safe }}</div>
+    </div>
+</div>
+
+<div class="insight-grid">
+    <div class="metric-tile">
+        <strong>{{ top_viewed.0.watch__name|default:"No data" }}</strong>
+        <span>Most viewed product - {{ top_viewed.0.views|default:0|intcomma }} views</span>
+    </div>
+    <div class="metric-tile">
+        <strong>{{ top_sold.0.watch__name|default:"No data" }}</strong>
+        <span>Top seller - {{ top_sold.0.units|default:0|intcomma }} units</span>
+    </div>
+    <div class="metric-tile">
+        <strong>{{ low_stock }} low / {{ out_of_stock }} empty</strong>
+        <span>Inventory attention needed</span>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="card chart-card">
+        <div class="card-header">
+            <span class="card-title">Product View Trend</span>
+            <span class="badge badge-success">Demand</span>
+        </div>
+        <div class="card-body">{{ view_chart|safe }}</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Traffic Sources</span>
+            <a href="{% url 'panel-analytics-visitors' %}?days={{ days }}" class="link">Visitor report</a>
+        </div>
+        <div class="table-wrap compact">
+            <table>
+                <thead>
+                    <tr><th>Path</th><th class="text-right">Visits</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in top_paths %}
+                        <tr>
+                            <td class="font-mono" style="font-size:0.78rem;">{{ row.path }}</td>
+                            <td class="text-right">{{ row.visits|intcomma }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="2"><div class="empty-state">No visitor paths yet.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="split-grid">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Category Performance</span>
+            <a href="{% url 'panel-analytics-products' %}?days={{ days }}" class="link">Products</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Category</th><th class="text-right">Views</th><th class="text-right">Revenue</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in category_rows %}
+                        <tr>
+                            <td>{{ row.category.name }}</td>
+                            <td class="text-right">{{ row.views|intcomma }}</td>
+                            <td class="text-right font-mono">{% money row.revenue %}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3"><div class="empty-state">No category data yet.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Brand Performance</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Brand</th><th class="text-right">Views</th><th class="text-right">Revenue</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in brand_rows %}
+                        <tr>
+                            <td>{{ row.brand.name }}</td>
+                            <td class="text-right">{{ row.views|intcomma }}</td>
+                            <td class="text-right font-mono">{% money row.revenue %}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3"><div class="empty-state">No brand data yet.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Product Opportunity Matrix</span>
+        <a href="{% url 'panel-analytics-products' %}?days={{ days }}" class="link">Full product analytics</a>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-right">Views</th>
+                    <th class="text-right">Sold</th>
+                    <th class="text-right">Revenue</th>
+                    <th>Conversion</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in product_rows %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'panel-product-detail' slug=row.watch.slug %}" class="link">{{ row.watch.name }}</a>
+                            <div class="text-muted" style="font-size:0.76rem;">{{ row.watch.brand.name }} - {{ row.watch.category.name }}</div>
+                        </td>
+                        <td class="text-right">{{ row.views|intcomma }}</td>
+                        <td class="text-right">{{ row.sold|intcomma }}</td>
+                        <td class="text-right font-mono">{% money row.revenue %}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div class="progress" style="width:80px;"><span style="width:{{ row.conversion|floatformat:0 }}%;"></span></div>
+                                <span>{{ row.conversion|floatformat:1 }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge {% if row.stock == 0 %}badge-danger{% elif row.stock < 5 %}badge-warning{% else %}badge-success{% endif %}">
+                                {{ row.stock }}
+                            </span>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6"><div class="empty-state">No product analytics yet.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

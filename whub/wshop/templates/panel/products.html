@@ -1,0 +1,674 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.search-input,
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 140ms ease;
+}
+
+.search-input {
+    width: 260px;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    border-color: var(--blue);
+}
+
+.filter-select {
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-ghost {
+    color: var(--ink);
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: rgba(15,23,42,0.04);
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+.btn-icon {
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 0;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(15,23,42,0.05);
+    color: var(--ink);
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+tr:hover td {
+    background: rgba(37,99,235,0.03);
+}
+
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-thumb {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+}
+
+.product-thumb-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 0.68rem;
+    flex-shrink: 0;
+}
+
+.product-name {
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.88rem;
+}
+
+.product-name:hover {
+    color: var(--blue);
+}
+
+.product-meta {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-success {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+}
+
+.badge-warning {
+    background: rgba(217,119,6,0.08);
+    color: #b45309;
+}
+
+.badge-danger {
+    background: rgba(220,38,38,0.08);
+    color: #b91c1c;
+}
+
+.badge-info {
+    background: rgba(37,99,235,0.08);
+    color: #1d4ed8;
+}
+
+.badge-default {
+    background: rgba(100,116,139,0.08);
+    color: #475569;
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--muted); }
+.font-mono {
+    font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.82rem;
+}
+
+.empty-state {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.link {
+    color: var(--blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.link:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+}
+
+.stat-pill-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stat-pill-value {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.confirm-overlay.is-visible {
+    display: flex;
+}
+
+.confirm-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    max-width: 420px;
+    width: calc(100% - 32px);
+}
+
+.confirm-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+}
+
+.confirm-text {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@media (max-width: 1024px) {
+    .stats-row {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .search-input {
+        width: 100%;
+    }
+    .filter-bar {
+        width: 100%;
+    }
+    .search-input,
+    .filter-select {
+        flex: 1 1 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:1.3rem;">Products</h2>
+        <p class="page-subtitle">Manage your watch inventory and listings</p>
+    </div>
+    <a href="{% url 'panel-dashboard' %}" class="btn btn-primary">+ Add Product</a>
+</div>
+
+<div class="stats-row">
+    <div class="stat-pill">
+        <span class="stat-pill-label">Total Products</span>
+        <span class="stat-pill-value">{{ total_products }}</span>
+    </div>
+    <div class="stat-pill">
+        <span class="stat-pill-label">Out of Stock</span>
+        <span class="stat-pill-value" style="color: {% if out_of_stock > 0 %}var(--red){% else %}var(--green){% endif %};">
+            {{ out_of_stock }}
+        </span>
+    </div>
+    <div class="stat-pill">
+        <span class="stat-pill-label">Featured</span>
+        <span class="stat-pill-value" style="color: var(--blue);">{{ featured_count }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding: 14px 18px;">
+        <form method="get" action="{% url 'panel-products' %}" class="filter-bar" style="margin-bottom:0;" id="filterForm">
+            <input type="text" name="q" class="search-input" placeholder="Search watches..." value="{{ request.GET.q|default:'' }}" id="searchInput" autocomplete="off">
+            <select name="brand" class="filter-select" id="brandFilter">
+                <option value="">All Brands</option>
+                {% for b in all_brands %}
+                    <option value="{{ b.name }}" {% if request.GET.brand == b.name %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="category" class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                {% for c in all_categories %}
+                    <option value="{{ c.name }}" {% if request.GET.category == c.name %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="model" class="filter-select" id="modelFilter">
+                <option value="">All Models</option>
+                {% for m in Watch.MODEL_CHOICES %}
+                    <option value="{{ m.0 }}" {% if request.GET.model == m.0 %}selected{% endif %}>{{ m.1 }}</option>
+                {% endfor %}
+            </select>
+            <select name="gender" class="filter-select" id="genderFilter">
+                <option value="">All Genders</option>
+                {% for g in Watch.GENDER_CHOICES %}
+                    <option value="{{ g.0 }}" {% if request.GET.gender == g.0 %}selected{% endif %}>{{ g.1 }}</option>
+                {% endfor %}
+            </select>
+            <select name="movement" class="filter-select" id="movementFilter">
+                <option value="">All Movements</option>
+                {% for mv in Watch.MOVEMENT_CHOICES %}
+                    <option value="{{ mv.0 }}" {% if request.GET.movement == mv.0 %}selected{% endif %}>{{ mv.1 }}</option>
+                {% endfor %}
+            </select>
+            <select name="strap" class="filter-select" id="strapFilter">
+                <option value="">All Straps</option>
+                {% for s in Watch.STRAP_CHOICES %}
+                    <option value="{{ s.0 }}" {% if request.GET.strap == s.0 %}selected{% endif %}>{{ s.1 }}</option>
+                {% endfor %}
+            </select>
+            <select name="stock" class="filter-select" id="stockFilter">
+                <option value="">All Stock</option>
+                <option value="in_stock" {% if request.GET.stock == "in_stock" %}selected{% endif %}>In Stock</option>
+                <option value="low_stock" {% if request.GET.stock == "low_stock" %}selected{% endif %}>Low Stock</option>
+                <option value="out_of_stock" {% if request.GET.stock == "out_of_stock" %}selected{% endif %}>Out of Stock</option>
+            </select>
+            <select name="active" class="filter-select" id="activeFilter">
+                <option value="">All Status</option>
+                <option value="active" {% if request.GET.active == "active" %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if request.GET.active == "inactive" %}selected{% endif %}>Inactive</option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Apply</button>
+            <a href="{% url 'panel-products' %}" class="btn btn-ghost">Clear</a>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Model</th>
+                        <th class="text-center">Stock</th>
+                        <th class="text-right">Price</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Featured</th>
+                        <th style="width:260px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    {% for watch in watches %}
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                {% with images=watch.images.all %}
+                                    {% if images %}
+                                        <img class="product-thumb" src="{{ images.0.image.url }}" alt="{{ watch.name }}">
+                                    {% else %}
+                                        <div class="product-thumb-placeholder">{{ watch.name|slice:":2" }}</div>
+                                    {% endif %}
+                                {% endwith %}
+                                <a href="{% url 'panel-product-detail' slug=watch.slug %}" class="product-name">{{ watch.name }}</a>
+                            </div>
+                            <div class="product-meta" style="margin-top:2px;">SKU: {{ watch.sku }}</div>
+                        </td>
+                        <td>{{ watch.brand.name }}</td>
+                        <td>{{ watch.category.name }}</td>
+                        <td>
+                            <span class="badge badge-default">{{ watch.model|title }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge
+                                {% if watch.stock == 0 %}badge-danger
+                                {% elif watch.stock < 5 %}badge-warning
+                                {% else %}badge-success{% endif %}">
+                                {{ watch.stock }}
+                            </span>
+                        </td>
+                        <td class="text-right font-mono">${{ watch.price|floatformat:2 }}</td>
+                        <td class="text-center">
+                            <span class="badge
+                                {% if watch.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                                {% if watch.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if watch.featured %}badge-info{% else %}badge-default{% endif %}">
+                                {% if watch.featured %}Yes{% else %}No{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{% url 'panel-product-detail' slug=watch.slug %}" class="btn btn-secondary btn-sm" title="View">View</a>
+                                <a href="{% url 'panel-product-edit' slug=watch.slug %}" class="btn btn-secondary btn-sm" title="Edit">✎</a>
+                                <a href="{% url 'panel-product-toggle-featured' slug=watch.slug %}" class="btn btn-sm {% if watch.featured %}btn-secondary{% else %}btn-primary{% endif %}" title="Toggle featured">★</a>
+                                <a href="{% url 'panel-product-toggle-active' slug=watch.slug %}" class="btn btn-sm {% if watch.is_active %}btn-secondary{% else %}btn-primary{% endif %}" title="Toggle active">●</a>
+                                <a href="{% url 'panel-product-delete' slug=watch.slug %}" class="btn btn-sm btn-ghost" style="color:var(--red);" title="Delete" onclick="return confirmDelete(this);">🗑</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9">
+                            <div class="empty-state">No products found.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+        <div class="confirm-title">Delete product</div>
+        <div class="confirm-text">Are you sure you want to delete this product? This action cannot be undone.</div>
+        <div class="confirm-actions">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="closeConfirm()">Cancel</button>
+            <a href="#" id="confirmDeleteLink" class="btn btn-primary btn-sm">Delete</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(link) {
+    const overlay = document.getElementById('confirmOverlay');
+    const deleteLink = document.getElementById('confirmDeleteLink');
+    deleteLink.href = link.href;
+    overlay.classList.add('is-visible');
+    return false;
+}
+
+function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('is-visible');
+}
+
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeConfirm();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeConfirm();
+});
+
+let searchTimeout = null;
+const searchInput = document.getElementById('searchInput');
+const filterForm = document.getElementById('filterForm');
+
+function buildQueryString() {
+    const params = new URLSearchParams();
+    const fields = ['q', 'brand', 'category', 'model', 'gender', 'movement', 'strap', 'stock', 'active'];
+    fields.forEach(function(field) {
+        const el = document.getElementById(field + 'Filter') || (field === 'q' ? searchInput : null);
+        if (el && el.value) {
+            params.set(field, el.value);
+        }
+    });
+    return params.toString();
+}
+
+function updateResults(queryString) {
+    const tbody = document.getElementById('productsTableBody');
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Searching...</div></td></tr>';
+    const url = '{% url "panel-product-search" %}?' + queryString;
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            const results = data.results || [];
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">No products found.</div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = results.map(function(item) {
+                const thumbHtml = item.thumb
+                    ? '<img class="product-thumb" src="' + item.thumb + '" alt="' + item.name + '">'
+                    : '<div class="product-thumb-placeholder">' + item.name.substring(0, 2) + '</div>';
+                const stockBadge = item.stock === 0
+                    ? '<span class="badge badge-danger">' + item.stock + '</span>'
+                    : item.stock < 5
+                        ? '<span class="badge badge-warning">' + item.stock + '</span>'
+                        : '<span class="badge badge-success">' + item.stock + '</span>';
+                const statusBadge = item.is_active
+                    ? '<span class="badge badge-success">Active</span>'
+                    : '<span class="badge badge-danger">Inactive</span>';
+                return '<tr>' +
+                    '<td><div class="product-cell">' + thumbHtml + '<a href="/panel/products/' + item.slug + '/" class="product-name">' + item.name + '</a></div><div class="product-meta" style="margin-top:2px;">SKU: ' + item.sku + '</div></td>' +
+                    '<td>' + item.brand + '</td>' +
+                    '<td>' + item.category + '</td>' +
+                    '<td><span class="badge badge-default">' + item.model + '</span></td>' +
+                    '<td class="text-center">' + stockBadge + '</td>' +
+                    '<td class="text-right font-mono">$' + item.price + '</td>' +
+                    '<td class="text-center">' + statusBadge + '</td>' +
+                    '<td class="text-center"><span class="badge badge-default">--</span></td>' +
+                    '<td><div class="actions-cell">' +
+                        '<a href="/panel/products/' + item.slug + '/" class="btn btn-secondary btn-sm" title="View">View</a>' +
+                        '<a href="/panel/products/' + item.slug + '/edit/" class="btn btn-secondary btn-sm" title="Edit">✎</a>' +
+                        '<a href="/panel/products/' + item.slug + '/toggle-featured/" class="btn btn-sm ' + (item.featured ? 'btn-secondary' : 'btn-primary') + '" title="Toggle featured">★</a>' +
+                        '<a href="/panel/products/' + item.slug + '/toggle-active/" class="btn btn-sm ' + (item.is_active ? 'btn-secondary' : 'btn-primary') + '" title="Toggle active">●</a>' +
+                        '<a href="/panel/products/' + item.slug + '/delete/" class="btn btn-sm btn-ghost" style="color:var(--red);" title="Delete" onclick="return confirmDelete(this);">🗑</a>' +
+                    '</div></td>' +
+                '</tr>';
+            }).join('');
+        })
+        .catch(function() {
+            tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Error loading results.</div></td></tr>';
+        });
+}
+
+const filterSelects = document.querySelectorAll('.filter-select');
+filterSelects.forEach(function(el) {
+    el.addEventListener('change', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            updateResults(buildQueryString());
+        }, 250);
+    });
+});
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+        updateResults(buildQueryString());
+    }, 200);
+});
+
+window.addEventListener('popstate', function() {
+    updateResults(buildQueryString());
+});
+</script>
+{% endblock %}

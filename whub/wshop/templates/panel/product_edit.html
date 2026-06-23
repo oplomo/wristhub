@@ -1,0 +1,433 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    color: #1d4ed8;
+}
+
+.page-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-danger {
+    color: #ffffff;
+    background: var(--red);
+    border-color: var(--red);
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 140ms ease;
+    font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--blue);
+}
+
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+    border: 1px solid rgba(22,163,74,0.2);
+}
+
+.alert-error {
+    background: rgba(220,38,38,0.08);
+    color: #b91c1c;
+    border: 1px solid rgba(220,38,38,0.2);
+}
+
+.empty-state {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.image-manager {
+    display: grid;
+    gap: 16px;
+}
+
+.image-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.image-item {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    transition: border-color 140ms ease;
+}
+
+.image-item.is-primary {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+.image-item img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f3f4f6;
+    cursor: pointer;
+}
+
+.image-item .image-actions {
+    display: grid;
+    gap: 6px;
+}
+
+.upload-zone {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 2px dashed var(--line);
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.upload-zone input[type="file"] {
+    flex: 1;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .image-list {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'panel-product-detail' slug=watch.slug %}" class="back-link">← Back to Product</a>
+</div>
+
+<div class="page-title-row">
+    <div>
+        <h1 class="page-title">Edit {{ watch.name }}</h1>
+        <p class="page-subtitle">{{ watch.brand.name }} · {{ watch.category.name }}</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{% url 'panel-product-detail' slug=watch.slug %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Product Information</span>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.name.id_for_label }}">Product Name</label>
+                    {{ form.name }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.slug.id_for_label }}">Slug</label>
+                    {{ form.slug }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.sku.id_for_label }}">SKU</label>
+                    {{ form.sku }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.brand.id_for_label }}">Brand</label>
+                    {{ form.brand }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.model.id_for_label }}">Model</label>
+                    {{ form.model }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.gender.id_for_label }}">Gender</label>
+                    {{ form.gender }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.movement.id_for_label }}">Movement</label>
+                    {{ form.movement }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.strap_material.id_for_label }}">Strap Material</label>
+                    {{ form.strap_material }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.strap_color.id_for_label }}">Strap Color</label>
+                    {{ form.strap_color }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.case_size_mm.id_for_label }}">Case Size (mm)</label>
+                    {{ form.case_size_mm }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.water_resistance_m.id_for_label }}">Water Resistance (m)</label>
+                    {{ form.water_resistance_m }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.price.id_for_label }}">Price ($)</label>
+                    {{ form.price }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.discount_price.id_for_label }}">Discount Price ($)</label>
+                    {{ form.discount_price }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.stock.id_for_label }}">Stock</label>
+                    {{ form.stock }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.featured.id_for_label }}">Featured</label>
+                    {{ form.featured }}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.is_active.id_for_label }}">Active</label>
+                    {{ form.is_active }}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card" id="images-section">
+    <div class="card-header">
+        <span class="card-title">Images</span>
+    </div>
+    <div class="card-body">
+        <div class="image-manager">
+            <div class="image-list">
+                {% for image in images %}
+                    <div class="image-item{% if image.is_primary %} is-primary{% endif %}">
+                        <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-full="{{ image.image.url }}" onclick="openLightbox(this)">
+                        <div class="image-actions">
+                            <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="primary_image_id" value="{{ image.id }}">
+                                <button type="submit" class="btn btn-sm btn-secondary" name="action" value="set_primary" style="width:100%;">
+                                    {% if image.is_primary %}★ Primary{% else %}Make Primary{% endif %}
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}" onsubmit="return confirm('Delete this image?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="delete_image_ids" value="{{ image.id }}">
+                                <button type="submit" class="btn btn-sm btn-ghost" name="action" value="delete" style="width:100%; color:var(--red);">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-state">No images yet. Upload one below.</div>
+                {% endfor %}
+            </div>
+            <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}" enctype="multipart/form-data" class="upload-zone">
+                {% csrf_token %}
+                <input type="file" name="new_image" accept="image/*">
+                <button type="submit" class="btn btn-primary" name="action" value="upload">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

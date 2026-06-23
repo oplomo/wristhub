@@ -1,0 +1,514 @@
+{% extends "base.html" %}
+
+{% block title %}{{ watch.name }} | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --ink: #111111;
+    --muted: #6b7280;
+    --line: rgba(17, 17, 17, 0.12);
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --red: #dc2626;
+    --radius: 10px;
+}
+
+.product-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 34px;
+    align-items: start;
+    padding: 18px 0 48px;
+}
+
+.product-gallery {
+    position: sticky;
+    top: 96px;
+}
+
+.gallery-shell {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 16px 40px rgba(17, 17, 17, 0.08);
+}
+
+.gallery-stage {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    background: #f3f4f6;
+}
+
+.gallery-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(1.01);
+    transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.gallery-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.gallery-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 24px;
+}
+
+.gallery-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(17, 17, 17, 0.12);
+    border-radius: 50%;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.86);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.gallery-arrow:hover {
+    color: #ffffff;
+    background: var(--ink);
+}
+
+.gallery-arrow.prev {
+    left: 12px;
+}
+
+.gallery-arrow.next {
+    right: 12px;
+}
+
+.gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.gallery-thumb {
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f3f4f6;
+    cursor: pointer;
+}
+
+.gallery-thumb.is-active {
+    border-color: var(--blue);
+}
+
+.gallery-thumb img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.product-info {
+    display: grid;
+    gap: 20px;
+}
+
+.product-kicker {
+    margin: 0;
+    color: var(--blue);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.product-title {
+    margin: 0;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+.product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.product-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.current-price {
+    color: var(--ink);
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.old-price {
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+.product-description {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.spec-card {
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+}
+
+.spec-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.spec-value {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.cart-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.add-button,
+.checkout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: var(--radius);
+    color: #ffffff;
+    background: var(--ink);
+    cursor: pointer;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.add-button:hover:not(:disabled),
+.checkout-button:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+}
+
+.add-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.stock-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.stock-note.is-out {
+    color: var(--red);
+}
+
+.related-section {
+    padding: 12px 0 56px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.section-heading h2 {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.15;
+}
+
+.related-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.related-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+}
+
+.related-image {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #f3f4f6;
+    color: var(--muted);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.related-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.related-copy {
+    padding: 12px;
+}
+
+.related-copy h3 {
+    margin: 0 0 6px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.related-copy p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 980px) {
+    .product-detail {
+        grid-template-columns: 1fr;
+    }
+    .product-gallery {
+        position: static;
+    }
+    .related-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .spec-grid {
+        grid-template-columns: 1fr;
+    }
+    .related-grid {
+        grid-template-columns: 1fr;
+    }
+    .gallery-thumbs {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="product-gallery" data-product-carousel>
+        <div class="gallery-shell">
+            <div class="gallery-stage">
+                {% with images=watch.images.all %}
+                    {% if images %}
+                        {% for image in images %}
+                            <img class="gallery-slide{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-product-carousel-slide>
+                        {% endfor %}
+                    {% else %}
+                        <div class="gallery-fallback" data-product-carousel-slide>{{ watch.name }}</div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            {% with images=watch.images.all %}
+                {% if images|length > 1 %}
+                    <button class="gallery-arrow prev" type="button" data-product-carousel-prev aria-label="Previous image">&lt;</button>
+                    <button class="gallery-arrow next" type="button" data-product-carousel-next aria-label="Next image">&gt;</button>
+                    <div class="gallery-thumbs">
+                        {% for image in images %}
+                            <button class="gallery-thumb{% if forloop.first %} is-active{% endif %}" type="button" data-product-carousel-dot="{{ forloop.counter0 }}" aria-label="Show image {{ forloop.counter }}">
+                                <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <div class="product-info">
+        <div>
+            <p class="product-kicker">{{ watch.brand.name }} · {{ watch.category.name }}</p>
+            <h1 class="product-title">{{ watch.name }}</h1>
+            <div class="product-meta">
+                <span>{{ watch.model|title }} Model</span>
+                <span>{{ watch.gender|title }}</span>
+                <span>{{ watch.movement|title }} Movement</span>
+                <span>{{ watch.case_size_mm }} mm Case</span>
+            </div>
+        </div>
+
+        <div>
+            <div class="product-price">
+                <span class="current-price">${{ watch.current_price|floatformat:2 }}</span>
+                {% if watch.discount_price %}
+                    <span class="old-price">${{ watch.price|floatformat:2 }}</span>
+                {% endif %}
+            </div>
+            <p class="stock-note{% if not watch.in_stock %} is-out{% endif %}">
+                {% if watch.in_stock %}{{ watch.stock }} in stock{% else %}Out of stock{% endif %}
+            </p>
+        </div>
+
+        <p class="product-description">
+            A curated timepiece selected for Wrist Hub customers, combining durable materials, refined finishing, and everyday versatility.
+        </p>
+
+        <div class="spec-grid">
+            <div class="spec-card">
+                <span class="spec-label">Strap</span>
+                <span class="spec-value">{{ watch.strap_material|title }} · {{ watch.strap_color|title }}</span>
+            </div>
+            <div class="spec-card">
+                <span class="spec-label">Water Resistance</span>
+                <span class="spec-value">{{ watch.water_resistance_m }} m</span>
+            </div>
+            <div class="spec-card">
+                <span class="spec-label">SKU</span>
+                <span class="spec-value">{{ watch.sku }}</span>
+            </div>
+            <div class="spec-card">
+                <span class="spec-label">Images</span>
+                <span class="spec-value">{{ watch.images.count }}</span>
+            </div>
+        </div>
+
+        <div class="cart-actions">
+            <form method="post" action="{% url 'cart-add' watch.id %}">
+                {% csrf_token %}
+                <button class="add-button" type="submit"{% if not watch.in_stock %} disabled{% endif %}>
+                    {% if watch.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+                </button>
+            </form>
+            <a class="checkout-button" href="{% url 'cart' %}">View Cart</a>
+        </div>
+    </div>
+</section>
+
+{% if related_watches %}
+    <section class="related-section">
+        <div class="section-heading">
+            <h2>Similar Watches</h2>
+            <a class="checkout-button" href="{% url 'shop' %}">Back to Shop</a>
+        </div>
+        <div class="related-grid">
+            {% for related in related_watches %}
+                <article class="related-card">
+                    <a class="related-image" href="{% url 'product-detail' slug=related.slug %}">
+                        {% with images=related.images.all %}
+                            {% if images %}
+                                <img src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:related.name }}">
+                            {% else %}
+                                <div>{{ related.name|slice:":2" }}</div>
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                    <div class="related-copy">
+                        <h3>{{ related.name }}</h3>
+                        <p>${{ related.current_price|floatformat:2 }}</p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function initProductCarousel(carousel) {
+    const slides = Array.from(carousel.querySelectorAll('[data-product-carousel-slide]'));
+    const dots = Array.from(carousel.querySelectorAll('[data-product-carousel-dot]'));
+    const prev = carousel.querySelector('[data-product-carousel-prev]');
+    const next = carousel.querySelector('[data-product-carousel-next]');
+    let index = 0;
+
+    if (!slides.length) {
+        return;
+    }
+
+    function showSlide(nextIndex) {
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === index));
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === index));
+    }
+
+    if (prev) {
+        prev.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(index - 1);
+        });
+    }
+
+    if (next) {
+        next.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(index + 1);
+        });
+    }
+
+    dots.forEach((dot) => {
+        dot.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(Number(dot.dataset.productCarouselDot));
+        });
+    });
+}
+
+document.querySelectorAll('[data-product-carousel]').forEach(initProductCarousel);
+</script>
+{% endblock %}

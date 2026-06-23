@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+
+{% block title %}Cart | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --ink: #111111;
+    --muted: #6b7280;
+    --line: rgba(17, 17, 17, 0.12);
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --red: #dc2626;
+    --radius: 10px;
+}
+
+.cart-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 56px;
+}
+
+.page-title {
+    margin: 0 0 6px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+}
+
+.page-subtitle {
+    margin: 0 0 24px;
+    color: var(--muted);
+}
+
+.cart-list,
+.cart-summary,
+.empty-cart {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 14px 36px rgba(17, 17, 17, 0.07);
+}
+
+.cart-list {
+    overflow: hidden;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+.cart-item:last-child {
+    border-bottom: 0;
+}
+
+.cart-item-image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f3f4f6;
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.cart-item-image div {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: 12px;
+    color: var(--muted);
+    font-family: Georgia, 'Times New Roman', serif;
+    text-align: center;
+}
+
+.cart-item-main {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+}
+
+.cart-item-brand {
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.cart-item-name {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+}
+
+.cart-item-price {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.cart-item-controls {
+    display: grid;
+    justify-items: end;
+    gap: 10px;
+}
+
+.quantity-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.quantity-input {
+    width: 64px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    text-align: center;
+    font: inherit;
+}
+
+.mini-button {
+    min-height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    background: #ffffff;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.mini-button:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.remove-button {
+    border: 0;
+    background: transparent;
+    color: var(--red);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.cart-summary {
+    position: sticky;
+    top: 96px;
+    padding: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.summary-row.total {
+    border-bottom: 0;
+    margin-top: 8px;
+    padding-top: 16px;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.summary-actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.primary-button {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.primary-button:hover {
+    background: var(--blue-hover);
+}
+
+.secondary-button {
+    color: var(--ink);
+    background: #ffffff;
+    border-color: var(--line);
+}
+
+.secondary-button:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.danger-button {
+    color: var(--red);
+    background: transparent;
+    border-color: transparent;
+}
+
+.empty-cart {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-cart h2 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+@media (max-width: 900px) {
+    .cart-page {
+        grid-template-columns: 1fr;
+    }
+    .cart-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .cart-item {
+        grid-template-columns: 86px 1fr;
+    }
+    .cart-item-controls {
+        grid-column: 1 / -1;
+        justify-items: stretch;
+    }
+    .quantity-form {
+        justify-content: space-between;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% if items %}
+    <h1 class="page-title">Your Cart</h1>
+    <p class="page-subtitle">Review your selected timepieces before checkout.</p>
+
+    <div class="cart-page">
+        <div class="cart-list">
+            {% for item in items %}
+                <article class="cart-item">
+                    <a class="cart-item-image" href="{% url 'product-detail' slug=item.watch.slug %}" aria-label="View {{ item.watch.name }}">
+                        {% with images=item.watch.images.all %}
+                            {% if images %}
+                                <img src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:item.watch.name }}">
+                            {% else %}
+                                <div>{{ item.watch.name|slice:":2" }}</div>
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                    <div class="cart-item-main">
+                        <span class="cart-item-brand">{{ item.watch.brand.name }}</span>
+                        <h2 class="cart-item-name">{{ item.watch.name }}</h2>
+                        <span class="cart-item-price">${{ item.watch.current_price|floatformat:2 }} each</span>
+                    </div>
+                    <div class="cart-item-controls">
+                        <form class="quantity-form" method="post" action="{% url 'cart-update' item.id %}">
+                            {% csrf_token %}
+                            <button class="mini-button" type="submit" name="action" value="decrease" aria-label="Decrease quantity">−</button>
+                            <input class="quantity-input" type="number" name="quantity" min="1" max="{{ item.watch.stock }}" value="{{ item.quantity }}" aria-label="Quantity">
+                            <button class="mini-button" type="submit" name="action" value="increase" aria-label="Increase quantity">+</button>
+                            <button class="mini-button" type="submit" name="action" value="set">Update</button>
+                        </form>
+                        <form method="post" action="{% url 'cart-remove' item.id %}">
+                            {% csrf_token %}
+                            <button class="remove-button" type="submit">Remove</button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <aside class="cart-summary">
+            <div class="summary-row">
+                <span>Items</span>
+                <strong>{{ cart_count }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong>${{ cart.total|floatformat:2 }}</strong>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>${{ cart.total|floatformat:2 }}</span>
+            </div>
+            <div class="summary-actions">
+                <a class="primary-button" href="{% url 'checkout' %}">Checkout</a>
+                <a class="secondary-button" href="{% url 'shop' %}">Continue Shopping</a>
+                <form method="post" action="{% url 'cart-clear' %}" onsubmit="return confirm('Clear your cart?');">
+                    {% csrf_token %}
+                    <button class="danger-button" type="submit">Clear Cart</button>
+                </form>
+            </div>
+        </aside>
+    </div>
+{% else %}
+    <div class="empty-cart">
+        <h2>Your cart is empty</h2>
+        <p>Find the right watch and add it to your cart.</p>
+        <a class="primary-button" href="{% url 'shop' %}">Browse Watches</a>
+    </div>
+{% endif %}
+{% endblock %}

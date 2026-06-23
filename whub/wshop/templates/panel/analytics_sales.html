@@ -1,0 +1,168 @@
+{% extends "panel/base.html" %}
+{% load admin_extras %}
+
+{% block extra_css %}
+<style>
+.analytics-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.range-form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.range-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+.range-button.is-active {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.chart-svg {
+    width: 100%;
+    height: 230px;
+    display: block;
+}
+.split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+@media (max-width: 1100px) {
+    .chart-grid,
+    .split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-toolbar">
+    <div>
+        <p class="page-subtitle">Revenue, order volume, fulfillment status, and customer purchasing patterns.</p>
+        <p class="text-muted" style="font-size:0.86rem;">Range: {{ start|date:"M d, Y" }} - {{ end|date:"M d, Y" }}</p>
+    </div>
+    <form class="range-form">
+        {% for option in range_options %}
+            <a class="range-button{% if days == option %} is-active{% endif %}" href="?days={{ option }}">{{ option }}d</a>
+        {% endfor %}
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card revenue-card">
+        <span class="stat-label">Sales Revenue</span>
+        <span class="stat-value revenue-value">{{ revenue|floatformat:0|intcomma }}</span>
+        <span class="stat-change">${{ revenue|floatformat:2 }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Orders</span>
+        <span class="stat-value">{{ orders.count|intcomma }}</span>
+        <span class="stat-change">{{ units_sold|intcomma }} units</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Average Order</span>
+        <span class="stat-value">{{ average_order|floatformat:0|intcomma }}</span>
+        <span class="stat-change">${{ average_order|floatformat:2 }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Pending Orders</span>
+        <span class="stat-value">{{ pending_orders|intcomma }}</span>
+        <span class="stat-change">Needs attention</span>
+    </div>
+</div>
+
+<div class="chart-grid" style="margin-top:16px;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Revenue by Day</span>
+        </div>
+        <div class="card-body">{{ revenue_chart|safe }}</div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Orders by Day</span>
+        </div>
+        <div class="card-body">{{ order_chart|safe }}</div>
+    </div>
+</div>
+
+<div class="split-grid">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Order Status Mix</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Status</th><th class="text-right">Orders</th><th class="text-right">Revenue</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in status_rows %}
+                        <tr>
+                            <td>
+                                <span class="badge {% if row.status == 'delivered' %}badge-success{% elif row.status == 'processing' %}badge-info{% elif row.status == 'shipped' %}badge-warning{% elif row.status == 'pending' %}badge-danger{% else %}badge-default{% endif %}">
+                                    {{ row.label }}
+                                </span>
+                            </td>
+                            <td class="text-right">{{ row.count|intcomma }}</td>
+                            <td class="text-right font-mono">${{ row.revenue|floatformat:2 }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Top Customers</span>
+            <a href="{% url 'panel-orders' %}" class="link">Orders</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Customer</th><th class="text-right">Orders</th><th class="text-right">Revenue</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in top_customers %}
+                        <tr>
+                            <td>
+                                <strong>{{ row.full_name }}</strong>
+                                <div class="text-muted" style="font-size:0.76rem;">{{ row.email }}{% if row.city %} · {{ row.city }}{% endif %}</div>
+                            </td>
+                            <td class="text-right">{{ row.orders_count|intcomma }}</td>
+                            <td class="text-right font-mono">${{ row.revenue|floatformat:2 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3"><div class="empty-state">No customer data yet.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

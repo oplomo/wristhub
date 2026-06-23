@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --ink: #111111;
+    --muted: #6b7280;
+    --line: rgba(17, 17, 17, 0.12);
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --red: #dc2626;
+    --radius: 10px;
+}
+
+.checkout-page {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) 360px;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 56px;
+}
+
+.page-title {
+    margin: 0 0 6px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+}
+
+.page-subtitle {
+    margin: 0 0 24px;
+    color: var(--muted);
+}
+
+.checkout-form,
+.order-summary,
+.empty-checkout {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 14px 36px rgba(17, 17, 17, 0.07);
+}
+
+.checkout-form {
+    padding: 22px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: grid;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--blue);
+}
+
+.form-error {
+    color: var(--red);
+    font-size: 0.82rem;
+}
+
+.order-summary {
+    position: sticky;
+    top: 96px;
+    padding: 20px;
+}
+
+.summary-item {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.summary-item:last-child {
+    border-bottom: 0;
+}
+
+.summary-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f3f4f6;
+}
+
+.summary-name {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.95rem;
+}
+
+.summary-meta {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.summary-row.total {
+    border-bottom: 0;
+    margin-top: 8px;
+    padding-top: 14px;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 12px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #ffffff;
+    background: var(--blue);
+    cursor: pointer;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.primary-button:hover {
+    background: var(--blue-hover);
+}
+
+.secondary-button {
+    color: var(--ink);
+    background: #ffffff;
+    border-color: var(--line);
+}
+
+.secondary-button:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.empty-checkout {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-checkout h2 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+@media (max-width: 900px) {
+    .checkout-page {
+        grid-template-columns: 1fr;
+    }
+    .order-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+{% if items %}
+    <h1 class="page-title">Checkout</h1>
+    <p class="page-subtitle">Enter your delivery details to place the order.</p>
+
+    <div class="checkout-page">
+        <form class="checkout-form" method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.full_name.id_for_label }}">Full Name</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<div class="form-error">{{ form.email.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.phone.id_for_label }}">Phone</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.address.id_for_label }}">Address</label>
+                    {{ form.address }}
+                    {% if form.address.errors %}<div class="form-error">{{ form.address.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.city.id_for_label }}">City</label>
+                    {{ form.city }}
+                    {% if form.city.errors %}<div class="form-error">{{ form.city.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.postal_code.id_for_label }}">Postal Code</label>
+                    {{ form.postal_code }}
+                    {% if form.postal_code.errors %}<div class="form-error">{{ form.postal_code.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
+                    {{ form.country }}
+                    {% if form.country.errors %}<div class="form-error">{{ form.country.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+            <button class="primary-button" type="submit">Place Order</button>
+            <a class="secondary-button" href="{% url 'cart' %}">Back to Cart</a>
+        </form>
+
+        <aside class="order-summary">
+            {% for item in items %}
+                <div class="summary-item">
+                    {% with images=item.watch.images.all %}
+                        {% if images %}
+                            <img class="summary-thumb" src="{{ images.0.image.url }}" alt="{{ images.0.alt_text|default:item.watch.name }}">
+                        {% else %}
+                            <div class="summary-thumb"></div>
+                        {% endif %}
+                    {% endwith %}
+                    <div>
+                        <p class="summary-name">{{ item.watch.name }}</p>
+                        <p class="summary-meta">{{ item.quantity }} × ${{ item.watch.current_price|floatformat:2 }}</p>
+                    </div>
+                    <strong>${{ item.subtotal|floatformat:2 }}</strong>
+                </div>
+            {% endfor %}
+            <div class="summary-row">
+                <span>Total</span>
+                <strong>${{ cart.total|floatformat:2 }}</strong>
+            </div>
+            <div class="summary-row total">
+                <span>Order Total</span>
+                <span>${{ cart.total|floatformat:2 }}</span>
+            </div>
+        </aside>
+    </div>
+{% else %}
+    <div class="empty-checkout">
+        <h2>Your cart is empty</h2>
+        <p>Add watches to your cart before checkout.</p>
+        <a class="primary-button" href="{% url 'shop' %}">Browse Watches</a>
+    </div>
+{% endif %}
+{% endblock %}

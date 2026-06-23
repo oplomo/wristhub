@@ -1,0 +1,180 @@
+{% extends "panel/base.html" %}
+{% load admin_extras %}
+
+{% block extra_css %}
+<style>
+.analytics-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.range-form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.range-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+.range-button.is-active {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+.chart-svg {
+    width: 100%;
+    height: 230px;
+    display: block;
+}
+.product-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #f1f5f9;
+}
+.progress {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+.progress > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--blue);
+}
+@media (max-width: 900px) {
+    .table-wrap {
+        overflow-x: auto;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-toolbar">
+    <div>
+        <p class="page-subtitle">Product demand, sell-through, conversion, and inventory exposure by product.</p>
+        <p class="text-muted" style="font-size:0.86rem;">Range: {{ start|date:"M d, Y" }} - {{ end|date:"M d, Y" }}</p>
+    </div>
+    <form class="range-form">
+        {% for option in range_options %}
+            <a class="range-button{% if days == option %} is-active{% endif %}" href="?days={{ option }}">{{ option }}d</a>
+        {% endfor %}
+    </form>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Tracked Products</span>
+        <span class="stat-value">{{ rows|length|intcomma }}</span>
+        <span class="stat-change">Products with activity</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Product Views</span>
+        <span class="stat-value">{{ product_events.count|intcomma }}</span>
+        <span class="stat-change">Product page views</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Units Sold</span>
+        <span class="stat-value">{{ units_sold|intcomma }}</span>
+        <span class="stat-change">Across all products</span>
+    </div>
+    <div class="stat-card revenue-card">
+        <span class="stat-label">Product Revenue</span>
+        <span class="stat-value revenue-value">{{ revenue|floatformat:0|intcomma }}</span>
+        <span class="stat-change">${{ revenue|floatformat:2 }}</span>
+    </div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+    <div class="card-header">
+        <span class="card-title">Product Momentum Score</span>
+        <a href="{% url 'panel-analytics' %}?days={{ days }}" class="link">Overview</a>
+    </div>
+    <div class="card-body">{{ product_chart|safe }}</div>
+</div>
+
+<div class="card" style="margin-top:16px;">
+    <div class="card-header">
+        <span class="card-title">Product Performance Table</span>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-right">Views</th>
+                    <th class="text-right">Sold</th>
+                    <th class="text-right">Revenue</th>
+                    <th>Conversion</th>
+                    <th>Sell-through</th>
+                    <th>Stock</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                {% with images=row.watch.images.all %}
+                                    {% if images %}
+                                        <img class="product-thumb" src="{{ images.0.image.url }}" alt="{{ row.watch.name }}">
+                                    {% else %}
+                                        <div class="product-thumb" style="display:grid;place-items:center;color:var(--muted);">{{ row.watch.name|slice:":2" }}</div>
+                                    {% endif %}
+                                {% endwith %}
+                                <div>
+                                    <strong>{{ row.watch.name }}</strong>
+                                    <div class="text-muted" style="font-size:0.76rem;">{{ row.watch.brand.name }} · {{ row.watch.category.name }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-right">{{ row.views|intcomma }}</td>
+                        <td class="text-right">{{ row.sold|intcomma }}</td>
+                        <td class="text-right font-mono">${{ row.revenue|floatformat:2 }}</td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div class="progress" style="width:80px;"><span style="width:{{ row.conversion|floatformat:0 }}%;"></span></div>
+                                <span>{{ row.conversion|floatformat:1 }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <div class="progress" style="width:80px;"><span style="width:{{ row.sell_through|floatformat:0 }}%;"></span></div>
+                                <span>{{ row.sell_through|floatformat:1 }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge {% if row.stock == 0 %}badge-danger{% elif row.stock < 5 %}badge-warning{% else %}badge-success{% endif %}">
+                                {{ row.stock }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'panel-product-edit' slug=row.watch.slug %}" class="link">Edit</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8"><div class="empty-state">No product analytics yet.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

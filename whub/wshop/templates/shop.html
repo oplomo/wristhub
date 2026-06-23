@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block title %}Shop | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --ink: #111111;
+    --muted: #6b7280;
+    --line: rgba(17, 17, 17, 0.12);
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --red: #dc2626;
+    --radius: 6px;
+}
+
+.shop-hero {
+    padding: 32px 0 20px;
+}
+
+.shop-hero h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 6px;
+}
+
+.shop-hero p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.shop-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding-bottom: 56px;
+}
+
+.shop-filters {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.35fr) repeat(3, minmax(150px, 1fr));
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 14px 36px rgba(17, 17, 17, 0.06);
+}
+
+.filter-search-group {
+    grid-column: 1 / -1;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.filter-select {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.filter-select:focus {
+    border-color: var(--blue);
+}
+
+.filter-search {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+}
+
+.filter-search:focus {
+    border-color: var(--blue);
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.watch-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    transition: transform 140ms ease;
+}
+
+.watch-card:hover {
+    transform: translateY(-2px);
+}
+
+.watch-carousel {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+.watch-carousel-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.watch-slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    opacity: 0;
+    transform: scale(1.01);
+    transition: opacity 200ms ease, transform 220ms ease;
+}
+
+.watch-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.watch-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(17, 17, 17, 0.1);
+    border-radius: 50%;
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.82);
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background 140ms ease, color 140ms ease;
+}
+
+.watch-carousel-arrow:hover {
+    color: #ffffff;
+    background: var(--ink);
+}
+
+.watch-carousel-arrow.prev {
+    left: 8px;
+}
+
+.watch-carousel-arrow.next {
+    right: 8px;
+}
+
+.watch-carousel-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 9px;
+    z-index: 2;
+    display: flex;
+    gap: 5px;
+    transform: translateX(-50%);
+}
+
+.watch-carousel-dot {
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(17, 17, 17, 0.25);
+    cursor: pointer;
+}
+
+.watch-carousel-dot.is-active {
+    width: 18px;
+    background: var(--ink);
+}
+
+.watch-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.watch-body {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+}
+
+.watch-brand {
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.watch-name {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+}
+
+.watch-price {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.watch-old-price {
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-decoration: line-through;
+}
+
+.watch-stock {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.watch-stock.is-low {
+    color: #b45309;
+}
+
+.watch-stock.is-out {
+    color: var(--red);
+}
+
+.watch-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    color: var(--blue);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.watch-link:hover {
+    color: var(--blue-hover);
+}
+
+.add-cart-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--radius);
+    color: #ffffff;
+    background: var(--ink);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.add-cart-button:hover:not(:disabled) {
+    background: var(--blue);
+    transform: translateY(-1px);
+}
+
+.add-cart-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.95rem;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+}
+
+@media (max-width: 700px) {
+    .shop-layout {
+        grid-template-columns: 1fr;
+    }
+    .shop-filters {
+        grid-template-columns: 1fr;
+        padding: 12px;
+    }
+    .shop-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shop-hero">
+    <h1>Shop Watches</h1>
+    <p>Browse our collection of premium timepieces.</p>
+</div>
+
+<div class="shop-layout">
+    <aside class="shop-filters" aria-label="Shop filters">
+        <div class="filter-group filter-search-group">
+            <label class="filter-label" for="shopSearch">Search</label>
+            <input type="text" class="filter-search" placeholder="Search watches..." id="shopSearch" autocomplete="off">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="brandFilter">Brand</label>
+            <select class="filter-select" id="brandFilter">
+                <option value="">All Brands</option>
+                {% for b in brands %}
+                    <option value="{{ b.name }}"{% if active_filters.brand == b.name %} selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="categoryFilter">Category</label>
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+                {% for c in categories %}
+                    <option value="{{ c.name }}"{% if active_filters.category == c.name %} selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label" for="priceFilter">Price</label>
+            <select class="filter-select" id="priceFilter">
+                <option value="">Any Price</option>
+                <option value="0-500"{% if active_filters.price == "0-500" %} selected{% endif %}>Under $500</option>
+                <option value="500-2000"{% if active_filters.price == "500-2000" %} selected{% endif %}>$500 - $2,000</option>
+                <option value="2000-5000"{% if active_filters.price == "2000-5000" %} selected{% endif %}>$2,000 - $5,000</option>
+                <option value="5000"{% if active_filters.price == "5000" %} selected{% endif %}>$5,000+</option>
+            </select>
+        </div>
+    </aside>
+
+    <div class="shop-grid" id="shopGrid">
+        {% for watch in watches %}
+            {% with images=watch.images.all %}
+                <article class="watch-card">
+                    <div class="watch-carousel" data-product-carousel>
+                        <div class="watch-carousel-stage">
+                            {% if images %}
+                                {% for image in images %}
+                                    <img class="watch-slide{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-product-carousel-slide>
+                                {% endfor %}
+                            {% else %}
+                                <div class="watch-fallback" data-product-carousel-slide>{{ watch.name|slice:":2" }}</div>
+                            {% endif %}
+                        </div>
+                        {% if images|length > 1 %}
+                            <button class="watch-carousel-arrow prev" type="button" data-product-carousel-prev aria-label="Previous image">&lt;</button>
+                            <button class="watch-carousel-arrow next" type="button" data-product-carousel-next aria-label="Next image">&gt;</button>
+                            <div class="watch-carousel-dots">
+                                {% for image in images %}
+                                    <button class="watch-carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-product-carousel-dot="{{ forloop.counter0 }}" aria-label="Show image {{ forloop.counter }}"></button>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="watch-body">
+                        <span class="watch-brand">{{ watch.brand.name }}</span>
+                        <h3 class="watch-name">{{ watch.name }}</h3>
+                        <p class="watch-price">${{ watch.current_price|floatformat:2 }}{% if watch.discount_price %}<span class="watch-old-price">${{ watch.price|floatformat:2 }}</span>{% endif %}</p>
+                        <span class="watch-stock{% if watch.stock == 0 %} is-out{% elif watch.stock < 5 %} is-low{% endif %}">
+                            {% if watch.stock == 0 %}Out of stock{% elif watch.stock < 5 %}Only {{ watch.stock }} left{% else %}In stock{% endif %}
+                        </span>
+                        <a class="watch-link" href="{% url 'product-detail' slug=watch.slug %}">View details &rarr;</a>
+                        <form method="post" action="{% url 'cart-add' watch.id %}">
+                            {% csrf_token %}
+                            <button class="add-cart-button" type="submit"{% if not watch.in_stock %} disabled{% endif %}>
+                                {% if watch.in_stock %}Add to Cart{% else %}Out of Stock{% endif %}
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endwith %}
+        {% empty %}
+            <div class="empty-state">No watches found matching your filters.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const searchInput = document.getElementById('shopSearch');
+const brandFilter = document.getElementById('brandFilter');
+const categoryFilter = document.getElementById('categoryFilter');
+const priceFilter = document.getElementById('priceFilter');
+const shopGrid = document.getElementById('shopGrid');
+const cartAddUrl = '{% url "cart-add" 0 %}'.replace('/0/', '/');
+
+function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, (match) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[match]));
+}
+
+function buildCarousel(images, name) {
+    const safeImages = Array.isArray(images) && images.length ? images : [];
+    const hasImages = safeImages.some((image) => image.url);
+    const slides = hasImages
+        ? safeImages.map((image, index) => '<img class="watch-slide' + (index === 0 ? ' is-active' : '') + '" src="' + escapeHtml(image.url) + '" alt="' + escapeHtml(image.alt || name) + '" data-product-carousel-slide>').join('')
+        : '<div class="watch-fallback" data-product-carousel-slide>' + escapeHtml(name.substring(0, 2)) + '</div>';
+    const dots = hasImages && safeImages.length > 1
+        ? '<div class="watch-carousel-dots">' + safeImages.map((image, index) => '<button class="watch-carousel-dot' + (index === 0 ? ' is-active' : '') + '" type="button" data-product-carousel-dot="' + index + '" aria-label="Show image ' + (index + 1) + '"></button>').join('') + '</div>'
+        : '';
+    const arrows = hasImages && safeImages.length > 1
+        ? '<button class="watch-carousel-arrow prev" type="button" data-product-carousel-prev aria-label="Previous image">&lt;</button><button class="watch-carousel-arrow next" type="button" data-product-carousel-next aria-label="Next image">&gt;</button>'
+        : '';
+
+    return '<div class="watch-carousel" data-product-carousel><div class="watch-carousel-stage">' + slides + '</div>' + arrows + dots + '</div>';
+}
+
+function buildCard(item) {
+    const stockClass = item.stock === 0 ? ' is-out' : item.stock < 5 ? ' is-low' : '';
+    const stockText = item.stock === 0 ? 'Out of stock' : item.stock < 5 ? 'Only ' + item.stock + ' left' : 'In stock';
+    const oldPrice = item.old_price ? '<span class="watch-old-price">$' + escapeHtml(item.old_price) + '</span>' : '';
+    return '<article class="watch-card">' +
+        buildCarousel(item.images || [], item.name) +
+        '<div class="watch-body">' +
+            '<span class="watch-brand">' + escapeHtml(item.brand) + '</span>' +
+            '<h3 class="watch-name">' + escapeHtml(item.name) + '</h3>' +
+            '<p class="watch-price">$' + escapeHtml(item.price) + oldPrice + '</p>' +
+            '<span class="watch-stock' + stockClass + '">' + escapeHtml(stockText) + '</span>' +
+            '<a class="watch-link" href="{% url "product-detail" slug="__slug__" %}">View details &rarr;</a>'.replace('__slug__', encodeURIComponent(item.slug)) +
+            '<form method="post" action="' + cartAddUrl + item.id + '/">' +
+                '<button class="add-cart-button" type="submit"' + (item.stock > 0 ? '' : ' disabled') + '>' + (item.stock > 0 ? 'Add to Cart' : 'Out of Stock') + '</button>' +
+            '</form>' +
+        '</div>' +
+    '</article>';
+}
+
+function initProductCarousel(carousel) {
+    const slides = Array.from(carousel.querySelectorAll('[data-product-carousel-slide]'));
+    const dots = Array.from(carousel.querySelectorAll('[data-product-carousel-dot]'));
+    const prev = carousel.querySelector('[data-product-carousel-prev]');
+    const next = carousel.querySelector('[data-product-carousel-next]');
+    let index = 0;
+
+    if (!slides.length) {
+        return;
+    }
+
+    function showSlide(nextIndex) {
+        index = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === index));
+        dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === index));
+    }
+
+    if (prev) {
+        prev.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(index - 1);
+        });
+    }
+
+    if (next) {
+        next.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(index + 1);
+        });
+    }
+
+    dots.forEach((dot) => {
+        dot.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showSlide(Number(dot.dataset.productCarouselDot));
+        });
+    });
+}
+
+document.querySelectorAll('[data-product-carousel]').forEach(initProductCarousel);
+
+function buildQuery() {
+    const params = new URLSearchParams();
+    const activeParams = new URLSearchParams(window.location.search);
+    if (searchInput.value) params.set('q', searchInput.value);
+    if (brandFilter.value) params.set('brand', brandFilter.value);
+    if (categoryFilter.value) params.set('category', categoryFilter.value);
+    if (priceFilter.value) params.set('price', priceFilter.value);
+    ['movement', 'model', 'gender', 'strap_material'].forEach((key) => {
+        if (activeParams.get(key)) params.set(key, activeParams.get(key));
+    });
+    return params.toString();
+}
+
+function updateShop() {
+    const query = buildQuery();
+    const url = '{% url "panel-product-search" %}?' + query;
+    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json())
+        .then(data => {
+            const results = data.results || [];
+            if (results.length === 0) {
+                shopGrid.innerHTML = '<div class="empty-state">No watches found matching your filters.</div>';
+                return;
+            }
+            shopGrid.innerHTML = results.map(buildCard).join('');
+            document.querySelectorAll('#shopGrid [data-product-carousel]').forEach(initProductCarousel);
+        })
+        .catch(() => {
+            shopGrid.innerHTML = '<div class="empty-state">Error loading results.</div>';
+        });
+}
+
+let shopTimeout = null;
+[searchInput, brandFilter, categoryFilter, priceFilter].forEach(el => {
+    el.addEventListener('input', () => {
+        clearTimeout(shopTimeout);
+        shopTimeout = setTimeout(updateShop, 250);
+    });
+    el.addEventListener('change', updateShop);
+});
+</script>
+{% endblock %}

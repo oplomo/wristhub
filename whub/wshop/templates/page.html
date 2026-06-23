@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }} | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --ink: #111111;
+    --muted: #6b7280;
+    --line: rgba(17, 17, 17, 0.12);
+    --blue: #2563eb;
+    --radius: 10px;
+}
+
+.page-panel {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 42px 0 56px;
+}
+
+.page-card {
+    padding: clamp(24px, 5vw, 44px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 16px 40px rgba(17, 17, 17, 0.08);
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: var(--blue);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.page-card h1 {
+    margin: 0 0 16px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.08;
+}
+
+.page-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.8;
+}
+
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.primary-button {
+    color: #ffffff;
+    background: var(--blue);
+}
+
+.secondary-button {
+    color: var(--ink);
+    border: 1px solid var(--line);
+}
+
+.order-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.order-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.order-row strong {
+    white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+    .order-row {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-panel">
+    <div class="page-card">
+        <p class="eyebrow">{{ page.eyebrow }}</p>
+        <h1>{{ page.title }}</h1>
+        <p>{{ page.body }}</p>
+
+        {% if orders %}
+            <div class="order-list">
+                {% for order in orders %}
+                    <div class="order-row">
+                        <div>
+                            <strong>Order #{{ order.pk }}</strong>
+                            <div>{{ order.created_at|date:"M d, Y" }} · {{ order.status|title }}</div>
+                        </div>
+                        <strong>${{ order.total|floatformat:2 }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="page-actions">
+            <a class="primary-button" href="{% url 'shop' %}">Shop Watches</a>
+            <a class="secondary-button" href="{% url 'cart' %}">View Cart</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
