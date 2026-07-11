@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home | Wrist Hub{% endblock %}
 
@@ -9,12 +10,12 @@
     display: grid;
     align-items: center;
     min-height: clamp(460px, 68vh, 640px);
-    margin: -42px calc(50% - 50vw) 36px;
-    padding: 90px max(20px, calc((100vw - 1180px) / 2)) 56px;
+    margin: 0 0 36px;
+    padding: 84px clamp(20px, 5vw, 72px) 56px;
     overflow: hidden;
     color: #ffffff;
     background: linear-gradient(135deg, rgba(17, 17, 17, 0.92), rgba(31, 41, 55, 0.78)), #111111;
-}
+  }
 
         .video-hero video {
             position: absolute;
@@ -137,7 +138,7 @@
             height: 36px;
             border: 1px solid var(--line);
             border-radius: 50%;
-            color: var(--ink);
+            color: #ffffff;
             background: var(--surface);
             box-shadow: var(--shadow);
             cursor: pointer;
@@ -158,7 +159,7 @@
         }
 
         .carousel-button:disabled:hover {
-            color: var(--ink);
+            color: #ffffff;
             background: var(--surface);
             border-color: var(--line);
         }
@@ -173,6 +174,18 @@
             gap: 16px;
             transition: transform 280ms ease;
             will-change: transform;
+            touch-action: pan-y;
+            cursor: grab;
+        }
+
+        .personality-carousel.is-dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .personality-carousel a {
+            -webkit-user-drag: none;
+            user-select: none;
         }
 
         .personality-card {
@@ -205,6 +218,7 @@
             height: 100%;
             display: block;
             object-fit: cover;
+            object-position: center;
             transition: transform 220ms ease;
         }
 
@@ -242,6 +256,7 @@
 
         .personality-copy h3 {
             margin: 0;
+            color: #ffffff;
             font-family: Georgia, "Times New Roman", serif;
             font-size: 1.5rem;
             line-height: 1.1;
@@ -250,7 +265,7 @@
 
         .personality-copy p {
             margin: 0;
-            color: var(--muted);
+            color: rgba(255, 255, 255, 0.74);
             font-size: 0.88rem;
             line-height: 1.5;
         }
@@ -502,23 +517,28 @@
         .material-swatch {
             position: relative;
             overflow: hidden;
-            background: var(--material-bg);
+            background: #f3f4f6;
         }
 
-        .material-swatch::before,
+        .material-swatch img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 220ms ease;
+        }
+
+        .material-card:hover .material-swatch img {
+            transform: scale(1.04);
+        }
+
         .material-swatch::after {
             content: "";
             position: absolute;
             inset: 0;
-        }
-
-        .material-swatch::before {
-            background: var(--material-texture);
-            opacity: 0.65;
-        }
-
-        .material-swatch::after {
-            background: linear-gradient(180deg, transparent, rgba(17, 17, 17, 0.18));
+            background: linear-gradient(180deg, transparent, rgba(17, 17, 17, 0.22));
+            pointer-events: none;
         }
 
         .material-copy {
@@ -546,27 +566,22 @@
 
         .leather-material {
             --material-bg: #3f2e26;
-            --material-texture: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 10px);
         }
 
         .metal-material {
             --material-bg: linear-gradient(135deg, #d4d4d4, #f5f5f5 45%, #9ca3af);
-            --material-texture: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 12px);
         }
 
         .rubber-material {
             --material-bg: #1f1f1f;
-            --material-texture: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.06) 0 3px, transparent 3px 10px);
         }
 
         .ceramic-material {
             --material-bg: linear-gradient(135deg, #fafafa, #d6d3d1);
-            --material-texture: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.6), transparent 20%);
         }
 
         .fabric-material {
             --material-bg: #4b5563;
-            --material-texture: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 6px), repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 6px);
         }
 
         .dream-watch {
@@ -1077,7 +1092,9 @@
                 {% for personality in personalities %}
                     <a class="personality-card" href="/shop/?personality={{ personality.slug }}">
                         <div class="personality-image">
-                            {% if personality.category and personality.category.image %}
+                            {% if personality.image %}
+                                <img src="{{ personality.image }}" alt="{{ personality.title }}">
+                            {% elif personality.category and personality.category.image %}
                                 <img src="{{ personality.category.image.url }}" alt="{{ personality.title }}">
                             {% else %}
                                 <div class="personality-image-fallback">{{ personality.title }}</div>
@@ -1227,36 +1244,46 @@
         </div>
 
         <div class="material-grid">
-            <a class="material-card leather-material" href="/shop/?strap_material=leather">
-                <div class="material-swatch"></div>
+            <a class="material-card leather-material" href="{% url 'shop' %}?strap_material=leather">
+                <div class="material-swatch">
+                    <img src="{% static 'images/leather-watch-strap.jpg' %}" alt="Leather strap">
+                </div>
                 <div class="material-copy">
                     <h3>Leather</h3>
                     <span>Shop leather straps</span>
                 </div>
             </a>
-            <a class="material-card metal-material" href="/shop/?strap_material=metal">
-                <div class="material-swatch"></div>
+            <a class="material-card metal-material" href="{% url 'shop' %}?strap_material=metal">
+                <div class="material-swatch">
+                    <img src="{% static 'images/meta-strap.jpg' %}" alt="Metal strap">
+                </div>
                 <div class="material-copy">
                     <h3>Metal</h3>
                     <span>Shop metal straps</span>
                 </div>
             </a>
-            <a class="material-card rubber-material" href="/shop/?strap_material=rubber">
-                <div class="material-swatch"></div>
+            <a class="material-card rubber-material" href="{% url 'shop' %}?strap_material=rubber">
+                <div class="material-swatch">
+                    <img src="{% static 'images/ruber-watch-strap.jpg' %}" alt="Rubber strap">
+                </div>
                 <div class="material-copy">
                     <h3>Rubber</h3>
                     <span>Shop rubber straps</span>
                 </div>
             </a>
-            <a class="material-card ceramic-material" href="/shop/?strap_material=ceramic">
-                <div class="material-swatch"></div>
+            <a class="material-card ceramic-material" href="{% url 'shop' %}?strap_material=ceramic">
+                <div class="material-swatch">
+                    <img src="{% static 'images/cwramic-strap.jpg' %}" alt="Ceramic strap">
+                </div>
                 <div class="material-copy">
                     <h3>Ceramic</h3>
                     <span>Shop ceramic straps</span>
                 </div>
             </a>
-            <a class="material-card fabric-material" href="/shop/?strap_material=fabric">
-                <div class="material-swatch"></div>
+            <a class="material-card fabric-material" href="{% url 'shop' %}?strap_material=fabric">
+                <div class="material-swatch">
+                    <img src="{% static 'images/fabric-strap.jpeg' %}" alt="Fabric strap">
+                </div>
                 <div class="material-copy">
                     <h3>Fabric</h3>
                     <span>Shop fabric straps</span>
@@ -1379,41 +1406,48 @@
         const customWatch = document.querySelector("[data-custom-watch]");
         const watchOptions = document.querySelectorAll("[data-watch-part]");
         let personalityIndex = 0;
+        let currentTranslate = 0;
 
-        function visiblePersonalityCards() {
-            if (!personalityCarousel) {
-                return 1;
-            }
-
-            if (window.innerWidth <= 700) {
-                return 1;
-            }
-
-            if (window.innerWidth <= 980) {
-                return 2;
-            }
-
-            return 3;
+        function carouselStep() {
+            const card = personalityCarousel.querySelector(".personality-card");
+            const styles = getComputedStyle(personalityCarousel);
+            const gap = parseFloat(styles.columnGap || styles.gap || "16");
+            return card ? card.offsetWidth + gap : 0;
         }
 
-        function updatePersonalityCarousel(nextIndex) {
+        function visiblePersonalityCards() {
+            const card = personalityCarousel.querySelector(".personality-card");
+            if (!card) {
+                return 1;
+            }
+
+            const cardWidth = card.offsetWidth;
+            const shell = personalityCarousel.parentElement;
+            const shellStyles = getComputedStyle(shell);
+            const shellPadX = parseFloat(shellStyles.paddingLeft) + parseFloat(shellStyles.paddingRight);
+            const shellWidth = shell.clientWidth - shellPadX;
+            const styles = getComputedStyle(personalityCarousel);
+            const gap = parseFloat(styles.columnGap || styles.gap || "16");
+            return Math.max(1, Math.round((shellWidth + gap) / (cardWidth + gap)));
+        }
+
+        function updatePersonalityCarousel(nextIndex, animate) {
             if (!personalityCarousel) {
                 return;
             }
 
             const cards = personalityCarousel.querySelectorAll(".personality-card");
-            const card = personalityCarousel.querySelector(".personality-card");
-            if (!card || !cards.length) {
+            if (!cards.length) {
                 return;
             }
 
             const visibleCards = visiblePersonalityCards();
             const maxIndex = Math.max(cards.length - visibleCards, 0);
             personalityIndex = Math.min(Math.max(nextIndex, 0), maxIndex);
+            currentTranslate = -personalityIndex * carouselStep();
 
-            const gap = 20;
-            const distance = personalityIndex * (card.offsetWidth + gap);
-            personalityCarousel.style.transform = `translateX(-${distance}px)`;
+            personalityCarousel.style.transition = animate === false ? "none" : "transform 280ms ease";
+            personalityCarousel.style.transform = `translateX(${currentTranslate}px)`;
 
             personalityDots.forEach((dot, index) => {
                 dot.classList.toggle("is-active", index === personalityIndex);
@@ -1424,6 +1458,66 @@
                 personalityPrev.disabled = personalityIndex === 0;
                 personalityNext.disabled = personalityIndex === maxIndex;
             }
+        }
+
+        let isDragging = false;
+        let isPointerDown = false;
+        let startX = 0;
+
+        if (personalityCarousel) {
+            personalityCarousel.addEventListener("pointerdown", (event) => {
+                isPointerDown = true;
+                isDragging = false;
+                startX = event.clientX;
+                personalityCarousel.classList.add("is-dragging");
+                personalityCarousel.setPointerCapture(event.pointerId);
+            });
+
+            personalityCarousel.addEventListener("pointermove", (event) => {
+                if (!isPointerDown) {
+                    return;
+                }
+
+                const deltaX = event.clientX - startX;
+                if (Math.abs(deltaX) > 6) {
+                    isDragging = true;
+                }
+
+                personalityCarousel.style.transform = `translateX(${currentTranslate + deltaX}px)`;
+            });
+
+            function endDrag(event) {
+                if (!isPointerDown) {
+                    return;
+                }
+
+                isPointerDown = false;
+                personalityCarousel.classList.remove("is-dragging");
+
+                const deltaX = event.clientX - startX;
+                const step = carouselStep();
+                const threshold = step * 0.18;
+
+                let nextIndex = personalityIndex;
+                if (deltaX <= -threshold) {
+                    nextIndex = personalityIndex + 1;
+                } else if (deltaX >= threshold) {
+                    nextIndex = personalityIndex - 1;
+                }
+
+                updatePersonalityCarousel(nextIndex);
+            }
+
+            personalityCarousel.addEventListener("pointerup", endDrag);
+            personalityCarousel.addEventListener("pointercancel", endDrag);
+
+            personalityCarousel.addEventListener("click", (event) => {
+                if (isDragging) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    isDragging = false;
+                }
+            }, true);
         }
 
         function initProductCarousel(carousel) {

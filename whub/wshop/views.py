@@ -13,46 +13,46 @@ from .models import Brand, Category, HomeHero, Order, OrderItem, Watch, Cart, Ca
 
 PERSONALITIES = [
     {
+        "slug": "athlete",
+        "title": "The Athlete",
+        "eyebrow": "Engineered for motion",
+        "text": "Sport watches built to keep pace with training, travel, and the everyday grind - durable, legible, and ready when you are.",
+        "category_slug": "sport",
+    },
+    {
         "slug": "executive",
         "title": "The Executive",
-        "eyebrow": "Sharp and refined",
-        "text": "Polished watches for meetings, milestones, and confident first impressions.",
-        "category_slug": "dress",
+        "eyebrow": "Quietly powerful",
+        "text": "Luxury timepieces for the moments that matter - boardrooms, celebrations, and the quiet confidence of wearing something rare.",
+        "category_slug": "luxury",
     },
     {
         "slug": "adventurer",
         "title": "The Adventurer",
-        "eyebrow": "Ready for anywhere",
-        "text": "Durable pieces built for movement, weather, travel, and discovery.",
-        "category_slug": "diver",
-    },
-    {
-        "slug": "minimalist",
-        "title": "The Minimalist",
-        "eyebrow": "Quiet precision",
-        "text": "Clean dials, slim cases, and timeless details without the noise.",
+        "eyebrow": "Timeless by design",
+        "text": "Classic watches that never go out of style - clean, versatile companions for every chapter of your story.",
         "category_slug": "classic",
     },
     {
-        "slug": "collector",
-        "title": "The Collector",
-        "eyebrow": "Curated taste",
-        "text": "Distinctive watches for people who notice the craft behind every detail.",
-        "category_slug": "luxury",
+        "slug": "voyager",
+        "title": "The Voyager",
+        "eyebrow": "Built for the deep",
+        "text": "Diver watches made for water, weather, and the unknown - rugged companions for anyone who prefers the unbeaten path.",
+        "category_slug": "diver",
     },
     {
-        "slug": "athlete",
-        "title": "The Athlete",
-        "eyebrow": "Performance minded",
-        "text": "Sport-ready watches with practical features and everyday strength.",
-        "category_slug": "sport",
+        "slug": "professional",
+        "title": "The Professional",
+        "eyebrow": "Sharp under pressure",
+        "text": "Slim dress watches that finish a tailored look - refined details for meetings, dinners, and everything in between.",
+        "category_slug": "dress",
     },
     {
-        "slug": "trendsetter",
-        "title": "The Trendsetter",
-        "eyebrow": "Style forward",
-        "text": "Bold watches made to stand out and finish the whole look.",
-        "category_slug": "luxury",
+        "slug": "maestro",
+        "title": "The Maestro",
+        "eyebrow": "Precision in motion",
+        "text": "Chronographs for people who measure the moment - complications that turn timekeeping into a craft.",
+        "category_slug": "chronograph",
     },
 ]
 
@@ -134,12 +134,28 @@ def home(request):
         category.slug: category
         for category in Category.objects.filter(is_active=True)
     }
+
+    random_watch_image = {}
+    for personality in PERSONALITIES:
+        slug = personality["category_slug"]
+        if slug in random_watch_image:
+            continue
+        watch = (
+            Watch.objects.filter(is_active=True, category__slug=slug)
+            .prefetch_related("images")
+            .order_by("?")
+            .first()
+        )
+        image = watch.images.first() if watch else None
+        random_watch_image[slug] = image.image.url if image else None
+
     personalities = []
 
     for personality in PERSONALITIES:
         personalities.append({
             **personality,
             "category": categories.get(personality["category_slug"]),
+            "image": random_watch_image.get(personality["category_slug"]),
         })
 
     featured_watches = (

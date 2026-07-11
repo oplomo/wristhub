@@ -337,6 +337,17 @@
             </select>
         </div>
         <div class="filter-group">
+            <label class="filter-label" for="strapFilter">Strap</label>
+            <select class="filter-select" id="strapFilter">
+                <option value="">All Straps</option>
+                <option value="leather"{% if active_filters.strap_material == "leather" %} selected{% endif %}>Leather</option>
+                <option value="metal"{% if active_filters.strap_material == "metal" %} selected{% endif %}>Metal</option>
+                <option value="rubber"{% if active_filters.strap_material == "rubber" %} selected{% endif %}>Rubber</option>
+                <option value="ceramic"{% if active_filters.strap_material == "ceramic" %} selected{% endif %}>Ceramic</option>
+                <option value="fabric"{% if active_filters.strap_material == "fabric" %} selected{% endif %}>Fabric</option>
+            </select>
+        </div>
+        <div class="filter-group">
             <label class="filter-label" for="priceFilter">Price</label>
             <select class="filter-select" id="priceFilter">
                 <option value="">Any Price</option>
@@ -397,6 +408,7 @@
 const searchInput = document.getElementById('shopSearch');
 const brandFilter = document.getElementById('brandFilter');
 const categoryFilter = document.getElementById('categoryFilter');
+const strapFilter = document.getElementById('strapFilter');
 const priceFilter = document.getElementById('priceFilter');
 const shopGrid = document.getElementById('shopGrid');
 const cartAddUrl = '{% url "cart-add" 0 %}'.replace('/0/', '/');
@@ -490,6 +502,7 @@ function buildQuery() {
     if (searchInput.value) params.set('q', searchInput.value);
     if (brandFilter.value) params.set('brand', brandFilter.value);
     if (categoryFilter.value) params.set('category', categoryFilter.value);
+    if (strapFilter.value) params.set('strap_material', strapFilter.value);
     if (priceFilter.value) params.set('price', priceFilter.value);
     ['movement', 'model', 'gender', 'strap_material'].forEach((key) => {
         if (activeParams.get(key)) params.set(key, activeParams.get(key));
@@ -517,7 +530,7 @@ function updateShop() {
 }
 
 let shopTimeout = null;
-[searchInput, brandFilter, categoryFilter, priceFilter].forEach(el => {
+[searchInput, brandFilter, categoryFilter, strapFilter, priceFilter].forEach(el => {
     el.addEventListener('input', () => {
         clearTimeout(shopTimeout);
         shopTimeout = setTimeout(updateShop, 250);

@@ -84,13 +84,13 @@
             gap: 10px;
             min-width: max-content;
             font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.45rem;
+            font-size: clamp(1.45rem, 2.2vw, 2rem);
             font-weight: 700;
             letter-spacing: 0;
         }
 
         .brand-mark {
-            height: 38px;
+            height: clamp(48px, 6vw, 72px);
             width: auto;
             display: block;
         }
@@ -367,7 +367,7 @@
         }
 
         .footer-logo {
-            height: 32px;
+            height: clamp(44px, 5vw, 64px);
             width: auto;
         }
 
@@ -513,7 +513,6 @@
                             <span class="cart-count" id="cartCount" data-count="0">0</span>
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
                     <li class="nav-item has-submenu account-menu">
                         <button class="account-trigger" type="button" aria-expanded="false">
@@ -534,21 +533,11 @@
                                 <li><a href="{% url 'login' %}">Login</a></li>
                                 <li><a href="{% url 'register' %}">Register</a></li>
                             {% endif %}
+                            {% if user.is_staff %}
+                                <li><a href="{% url 'panel-dashboard' %}">Admin Panel</a></li>
+                            {% endif %}
                         </ul>
                     </li>
-                    {% if user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'panel-dashboard' %}">
-                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/>
-                                <rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="7" height="7" rx="1"/>
-                            </svg>
-                            Admin Panel
-                        </a>
-                    </li>
-                    {% endif %}
                 </ul>
             </div>
         </nav>
