@@ -60,12 +60,16 @@
                                     {% else %}
                                         {{ order.full_name }}
                                     {% endif %}
+                                    {% if order.county or order.sub_county %}
+                                        <br><span class="text-muted">{{ order.county|title }}{% if order.sub_county %} &middot; {{ order.sub_county|title }}{% endif %}{% if order.ward %} &middot; {{ order.ward|title }}{% endif %}</span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-muted">{{ order.created_at|date:"M d, Y" }}</td>
                                 <td>{{ order.item_count }}</td>
                                 <td><strong>Ksh {{ order.total|floatformat:2 }}</strong></td>
                                 <td><span class="badge {{ order.status_badge }}">{{ order.status }}</span></td>
                                 <td class="text-right">
+                                    <button class="btn btn-secondary" type="button" data-order-toggle="{{ order.pk }}" style="margin-right: 8px;">View details</button>
                                     <form method="post" style="display: inline-flex; gap: 8px; justify-content: flex-end;">
                                         {% csrf_token %}
                                         <input type="hidden" name="order_id" value="{{ order.pk }}">

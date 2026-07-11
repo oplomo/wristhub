@@ -546,6 +546,8 @@ def cart_checkout(request):
     items = get_cart_items(cart)
     initial = {}
 
+    theme = "women"
+
     if request.user.is_authenticated:
         full_name = request.user.get_full_name()
         if full_name:
@@ -598,7 +600,7 @@ def cart_checkout(request):
             "items": items,
             "form": form,
             "cart_count": get_cart_count(cart),
-            "theme": "unisex",
+            "theme": theme,
         },
     )
 

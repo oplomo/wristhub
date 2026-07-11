@@ -826,6 +826,7 @@ def admin_image_delete(request, slug, image_id):
 
 def admin_orders(request):
     allowed_statuses = {choice[0] for choice in Order.STATUS_CHOICES}
+    status_filter = request.GET.get("status", "").strip()
 
     if request.method == "POST":
         order_id = request.POST.get("order_id")
@@ -836,7 +837,6 @@ def admin_orders(request):
                 messages.success(request, "Order #%s updated to %s." % (order_id, new_status))
         return redirect("panel-orders" + ("?status=%s" % status_filter if status_filter else ""))
 
-    status_filter = request.GET.get("status", "").strip()
     orders_qs = Order.objects.select_related("user").prefetch_related("items__watch")
     if status_filter in allowed_statuses:
         orders_qs = orders_qs.filter(status=status_filter)
