@@ -456,7 +456,7 @@
                                 <div class="order-info">
                                     <div>
                                         <h4>Ship to</h4>
-                                        <p>{{ order.full_name }}<br>{{ order.address }}<br>{{ order.city }}, {{ order.postal_code }}<br>{{ order.country }}</p>
+                                        <p>{{ order.full_name }}<br>{{ order.county|title }}<br>{% if order.sub_county %}{{ order.sub_county|title }}{% endif %}{% if order.ward %} &middot; {{ order.ward|title }}{% endif %}</p>
                                     </div>
                                     <div>
                                         <h4>Contact</h4>

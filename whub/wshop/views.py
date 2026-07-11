@@ -1,14 +1,37 @@
+import json
+import os
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.db import transaction
 from django.db.models import Q, Sum
-from django.forms import CharField, EmailField, Form
+from django.forms import CharField, ChoiceField, EmailField, Form, Select
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .analytics import record_analytics_event
 from .forms import LoginForm, RegisterForm
 from .models import Brand, Category, HomeHero, Order, OrderItem, Watch, Cart, CartItem
+
+
+def get_location_data():
+    path = os.path.join(os.path.dirname(__file__), "counties_data", "db.json")
+    with open(path, "r", encoding="utf-8") as handle:
+        raw = json.load(handle)
+
+    data = {}
+    for row in raw:
+        county = (row.get("County_name") or "").strip()
+        sub = (row.get("Constituency_name") or "").strip()
+        wards = row.get("Ward") or []
+        if not county or not sub:
+            continue
+        data.setdefault(county, {})
+        data[county].setdefault(sub, [])
+        for ward in wards:
+            if ward and ward not in data[county][sub]:
+                data[county][sub].append(ward)
+    return data
 
 
 PERSONALITIES = [
@@ -61,10 +84,23 @@ class CheckoutForm(Form):
     full_name = CharField(max_length=120)
     email = EmailField()
     phone = CharField(max_length=30)
-    address = CharField(max_length=255)
-    city = CharField(max_length=100)
-    postal_code = CharField(max_length=20)
-    country = CharField(max_length=100)
+    county = ChoiceField(required=True, widget=Select(attrs={"class": "form-input"}))
+    sub_county = ChoiceField(required=True, widget=Select(attrs={"class": "form-input"}))
+    ward = ChoiceField(required=False, widget=Select(attrs={"class": "form-input"}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        locations = get_location_data()
+        counties = sorted(locations.keys())
+        self.fields["county"].choices = [("", "Select county")] + [(c, c) for c in counties]
+
+        selected_county = self.data.get("county") or self.initial.get("county") or ""
+        subs = sorted(locations.get(selected_county, {}).keys())
+        self.fields["sub_county"].choices = [("", "Select sub-county")] + [(s, s) for s in subs]
+
+        selected_sub = self.data.get("sub_county") or self.initial.get("sub_county") or ""
+        wards = locations.get(selected_county, {}).get(selected_sub, [])
+        self.fields["ward"].choices = [("", "Select ward (optional)")] + [(w, w) for w in wards]
 
 
 def get_session_key(request):
@@ -535,10 +571,9 @@ def cart_checkout(request):
                 full_name=form.cleaned_data["full_name"],
                 email=form.cleaned_data["email"],
                 phone=form.cleaned_data["phone"],
-                address=form.cleaned_data["address"],
-                city=form.cleaned_data["city"],
-                postal_code=form.cleaned_data["postal_code"],
-                country=form.cleaned_data["country"],
+                county=form.cleaned_data["county"],
+                sub_county=form.cleaned_data["sub_county"],
+                ward=form.cleaned_data.get("ward", ""),
                 total=total,
             )
             for item in items:
@@ -566,6 +601,10 @@ def cart_checkout(request):
             "theme": "unisex",
         },
     )
+
+
+def checkout_locations(request):
+    return JsonResponse(get_location_data())
 
 
 def order_confirmation(request, order_id):

@@ -115,9 +115,8 @@
                                             <div>
                                                 <h4 style="margin: 0 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Shipping</h4>
                                                 <p style="margin: 0; line-height: 1.5;">
-                                                    {{ order.address }}<br>
-                                                    {{ order.city }}, {{ order.postal_code }}<br>
-                                                    {{ order.country }}
+                                                    {{ order.county|title }}<br>
+                                                    {{ order.sub_county|title }}{% if order.ward %} &middot; {{ order.ward|title }}{% endif %}
                                                 </p>
                                             </div>
                                         </div>

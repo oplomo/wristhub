@@ -258,10 +258,9 @@ class Order(models.Model):
     full_name = models.CharField(max_length=120)
     email = models.EmailField()
     phone = models.CharField(max_length=30)
-    address = models.CharField(max_length=255)
-    city = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=20)
-    country = models.CharField(max_length=100)
+    county = models.CharField(max_length=100, blank=True)
+    sub_county = models.CharField(max_length=100, blank=True)
+    ward = models.CharField(max_length=100, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     total = models.DecimalField(
         max_digits=10,

@@ -220,25 +220,20 @@
                     {{ form.phone }}
                     {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors.0 }}</div>{% endif %}
                 </div>
-                <div class="form-group full">
-                    <label class="form-label" for="{{ form.address.id_for_label }}">Address</label>
-                    {{ form.address }}
-                    {% if form.address.errors %}<div class="form-error">{{ form.address.errors.0 }}</div>{% endif %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.county.id_for_label }}">County</label>
+                    {{ form.county }}
+                    {% if form.county.errors %}<div class="form-error">{{ form.county.errors.0 }}</div>{% endif %}
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="{{ form.city.id_for_label }}">City</label>
-                    {{ form.city }}
-                    {% if form.city.errors %}<div class="form-error">{{ form.city.errors.0 }}</div>{% endif %}
+                    <label class="form-label" for="{{ form.sub_county.id_for_label }}">Sub-County</label>
+                    {{ form.sub_county }}
+                    {% if form.sub_county.errors %}<div class="form-error">{{ form.sub_county.errors.0 }}</div>{% endif %}
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="{{ form.postal_code.id_for_label }}">Postal Code</label>
-                    {{ form.postal_code }}
-                    {% if form.postal_code.errors %}<div class="form-error">{{ form.postal_code.errors.0 }}</div>{% endif %}
-                </div>
-                <div class="form-group full">
-                    <label class="form-label" for="{{ form.country.id_for_label }}">Country</label>
-                    {{ form.country }}
-                    {% if form.country.errors %}<div class="form-error">{{ form.country.errors.0 }}</div>{% endif %}
+                    <label class="form-label" for="{{ form.ward.id_for_label }}">Ward</label>
+                    {{ form.ward }}
+                    {% if form.ward.errors %}<div class="form-error">{{ form.ward.errors.0 }}</div>{% endif %}
                 </div>
             </div>
             <button class="primary-button" type="submit">Place Order</button>
@@ -279,4 +274,69 @@
         <a class="primary-button" href="{% url 'shop' %}">Browse Watches</a>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const countySelect = document.getElementById('id_county');
+    const subSelect = document.getElementById('id_sub_county');
+    const wardSelect = document.getElementById('id_ward');
+    if (!countySelect) {
+        return;
+    }
+
+    let LOCATIONS = {};
+
+    function titleCase(value) {
+        return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    }
+
+    function fill(select, options, keep) {
+        const current = keep !== undefined ? keep : select.value;
+        select.innerHTML = options.map(function (option) {
+            return '<option value="' + option.value + '">' + option.label + '</option>';
+        }).join('');
+        if (current) {
+            select.value = current;
+        }
+    }
+
+    function updateSubCounty() {
+        const subs = LOCATIONS[countySelect.value] ? Object.keys(LOCATIONS[countySelect.value]).sort() : [];
+        const options = [{ value: '', label: 'Select sub-county' }];
+        subs.forEach(function (sub) {
+            options.push({ value: sub, label: titleCase(sub) });
+        });
+        fill(subSelect, options, subSelect.value);
+        updateWard();
+    }
+
+    function updateWard() {
+        const subs = LOCATIONS[countySelect.value] || {};
+        const wards = subs[subSelect.value] || [];
+        const options = [{ value: '', label: 'Select ward (optional)' }];
+        wards.forEach(function (ward) {
+            options.push({ value: ward, label: titleCase(ward) });
+        });
+        fill(wardSelect, options, wardSelect.value);
+    }
+
+    countySelect.addEventListener('change', updateSubCounty);
+    subSelect.addEventListener('change', updateWard);
+
+    fetch('{% url "checkout-locations" %}')
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
+            LOCATIONS = data;
+            const counties = Object.keys(LOCATIONS).sort();
+            const options = [{ value: '', label: 'Select county' }];
+            counties.forEach(function (county) {
+                options.push({ value: county, label: titleCase(county) });
+            });
+            fill(countySelect, options, countySelect.value);
+            updateSubCounty();
+        });
+})();
+</script>
 {% endblock %}
