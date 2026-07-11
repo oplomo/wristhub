@@ -543,15 +543,9 @@
         </nav>
     </header>
 
-    <main class="page-shell">
-        {% block hero %}
-            <section class="hero">
-                <p class="eyebrow">Fine Watches, Warm Service</p>
-                <h1>Find the watch that feels made for your wrist.</h1>
-                <p>Explore timeless classics, everyday pieces, and polished luxury watches curated for confident style.</p>
-            </section>
-        {% endblock %}
+    {% block hero %}{% endblock %}
 
+    <main class="page-shell">
         <section class="content">
             {% if messages %}
                 <ul class="messages">

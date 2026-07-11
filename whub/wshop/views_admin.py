@@ -825,18 +825,52 @@ def admin_image_delete(request, slug, image_id):
 
 
 def admin_orders(request):
-    orders = Order.objects.select_related("user").prefetch_related("items__watch").order_by("-created_at")[:50]
+    allowed_statuses = {choice[0] for choice in Order.STATUS_CHOICES}
+
+    if request.method == "POST":
+        order_id = request.POST.get("order_id")
+        new_status = request.POST.get("status")
+        if order_id and new_status in allowed_statuses:
+            updated = Order.objects.filter(pk=order_id).update(status=new_status)
+            if updated:
+                messages.success(request, "Order #%s updated to %s." % (order_id, new_status))
+        return redirect("panel-orders" + ("?status=%s" % status_filter if status_filter else ""))
+
+    status_filter = request.GET.get("status", "").strip()
+    orders_qs = Order.objects.select_related("user").prefetch_related("items__watch")
+    if status_filter in allowed_statuses:
+        orders_qs = orders_qs.filter(status=status_filter)
+    orders = orders_qs.order_by("-created_at")[:50]
+
+    badge_map = {
+        "pending": "badge-default",
+        "paid": "badge-info",
+        "processing": "badge-warning",
+        "shipped": "badge-info",
+        "delivered": "badge-success",
+        "cancelled": "badge-danger",
+    }
+    for order in orders:
+        order.status_badge = badge_map.get(order.status, "badge-default")
+        order.item_count = sum(item.quantity for item in order.items.all())
+
     total_orders = Order.objects.count()
     pending_orders = Order.objects.filter(status="pending").count()
     processing_orders = Order.objects.filter(status="processing").count()
     delivered_orders = Order.objects.filter(status="delivered").count()
+    paid_orders = Order.objects.filter(status__in=["paid", "processing", "shipped", "delivered"]).count()
+    revenue = Order.objects.filter(status__in=["paid", "processing", "shipped", "delivered"]).aggregate(total=Sum("total"))["total"] or 0
 
     context = {
         "orders": orders,
+        "status_choices": Order.STATUS_CHOICES,
+        "status_filter": status_filter,
         "total_orders": total_orders,
         "pending_orders": pending_orders,
         "processing_orders": processing_orders,
         "delivered_orders": delivered_orders,
+        "paid_orders": paid_orders,
+        "revenue": revenue,
         "dashboard_title": "Orders",
         "orders_active": True,
     }

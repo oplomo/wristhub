@@ -1,13 +1,13 @@
-zs{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}{{ page.title }} | Wrist Hub{% endblock %}
 
 {% block extra_css %}
 <style>
 .page-panel {
-    max-width: 860px;
+    max-width: 920px;
     margin: 0 auto;
-    padding: 42px 0 56px;
+    padding: 42px 0 64px;
 }
 
 .page-card {
@@ -28,7 +28,7 @@ zs{% extends "base.html" %}
 }
 
 .page-card h1 {
-    margin: 0 0 16px;
+    margin: 0 0 14px;
     font-family: Georgia, 'Times New Roman', serif;
     font-size: clamp(2rem, 5vw, 3.4rem);
     line-height: 1.08;
@@ -58,47 +58,323 @@ zs{% extends "base.html" %}
     border-radius: 8px;
     font-weight: 800;
     text-decoration: none;
+    border: 1px solid transparent;
 }
 
 .primary-button {
-    color: var(--color-background);
+    color: #ffffff;
     background: var(--color-text);
+}
+
+.primary-button:hover {
+    background: var(--blue);
 }
 
 .secondary-button {
-    color: var(--ink);
-    background: var(--color-text);
-    border-color: var(--color-text);
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
 }
 
 .secondary-button:hover {
-    background: var(--color-primary);
-    color: var(--color-text);
+    background: var(--color-text);
 }
 
-.order-list {
-    display: grid;
-    gap: 10px;
-    margin-top: 24px;
+/* Orders */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
 }
 
-.order-row {
+.badge-success { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.badge-warning { background: rgba(217, 119, 6, 0.14); color: #b45309; }
+.badge-info { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; }
+.badge-default { background: rgba(100, 116, 139, 0.14); color: #475569; }
+.badge-danger { background: rgba(220, 38, 38, 0.12); color: #b91c1c; }
+
+.order-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.order-card--current {
+    border-color: var(--blue);
+    box-shadow: 0 14px 36px rgba(37, 99, 235, 0.16);
+}
+
+.order-head {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 14px;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.order-id {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 1.02rem;
+}
+
+.order-id .pill {
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #ffffff;
+}
+
+.order-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.order-meta strong {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.order-body {
+    padding: 18px 20px;
+}
+
+/* Tracker */
+.tracker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0 18px;
+}
+
+.track-step {
+    flex: 1 1 0;
+    min-width: 92px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.track-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--line);
+    background: #ffffff;
+    font-weight: 700;
+    color: var(--muted);
+    z-index: 1;
+}
+
+.track-step::before {
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: -50%;
+    width: 100%;
+    height: 2px;
+    background: var(--line);
+    z-index: 0;
+}
+
+.track-step:first-child::before {
+    display: none;
+}
+
+.track-step.is-done .track-dot {
+    background: var(--green);
+    border-color: var(--green);
+    color: #ffffff;
+}
+
+.track-step.is-done::before {
+    background: var(--green);
+}
+
+.track-step.is-active .track-dot {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+
+.track-step.is-done,
+.track-step.is-active {
+    color: var(--ink);
+    font-weight: 700;
+}
+
+.track-cancelled {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* Items */
+.order-items {
+    display: grid;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.order-item {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 10px;
     border: 1px solid var(--line);
     border-radius: 8px;
 }
 
-.order-row strong {
-    white-space: nowrap;
+.order-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f3f4f6;
+    flex: 0 0 auto;
 }
 
-@media (max-width: 640px) {
-    .order-row {
-        flex-direction: column;
-    }
+.order-item .oi-name {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.order-item .oi-brand {
+    color: var(--blue);
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.order-item .oi-qty {
+    margin-left: auto;
+    text-align: right;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.order-item .oi-price {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.order-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px 22px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+}
+
+.order-info h4 {
+    margin: 0 0 6px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.order-info p {
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.order-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #f8fafc;
+    border-top: 1px solid var(--line);
+}
+
+.order-total {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--ink);
+}
+
+.detail-toggle {
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: var(--ink);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.84rem;
+}
+
+.detail-toggle:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.order-detail {
+    display: none;
+}
+
+.order-detail.is-open {
+    display: block;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+}
+
+.empty-state h2 {
+    margin: 0 0 8px;
+    font-family: Georgia, 'Times New Roman', serif;
+    color: var(--ink);
+}
+
+@media (max-width: 600px) {
+    .track-step { min-width: 64px; font-size: 0.72rem; }
+    .order-item .oi-qty { margin-left: 0; text-align: left; width: 100%; }
 }
 </style>
 {% endblock %}
@@ -110,24 +386,122 @@ zs{% extends "base.html" %}
         <h1>{{ page.title }}</h1>
         <p>{{ page.body }}</p>
 
-        {% if orders %}
-            <div class="order-list">
+        {% if not request.user.is_authenticated %}
+            <div class="page-actions">
+                <a class="primary-button" href="{% url 'login' %}?next={% url 'orders' %}">Sign in</a>
+                <a class="secondary-button" href="{% url 'register' %}">Create account</a>
+            </div>
+        {% elif orders %}
+            <div class="order-list" style="margin-top: 26px;">
                 {% for order in orders %}
-                    <div class="order-row">
-                        <div>
-                            <strong>Order #{{ order.pk }}</strong>
-                            <div>{{ order.created_at|date:"M d, Y" }} · {{ order.status|title }}</div>
+                    <article class="order-card{% if order.is_current %} order-card--current{% endif %}">
+                        <div class="order-head">
+                            <div class="order-id">
+                                Order #{{ order.pk }}
+                                {% if order.is_current %}<span class="pill">Current</span>{% endif %}
+                            </div>
+                            <div class="order-meta">
+                                <span>{{ order.created_at|date:"M d, Y" }}</span>
+                                <span><strong>Ksh {{ order.total|floatformat:2 }}</strong></span>
+                                <span>{{ order.item_count }} item{{ order.item_count|pluralize }}</span>
+                                <span class="badge {{ order.status_badge }}">{{ order.status }}</span>
+                            </div>
                         </div>
-                        <strong>Ksh {{ order.total|floatformat:2 }}</strong>
-                    </div>
+
+                        <div class="order-body">
+                            {% if order.status == "cancelled" %}
+                                <div class="track-cancelled">This order was cancelled.</div>
+                            {% elif order.is_current %}
+                                <div class="tracker">
+                                    {% for _ in "12345" %}
+                                        {% with i=forloop.counter0 %}
+                                            <div class="track-step{% if i < order.tracker_step %} is-done{% elif i == order.tracker_step %} is-active{% endif %}">
+                                                <span class="track-dot">{{ forloop.counter }}</span>
+                                                <span class="track-label">
+                                                    {% if i == 0 %}Pending{% elif i == 1 %}Paid{% elif i == 2 %}Processing{% elif i == 3 %}Shipped{% else %}Delivered{% endif %}
+                                                </span>
+                                            </div>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <button class="detail-toggle" type="button" data-order-toggle="{{ order.pk }}" aria-expanded="false">
+                                View details
+                            </button>
+
+                            <div class="order-detail" id="order-detail-{{ order.pk }}">
+                                <div class="order-items">
+                                    {% for item in order.items.all %}
+                                        <div class="order-item">
+                                            {% with image=item.watch.images.first %}
+                                                {% if image %}
+                                                    <img src="{{ image.image.url }}" alt="{{ item.watch.name }}">
+                                                {% else %}
+                                                    <img src="" alt="{{ item.watch.name }}">
+                                                {% endif %}
+                                            {% endwith %}
+                                            <div>
+                                                <div class="oi-brand">{{ item.watch.brand.name }}</div>
+                                                <div class="oi-name">{{ item.watch.name }}</div>
+                                            </div>
+                                            <div class="oi-qty">
+                                                <div>Qty {{ item.quantity }}</div>
+                                                <div class="oi-price">Ksh {{ item.price|floatformat:2 }}</div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="order-info">
+                                    <div>
+                                        <h4>Ship to</h4>
+                                        <p>{{ order.full_name }}<br>{{ order.address }}<br>{{ order.city }}, {{ order.postal_code }}<br>{{ order.country }}</p>
+                                    </div>
+                                    <div>
+                                        <h4>Contact</h4>
+                                        <p>{{ order.email }}<br>{{ order.phone }}</p>
+                                    </div>
+                                    <div>
+                                        <h4>Placed</h4>
+                                        <p>{{ order.created_at|date:"M d, Y \\a\\t g:i A" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-foot">
+                            <span class="order-total">Ksh {{ order.total|floatformat:2 }}</span>
+                            <a class="detail-toggle" style="text-decoration:none;" href="{% url 'shop' %}">Buy again</a>
+                        </div>
+                    </article>
                 {% endfor %}
             </div>
+        {% else %}
+            <div class="empty-state" style="margin-top: 26px;">
+                <h2>No orders yet</h2>
+                <p>You have not placed any orders. When you do, they will appear here with live tracking.</p>
+                <div class="page-actions" style="justify-content:center;">
+                    <a class="primary-button" href="{% url 'shop' %}">Shop Watches</a>
+                </div>
+            </div>
         {% endif %}
-
-        <div class="page-actions">
-            <a class="primary-button" href="{% url 'shop' %}">Shop Watches</a>
-            <a class="secondary-button" href="{% url 'cart' %}">View Cart</a>
-        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('[data-order-toggle]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const panel = document.getElementById('order-detail-' + button.dataset.orderToggle);
+            if (!panel) {
+                return;
+            }
+            const open = panel.classList.toggle('is-open');
+            button.setAttribute('aria-expanded', String(open));
+            button.textContent = open ? 'Hide details' : 'View details';
+        });
+    });
+</script>
 {% endblock %}

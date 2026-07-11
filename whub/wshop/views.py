@@ -255,6 +255,30 @@ def shop(request, **filters):
     )
 
 
+STATUS_FLOW = ["pending", "paid", "processing", "shipped", "delivered"]
+
+STATUS_BADGE = {
+    "pending": "badge-default",
+    "paid": "badge-info",
+    "processing": "badge-warning",
+    "shipped": "badge-info",
+    "delivered": "badge-success",
+    "cancelled": "badge-danger",
+}
+
+
+def _enrich_order(order):
+    if order.status in STATUS_FLOW:
+        order.tracker_step = STATUS_FLOW.index(order.status)
+    elif order.status == "cancelled":
+        order.tracker_step = -1
+    else:
+        order.tracker_step = 0
+    order.is_current = order.status not in ("delivered", "cancelled")
+    order.status_badge = STATUS_BADGE.get(order.status, "badge-default")
+    order.item_count = sum(item.quantity for item in order.items.all())
+
+
 def page(request, slug):
     pages = {
         "about": {
@@ -283,9 +307,9 @@ def page(request, slug):
             "body": "Profile details will appear here once account authentication is enabled.",
         },
         "orders": {
-            "eyebrow": "Orders",
-            "title": "Order history",
-            "body": "Your recent orders will appear here once account authentication is enabled.",
+            "eyebrow": "Your Orders",
+            "title": "Track and review your watches.",
+            "body": "Sign in to see your order history and follow the status of orders in progress.",
         },
     }
     page_data = pages.get(slug)
@@ -293,12 +317,24 @@ def page(request, slug):
         raise Http404
 
     orders = []
-    if slug == "orders" and request.user.is_authenticated:
-        orders = Order.objects.filter(user=request.user).prefetch_related("items__watch").order_by("-created_at")[:10]
-        page_data = {
-            **page_data,
-            "body": "Here are your most recent Wrist Hub orders.",
-        }
+    if slug == "orders":
+        if request.user.is_authenticated:
+            orders = list(
+                Order.objects.filter(user=request.user)
+                .prefetch_related("items__watch__brand", "items__watch__images")
+                .order_by("-created_at")
+            )
+            for order in orders:
+                _enrich_order(order)
+            page_data = {
+                **page_data,
+                "body": "Track your current order and review everything you have bought from Wrist Hub.",
+            }
+        else:
+            page_data = {
+                **page_data,
+                "body": "Sign in to see your order history and follow the status of orders in progress.",
+            }
 
     return render(
         request,

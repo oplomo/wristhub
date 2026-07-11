@@ -1,0 +1,178 @@
+{% extends "panel/base.html" %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Orders</span>
+        <span class="stat-value">{{ total_orders }}</span>
+        <span class="stat-change">All time</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Pending</span>
+        <span class="stat-value">{{ pending_orders }}</span>
+        <span class="stat-change">Awaiting processing</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Processing</span>
+        <span class="stat-value">{{ processing_orders }}</span>
+        <span class="stat-change">In progress</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Revenue</span>
+        <span class="stat-value">Ksh {{ revenue|floatformat:0 }}</span>
+        <span class="stat-change">{{ paid_orders }} paid orders</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="flex-wrap: wrap; gap: 14px;">
+        <span class="card-title">Orders</span>
+        <div class="order-filters" style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <a class="filter-chip{% if not status_filter %} is-active{% endif %}" href="{% url 'panel-orders' %}">All</a>
+            {% for value, label in status_choices %}
+                <a class="filter-chip{% if status_filter == value %} is-active{% endif %}" href="{% url 'panel-orders' %}?status={{ value }}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card-body" style="padding: 0;">
+        {% if orders %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th class="text-right">Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td><strong>#{{ order.pk }}</strong></td>
+                                <td>
+                                    {% if order.user %}
+                                        {{ order.user.get_full_name|default:order.user.username }}
+                                    {% else %}
+                                        {{ order.full_name }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted">{{ order.created_at|date:"M d, Y" }}</td>
+                                <td>{{ order.item_count }}</td>
+                                <td><strong>Ksh {{ order.total|floatformat:2 }}</strong></td>
+                                <td><span class="badge {{ order.status_badge }}">{{ order.status }}</span></td>
+                                <td class="text-right">
+                                    <form method="post" style="display: inline-flex; gap: 8px; justify-content: flex-end;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="order_id" value="{{ order.pk }}">
+                                        <select name="status" style="padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: inherit;">
+                                            {% for value, label in status_choices %}
+                                                <option value="{{ value }}"{% if value == order.status %} selected{% endif %}>{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button class="btn btn-primary" type="submit">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr class="order-detail-row" id="admin-order-{{ order.pk }}" style="display: none;">
+                                <td colspan="7" style="background: #f8fafc;">
+                                    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px; padding: 6px 2px 10px;">
+                                        <div>
+                                            <h4 style="margin: 0 0 10px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Items</h4>
+                                            <table style="font-size: 0.86rem;">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Watch</th>
+                                                        <th>Brand</th>
+                                                        <th class="text-right">Qty</th>
+                                                        <th class="text-right">Price</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in order.items.all %}
+                                                        <tr>
+                                                            <td>{{ item.watch.name }}</td>
+                                                            <td class="text-muted">{{ item.watch.brand.name }}</td>
+                                                            <td class="text-right">{{ item.quantity }}</td>
+                                                            <td class="text-right">Ksh {{ item.price|floatformat:2 }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div style="display: grid; gap: 14px; align-content: start;">
+                                            <div>
+                                                <h4 style="margin: 0 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Customer</h4>
+                                                <p style="margin: 0; line-height: 1.5;">
+                                                    {% if order.user %}{{ order.user.get_full_name|default:order.user.username }}{% else %}{{ order.full_name }}{% endif %}<br>
+                                                    {{ order.email }}<br>{{ order.phone }}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h4 style="margin: 0 0 6px; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Shipping</h4>
+                                                <p style="margin: 0; line-height: 1.5;">
+                                                    {{ order.address }}<br>
+                                                    {{ order.city }}, {{ order.postal_code }}<br>
+                                                    {{ order.country }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary" type="button" data-order-toggle="{{ order.pk }}">Hide details</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state" style="margin: 20px;">
+                <h2 style="margin: 0 0 6px; font-family: Georgia, serif; color: var(--ink);">No orders found</h2>
+                <p style="margin: 0; color: var(--muted);">There are no orders matching this filter.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 140ms ease;
+}
+
+.filter-chip:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+}
+
+.filter-chip.is-active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+}
+</style>
+
+<script>
+    document.querySelectorAll('[data-order-toggle]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const row = document.getElementById('admin-order-' + button.dataset.orderToggle);
+            if (row) {
+                row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
