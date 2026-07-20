@@ -1,0 +1,366 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 140ms ease;
+    width: 100%;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--blue);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue);
+}
+
+.media-preview {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: rgba(243,244,246,0.5);
+}
+
+.media-preview img {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 6px;
+    display: block;
+}
+
+.media-preview-empty {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 18px;
+}
+
+.gallery-dropzone {
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    padding: 18px;
+    background: rgba(243,244,246,0.4);
+}
+
+.gallery-help {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.preview-item {
+    position: relative;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    display: block;
+}
+
+.preview-item .preview-caption {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.preview-item .preview-caption input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 4px 6px;
+    font-size: 0.74rem;
+}
+
+.existing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.existing-item {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.existing-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.existing-item .existing-caption {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+    color: var(--ink);
+    word-break: break-word;
+}
+
+.existing-item .existing-remove {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-top: 1px solid var(--line);
+    font-size: 0.74rem;
+    color: #dc2626;
+    cursor: pointer;
+}
+
+.existing-item .existing-remove input {
+    accent-color: #dc2626;
+}
+
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">{{ dashboard_title }}</span>
+        <a href="{% url 'panel-journals' %}" class="btn btn-secondary btn-sm">&larr; Back to Journal</a>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.title.id_for_label }}">Title</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.title.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.category.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.excerpt.id_for_label }}">Excerpt</label>
+                    {{ form.excerpt }}
+                    {% if form.excerpt.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.excerpt.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.content.id_for_label }}">Content</label>
+                    {{ form.content }}
+                    {% if form.content.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.content.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label" for="{{ form.image.id_for_label }}">Cover Image</label>
+                    {{ form.image }}
+                    <span class="form-hint">Optional single cover. Use the gallery below to add multiple images.</span>
+                    {% if form.image.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.image.errors.0 }}</div>{% endif %}
+                    {% if journal and journal.image %}
+                        <div class="media-preview">
+                            <img src="{{ journal.image.url }}" alt="{{ journal.title }}">
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">Gallery Images</label>
+                    <div class="gallery-dropzone">
+                        <p class="gallery-help">Add one or more images. If more than one is added, a carousel is shown on the article page.</p>
+                        <input type="file" name="gallery_images" accept="image/*" multiple>
+                        <div class="preview-grid" id="journalImagePreview"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.author.id_for_label }}">Author</label>
+                    {{ form.author }}
+                    {% if form.author.errors %}<div style="color:#dc2626;font-size:0.78rem;">{{ form.author.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="{{ form.slug.id_for_label }}">Slug</label>
+                    {{ form.slug }}
+                    <span class="form-hint">Auto-generated from title</span>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        {{ form.is_published }}
+                        <label class="form-label" for="{{ form.is_published.id_for_label }}" style="margin:0;">Published</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        {{ form.is_featured }}
+                        <label class="form-label" for="{{ form.is_featured.id_for_label }}" style="margin:0;">Featured</label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;">
+                <button type="submit" class="btn btn-primary">Save Article</button>
+                <a href="{% url 'panel-journals' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const input = document.querySelector('input[name="gallery_images"]');
+    const preview = document.getElementById('journalImagePreview');
+    if (input && preview) {
+        input.addEventListener('change', function () {
+            preview.innerHTML = '';
+            Array.from(this.files).forEach(function (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    item.innerHTML =
+                        '<img src="' + e.target.result + '" alt="">' +
+                        '<div class="preview-caption"><input type="text" placeholder="Caption (optional)"></div>';
+                    preview.appendChild(item);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+</script>
+{% endblock %}

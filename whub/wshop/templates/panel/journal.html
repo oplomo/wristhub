@@ -1,0 +1,407 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 140ms ease;
+}
+
+.filter-select:focus {
+    border-color: var(--blue);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-ghost {
+    color: var(--ink);
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: rgba(15,23,42,0.04);
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 0;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(15,23,42,0.05);
+    color: var(--ink);
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+tr:hover td {
+    background: rgba(37,99,235,0.03);
+}
+
+.journal-thumb {
+    width: 64px;
+    height: 44px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+}
+
+.journal-thumb-placeholder {
+    width: 64px;
+    height: 44px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 0.6rem;
+    flex-shrink: 0;
+}
+
+.gallery-count-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(37,99,235,0.1);
+    color: var(--blue);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-success {
+    background: rgba(34,197,94,0.1);
+    color: #16a34a;
+}
+
+.badge-default {
+    background: rgba(100,116,139,0.1);
+    color: #64748b;
+}
+
+.badge-warning {
+    background: rgba(245,158,11,0.1);
+    color: #d97706;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-state h3 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.product-name {
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+}
+
+.product-name:hover {
+    color: var(--blue);
+}
+
+.product-meta {
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-top: 2px;
+}
+
+.category-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(37,99,235,0.06);
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+    <div class="stat-card">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ total_journals }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Published</span>
+        <span class="stat-value">{{ published_count }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Drafts</span>
+        <span class="stat-value">{{ draft_count }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Featured</span>
+        <span class="stat-value">{{ featured_count }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">All Journal Articles</span>
+        <a href="{% url 'panel-journal-add' %}" class="btn btn-primary btn-sm">+ Add Article</a>
+    </div>
+    <div class="card-body">
+        <div class="filter-bar" style="padding: 14px 18px 0;">
+            <form method="get" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                <select name="category" class="filter-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for key, label in categories %}
+                        <option value="{{ key }}" {% if category_filter == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cover</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Gallery</th>
+                        <th>Status</th>
+                        <th>Featured</th>
+                        <th>Published</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for journal in journals %}
+                    <tr>
+                        <td>
+                            {% if journal.image %}
+                                <img class="journal-thumb" src="{{ journal.image.url }}" alt="{{ journal.title }}">
+                            {% elif journal.images.exists %}
+                                <img class="journal-thumb" src="{{ journal.images.first.image.url }}" alt="{{ journal.title }}">
+                            {% else %}
+                                <div class="journal-thumb-placeholder">---</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'panel-journal-edit' slug=journal.slug %}" class="product-name">{{ journal.title }}</a>
+                            {% if journal.excerpt %}
+                                <div class="product-meta">{{ journal.excerpt|truncatechars:60 }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="category-tag">{{ journal.get_category_display }}</span>
+                        </td>
+                        <td>
+                            {% with count=journal.images.count %}
+                                {% if count > 0 %}
+                                    <span class="gallery-count-badge">{{ count }} image{{ count|pluralize }}</span>
+                                {% else %}
+                                    <span style="color:var(--muted); font-size:0.8rem;">Single</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% if journal.is_published %}
+                                <span class="badge badge-success">Published</span>
+                            {% else %}
+                                <span class="badge badge-default">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if journal.is_featured %}
+                                <span class="badge badge-warning">Featured</span>
+                            {% else %}
+                                <span class="badge badge-default">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ journal.published_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{% url 'panel-journal-edit' slug=journal.slug %}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form method="post" action="{% url 'panel-journal-delete' slug=journal.slug %}" style="display:inline;" onsubmit="return confirm('Delete this article?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-ghost btn-sm" style="color:#dc2626;">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <h3>No journal articles yet</h3>
+                                <p>Write your first article to get started.</p>
+                                <a href="{% url 'panel-journal-add' %}" class="btn btn-primary" style="margin-top:10px;">+ Add Article</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

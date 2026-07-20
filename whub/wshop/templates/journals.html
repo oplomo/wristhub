@@ -1,0 +1,698 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Journal & Articles | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+  .page-hero {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 20px;
+    padding: 64px clamp(20px, 5vw, 72px) 40px;
+    margin: 0 0 40px;
+    border-bottom: 1px solid var(--line);
+    background: var(--warm-white);
+  }
+
+  .page-hero-brand {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+
+  .page-hero-logo {
+    height: clamp(56px, 6vw, 80px);
+    width: auto;
+    display: block;
+    border-radius: 8px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+  }
+
+  .page-hero-brand-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .page-hero-motto {
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    font-weight: 600;
+    color: var(--color-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .page-hero h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .page-hero p {
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: clamp(0.92rem, 1.5vw, 1.05rem);
+    line-height: 1.65;
+    max-width: 560px;
+  }
+
+  .page-hero-pillars {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 32px;
+    margin-top: 8px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--line);
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .pillar {
+    display: grid;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .pillar-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .pillar-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  .journals-layout {
+    display: grid;
+    gap: 40px;
+    padding-bottom: 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .section-header h2 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  /* ── Search bar ── */
+  .journal-search-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+  }
+
+  .journal-search {
+    width: 100%;
+    height: 46px;
+    padding: 0 18px 0 44px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: #ffffff;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+  }
+
+  .journal-search:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(196, 154, 165, 0.15);
+  }
+
+  .journal-search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* ── Category filters ── */
+  .journal-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .category-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
+  }
+
+  .category-chip:hover,
+  .category-chip.is-active {
+    color: #ffffff;
+    border-color: var(--color-primary);
+    background: var(--color-surface-high);
+  }
+
+  /* ── Featured story (hero card, full bleed) ── */
+  .featured-story {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 440px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .featured-story:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .featured-story-visual {
+    position: relative;
+    overflow: hidden;
+    background: #111111;
+  }
+
+  .featured-story-visual img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 260ms ease;
+  }
+
+  .featured-story:hover .featured-story-visual img {
+    transform: scale(1.04);
+  }
+
+  .featured-story-visual-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.18);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(3rem, 8vw, 6rem);
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  }
+
+  .featured-story-body {
+    display: grid;
+    align-content: center;
+    gap: 16px;
+    padding: clamp(28px, 5vw, 44px);
+    background: var(--surface);
+    position: relative;
+  }
+
+  .featured-story-body::before {
+    content: "Featured";
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--color-secondary);
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .featured-story-body .eyebrow {
+    color: var(--color-secondary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .featured-story-body h3 {
+    margin: 0;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .featured-story-body p {
+    margin: 0;
+    color: var(--on-surface-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .journal-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: var(--on-surface-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .journal-meta-row .meta-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: gap 160ms ease, color 160ms ease;
+  }
+
+  .read-more:hover {
+    color: var(--color-secondary);
+    gap: 12px;
+  }
+
+  /* ── Masonry-style grid for articles ── */
+  .journal-masonry {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .journal-card {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+    break-inside: avoid;
+  }
+
+  .journal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Span 2 columns for the first card if there are enough */
+  .journal-card.featured-card {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .journal-card.featured-card .journal-card-image {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 240px;
+  }
+
+  .journal-card-image {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #111111;
+  }
+
+  .journal-card-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 220ms ease;
+  }
+
+  .journal-card:hover .journal-card-image img {
+    transform: scale(1.04);
+  }
+
+  .journal-card-image-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.6rem;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  }
+
+  .journal-card-body {
+    display: grid;
+    gap: 10px;
+    padding: 20px;
+    background: var(--surface);
+  }
+
+  .journal-card-body .card-category {
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .journal-card-body h3 {
+    margin: 0;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.15rem;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .journal-card-body h3 a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .journal-card-body h3 a:hover {
+    color: var(--color-secondary);
+  }
+
+  .journal-card-body p {
+    margin: 0;
+    color: var(--on-surface-muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Reading time badge ── */
+  .reading-time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--on-surface-muted);
+    font-size: 0.74rem;
+    font-weight: 600;
+  }
+
+  /* ── Empty state ── */
+  .empty-journals {
+    grid-column: 1 / -1;
+    padding: 64px 24px;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .empty-journals h3 {
+    margin: 0 0 8px;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.3rem;
+  }
+
+  .empty-journals p {
+    margin: 0 0 18px;
+    font-size: 0.95rem;
+  }
+
+  .empty-journals .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    background: var(--color-primary);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 140ms ease;
+  }
+
+  .empty-journals .btn:hover {
+    background: var(--color-secondary);
+  }
+
+  /* ── Result count ── */
+  .result-count {
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .result-count strong {
+    color: var(--ink);
+  }
+
+  /* ── Active filters indicator ── */
+  .active-search-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-secondary);
+    border-radius: var(--radius);
+    background: rgba(232, 119, 74, 0.06);
+    font-size: 0.88rem;
+    color: var(--color-text);
+  }
+
+  .active-search-indicator .clear-search {
+    color: var(--color-secondary);
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: auto;
+  }
+
+  .active-search-indicator .clear-search:hover {
+    color: var(--color-primary);
+  }
+
+  @media (max-width: 820px) {
+    .featured-story {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    .featured-story-visual {
+      aspect-ratio: 16 / 9;
+    }
+    .journal-card.featured-card {
+      grid-column: span 1;
+      grid-template-columns: 1fr;
+    }
+    .journal-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .journal-search-wrap {
+      max-width: 100%;
+    }
+    .journal-masonry {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+  }
+
+  @media (max-width: 480px) {
+    .journal-masonry {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+  <section class="page-hero">
+    <div class="page-hero-brand">
+      <img class="page-hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
+      <span class="page-hero-brand-name">Wrist Hub</span>
+      <span class="page-hero-motto">&ldquo;A time for every style&rdquo;</span>
+    </div>
+    <h1>Stories, insights & style.</h1>
+    <p>Discover the latest in watch culture, buying guides, horological history, and timeless style advice.</p>
+    <div class="page-hero-pillars">
+      <div class="pillar">
+        <span class="pillar-title">Quality</span>
+        <span class="pillar-desc">Every detail matters</span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-title">Trust</span>
+        <span class="pillar-desc">What you see is what you receive</span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-title">Style</span>
+        <span class="pillar-desc">Accessories that become part of your story.</span>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block content %}
+  {% block messages %}{{ block.super }}{% endblock %}
+
+  <div class="journals-layout">
+    {# ── Search & Filters Toolbar ── #}
+    <div class="journal-toolbar">
+      <form class="journal-search-wrap" method="get" action="{% url 'journals' %}">
+        <svg class="journal-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="journal-search" type="text" name="q" placeholder="Search articles, topics, authors…" value="{{ query }}" aria-label="Search journal articles">
+      </form>
+      <div class="category-filters">
+        <a class="category-chip{% if not category_filter %} is-active{% endif %}" href="{% url 'journals' %}{% if query %}?q={{ query }}{% endif %}">All</a>
+        {% for cat in categories %}
+          <a class="category-chip{% if category_filter == cat.key %} is-active{% endif %}" href="{% if query %}?q={{ query }}&category={{ cat.key }}{% else %}?category={{ cat.key }}{% endif %}">{{ cat.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# ── Active search indicator ── #}
+    {% if query %}
+      <div class="active-search-indicator">
+        <span>Showing results for <strong>&ldquo;{{ query }}&rdquo;</strong></span>
+        <a class="clear-search" href="{% if category_filter %}?category={{ category_filter }}{% else %}{% url 'journals' %}{% endif %}">Clear search &times;</a>
+      </div>
+    {% endif %}
+
+    {# ── Total results count ── #}
+    {% if query or category_filter %}
+      <div class="result-count"><strong>{{ total_journals }}</strong> article{{ total_journals|pluralize }} found</div>
+    {% endif %}
+
+    {# ── Featured Story ── #}
+    {% if featured_journals and not query %}
+      <section>
+        <div class="section-header">
+          <h2>Featured Story</h2>
+        </div>
+        {% for journal in featured_journals %}
+          <a class="featured-story" href="{% url 'journal-detail' slug=journal.slug %}">
+            <div class="featured-story-visual">
+              {% if journal.image %}
+                <img src="{{ journal.image.url }}" alt="{{ journal.title }}">
+              {% else %}
+                <div class="featured-story-visual-fallback">{{ journal.title|slice:":1" }}</div>
+              {% endif %}
+            </div>
+            <div class="featured-story-body">
+              <p class="eyebrow">{{ journal.get_category_display }}</p>
+              <h3>{{ journal.title }}</h3>
+              <p>{{ journal.excerpt }}</p>
+              <div class="journal-meta-row">
+                <span>{{ journal.author }}</span>
+                <span class="meta-dot"></span>
+                <span>{{ journal.published_at|date:"M d, Y" }}</span>
+                <span class="meta-dot"></span>
+                <span class="reading-time">&#9201; {% widthratio journal.content|wordcount 200 1 %} min read</span>
+              </div>
+              <span class="read-more">Read article &rarr;</span>
+            </div>
+          </a>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    {# ── All Articles Grid ── #}
+    <section>
+      <div class="section-header">
+        <h2>{% if query %}Search Results{% else %}Latest Articles{% endif %}</h2>
+      </div>
+
+      {% if recent_journals %}
+        <div class="journal-masonry">
+          {% for journal in recent_journals %}
+            <article class="journal-card{% if forloop.first and not query and not category_filter %} featured-card{% endif %}">
+              <a class="journal-card-image" href="{% url 'journal-detail' slug=journal.slug %}" aria-label="Read {{ journal.title }}">
+                {% if journal.image %}
+                  <img src="{{ journal.image.url }}" alt="{{ journal.title }}" loading="lazy">
+                {% else %}
+                  <div class="journal-card-image-fallback">{{ journal.title|slice:":1" }}</div>
+                {% endif %}
+              </a>
+              <div class="journal-card-body">
+                <span class="card-category">{{ journal.get_category_display }}</span>
+                <h3><a href="{% url 'journal-detail' slug=journal.slug %}">{{ journal.title }}</a></h3>
+                <p>{{ journal.excerpt }}</p>
+                <div class="journal-meta-row" style="margin-top:4px;">
+                  <span>{{ journal.author }}</span>
+                  <span class="meta-dot"></span>
+                  <span>{{ journal.published_at|date:"M d, Y" }}</span>
+                  <span class="meta-dot"></span>
+                  <span class="reading-time">{% widthratio journal.content|wordcount 200 1 %} min read</span>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-journals">
+          <h3>No articles found</h3>
+          {% if query %}
+            <p>We couldn&rsquo;t find any articles matching &ldquo;{{ query }}&rdquo;. Try a different search term or browse categories.</p>
+            <a class="btn" href="{% url 'journals' %}">Browse all articles</a>
+          {% else %}
+            <p>New stories and guides will appear here. Check back soon.</p>
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <script>
+    // Auto-submit search on Enter (already works with form), clear on Escape
+    document.querySelector('.journal-search')?.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        this.form.submit();
+      }
+    });
+  </script>
+{% endblock %}

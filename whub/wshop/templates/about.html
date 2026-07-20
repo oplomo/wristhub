@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+.about-hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: clamp(480px, 70vh, 640px);
+  margin: 0 0 48px;
+  padding: 80px clamp(20px, 5vw, 72px) 56px;
+  overflow: hidden;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(10, 10, 10, 0.7)), #0a0a0a;
+}
+
+.about-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0.2)), linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, transparent 60%);
+}
+
+.about-hero-layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 28px;
+  max-width: 800px;
+}
+
+.about-hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.about-hero-logo {
+  height: clamp(52px, 6vw, 72px);
+  width: auto;
+  display: block;
+  border-radius: 8px;
+  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+}
+
+.about-hero-brand-name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+}
+
+.about-hero-motto {
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-weight: 600;
+  color: var(--color-secondary);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.02em;
+}
+
+.about-hero h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.2rem, 5.5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: #ffffff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9);
+}
+
+.about-hero p {
+  margin: 0;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 640px;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+}
+
+.about-body {
+  display: grid;
+  gap: 48px;
+  padding-bottom: 64px;
+}
+
+.about-section {
+  display: grid;
+  gap: 18px;
+  max-width: 920px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.about-section-label {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.about-section h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+  line-height: 1.15;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+.about-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.85;
+  max-width: 780px;
+}
+
+.about-section p.lead {
+  font-size: clamp(1.08rem, 2vw, 1.25rem);
+  line-height: 1.75;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.about-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.about-value-card {
+  display: grid;
+  gap: 12px;
+  padding: 26px 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.about-value-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.about-value-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(196, 154, 165, 0.12);
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.about-value-card h3 {
+  margin: 0;
+  color: #ffffff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.about-value-card p {
+  margin: 0;
+  color: var(--on-surface-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.about-timeline {
+  display: grid;
+  gap: 22px;
+  margin-top: 10px;
+  position: relative;
+}
+
+.about-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 23px;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--line-strong), transparent);
+  z-index: 0;
+}
+
+.about-timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  align-items: start;
+  z-index: 1;
+}
+
+.about-timeline-marker {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 24px rgba(196, 154, 165, 0.18);
+}
+
+.about-timeline-copy {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 22px;
+}
+
+.about-timeline-copy h3 {
+  margin: 0;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.about-timeline-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.about-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  color: #ffffff;
+  background: var(--color-secondary);
+  box-shadow: 0 8px 24px rgba(232, 119, 74, 0.3);
+  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.about-cta:hover {
+  transform: translateY(-2px);
+  background: #d5663a;
+  box-shadow: 0 12px 32px rgba(232, 119, 74, 0.4);
+  color: #ffffff;
+}
+
+@media (max-width: 700px) {
+  .about-hero {
+    min-height: 420px;
+    padding-top: 72px;
+  }
+
+  .about-timeline::before {
+    left: 23px;
+  }
+
+  .about-timeline-item {
+    grid-template-columns: 48px 1fr;
+    gap: 14px;
+  }
+}
+</style>
+{% endblock %}
+
+{% block hero %}
+  <section class="about-hero">
+    <div class="about-hero-layout">
+      <div class="about-hero-brand">
+        <img class="about-hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
+        <div>
+          <div class="about-hero-brand-name">Wrist Hub</div>
+          <div class="about-hero-motto">&ldquo;A time for every style&rdquo;</div>
+        </div>
+      </div>
+
+      <h1>Built on trust, powered by style.</h1>
+      <p>Wrist Hub was built to bridge the gap between online shopping and customer confidence. We believe every client deserves quality products, honest presentation, and reliable service.</p>
+    </div>
+  </section>
+{% endblock %}
+
+{% block content %}
+  <div class="about-body">
+    <section class="about-section">
+      <p class="about-section-label">Our Story</p>
+      <h2>From a simple idea to a trusted watch destination</h2>
+      <p class="lead">Wrist Hub started with a single belief: buying a watch online should feel as confident as walking into a premium boutique. Founded in Nairobi, we set out to create a space where craftsmanship meets transparency, and where every customer — no matter their budget or experience — can find a timepiece that feels made for them.</p>
+      <p>What began as a small curated collection has grown into a go-to destination for men&rsquo;s, women&rsquo;s, luxury, sport, and classic watches. Along the way, we have stayed true to the same promise: present every product honestly, package every order with care, and treat every customer like a returning friend.</p>
+    </section>
+
+    <section class="about-section">
+      <p class="about-section-label">Mission & Vision</p>
+      <h2>Why we do what we do</h2>
+      <p class="lead">Our mission is to make premium timepieces accessible, trustworthy, and enjoyable to buy — no guesswork, no hidden markups, no surprises.</p>
+      <p>We envision a Kenya where anyone can discover a watch that matches their personality, from the boardroom executive to the weekend adventurer, without compromising on authenticity or service. Every watch we list is selected for quality, durability, and honest value.</p>
+    </section>
+
+    <section class="about-section">
+      <p class="about-section-label">Our Values</p>
+      <h2>The principles that guide every decision</h2>
+      <div class="about-values">
+        <div class="about-value-card">
+          <div class="about-value-icon">&#10003;</div>
+          <h3>Authenticity First</h3>
+          <p>We never sell counterfeits. Every timepiece is sourced from verified distributors and inspected before it reaches you.</p>
+        </div>
+        <div class="about-value-card">
+          <div class="about-value-icon">&#128172;</div>
+          <h3>Honest Presentation</h3>
+          <p>Clear photos, accurate descriptions, and transparent pricing. What you see is exactly what you receive.</p>
+        </div>
+        <div class="about-value-card">
+          <div class="about-value-icon">&#128666;</div>
+          <h3>Reliable Service</h3>
+          <p>From order to delivery, we keep you informed. Real tracking, real people, and real accountability.</p>
+        </div>
+        <div class="about-value-card">
+          <div class="about-value-icon">&#10084;</div>
+          <h3>Customer Confidence</h3>
+          <p>Easy exchanges, helpful support, and a 7-day return policy because your peace of mind matters most.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <p class="about-section-label">Our Journey</p>
+      <h2>Milestones that shaped us</h2>
+      <div class="about-timeline">
+        <div class="about-timeline-item">
+          <div class="about-timeline-marker">1</div>
+          <div class="about-timeline-copy">
+            <h3>The Beginning</h3>
+            <p>Wrist Hub was launched with a handpicked selection of watches and a simple website, driven by the desire to offer Kenyan buyers a safer, smarter way to shop for timepieces online.</p>
+          </div>
+        </div>
+        <div class="about-timeline-item">
+          <div class="about-timeline-marker">2</div>
+          <div class="about-timeline-copy">
+            <h3>Growing the Collection</h3>
+            <p>We expanded into luxury, sport, dress, diver, and chronograph categories, partnering with more trusted brands and building a catalogue that fits every personality and occasion.</p>
+          </div>
+        </div>
+        <div class="about-timeline-item">
+          <div class="about-timeline-marker">3</div>
+          <div class="about-timeline-copy">
+            <h3>Putting Customers First</h3>
+            <p>We introduced cash on delivery, free strap sizing, a 7-day exchange policy, and a minimum 3-month warranty — because great service is just as important as a great watch.</p>
+          </div>
+        </div>
+        <div class="about-timeline-item">
+          <div class="about-timeline-marker">4</div>
+          <div class="about-timeline-copy">
+            <h3>Building Community</h3>
+            <p>Through our journal, gallery, and social channels, we now share styling guides, care tips, and behind-the-scenes moments that turn customers into a community of watch lovers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section">
+      <p class="about-section-label">Our Promise</p>
+      <h2>What you can always expect from Wrist Hub</h2>
+      <p class="lead">We present every product honestly, with clear details and accurate imagery. We package every order with care, so it arrives in perfect condition. We verify quality before dispatch, because excellence should never be optional. We value every customer, not just the sale. And we keep improving through your feedback, because small details make the biggest difference.</p>
+      <p>When you wear a Wrist Hub timepiece, you are wearing more than a watch — you are wearing our promise of quality, trust, and style.</p>
+      <a class="about-cta" href="{% url 'shop' %}">Explore Our Collection</a>
+    </section>
+  </div>
+{% endblock %}

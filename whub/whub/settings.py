@@ -170,5 +170,16 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+BREVO_API_KEY = 'xsmtpsib-7d11c43a4fd84c9a8e3da28be38f7a31aa6bad7ce791f38fdfda047621ed51c9-PmvGmExYUnhyOfov'
+DEFAULT_FROM_EMAIL = 'Timepiecesatwristhub@gmail.com'
+ORDER_NOTIFICATION_EMAIL = 'adamssquare4@gmail.com'
+SITE_URL = 'https://wristhub.com'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'timepiecesatwristhub@gmail.com'
+EMAIL_HOST_PASSWORD = 'zawq luup mwpb arkc'
 
 

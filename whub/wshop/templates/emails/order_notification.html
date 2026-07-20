@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Order Notification</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .email-wrapper {
+      background-color: #f4f4f4;
+      padding: 32px 16px;
+    }
+    .email-container {
+      max-width: 640px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+    .email-header {
+      background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+      color: #ffffff;
+      padding: 36px 32px;
+      text-align: center;
+    }
+    .email-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    .email-header p {
+      margin: 8px 0 0;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+    .email-body {
+      padding: 32px;
+      color: #333333;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0a0a0a;
+      margin-bottom: 8px;
+    }
+    .message {
+      color: #555555;
+      margin-bottom: 24px;
+    }
+    .order-summary {
+      background-color: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .order-summary h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: #0a0a0a;
+    }
+    .order-detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e0e0e0;
+      font-size: 14px;
+    }
+    .order-detail-row:last-child {
+      border-bottom: none;
+    }
+    .order-detail-label {
+      color: #777777;
+      font-weight: 600;
+    }
+    .order-detail-value {
+      color: #0a0a0a;
+      font-weight: 700;
+    }
+    .watch-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      background-color: #ffffff;
+    }
+    .watch-info {
+      flex: 1;
+    }
+    .watch-name {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0a0a0a;
+    }
+    .watch-meta {
+      margin: 0;
+      color: #777777;
+      font-size: 13px;
+    }
+    .qr-code {
+      width: 96px;
+      height: 96px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      padding: 4px;
+      background-color: #ffffff;
+      flex-shrink: 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 24px 32px;
+      color: #888888;
+      font-size: 12px;
+      border-top: 1px solid #e0e0e0;
+    }
+    .footer a {
+      color: #c49aa5;
+      text-decoration: none;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #c49aa5;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="email-container">
+      <div class="email-header">
+        <h1>🎉 New Order Received!</h1>
+        <p>Wrist Hub — time for every style</p>
+      </div>
+
+      <div class="email-body">
+        <p class="greeting">Hello Team,</p>
+        <p class="message">
+          Great news! A customer just placed an order on Wrist Hub. Here are all the details you need to fulfill it.
+        </p>
+
+        <div class="order-summary">
+          <h2>Order Summary</h2>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Order ID</span>
+            <span class="order-detail-value">#{{ order.pk }}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Customer</span>
+            <span class="order-detail-value">{{ order.full_name }}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Email</span>
+            <span class="order-detail-value">{{ order.email }}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Phone</span>
+            <span class="order-detail-value">{{ order.phone }}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Location</span>
+            <span class="order-detail-value">{{ order.county }}{% if order.sub_county %}, {{ order.sub_county }}{% endif %}{% if order.ward %}, {{ order.ward }}{% endif %}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Total</span>
+            <span class="order-detail-value">Ksh {{ order.total|floatformat:2 }}</span>
+          </div>
+          <div class="order-detail-row">
+            <span class="order-detail-label">Date</span>
+            <span class="order-detail-value">{{ order.created_at|date:"M d, Y g:i A" }}</span>
+          </div>
+        </div>
+
+        <h2 style="margin: 0 0 12px; font-size: 18px; color: #0a0a0a;">Items Ordered</h2>
+        {% for item in items %}
+        <div class="watch-item">
+          <div class="watch-info">
+            <p class="watch-name">{{ item.watch.brand.name }} {{ item.watch.name }}</p>
+            <p class="watch-meta">
+              Qty: {{ item.quantity }} &nbsp;|&nbsp; Price: Ksh {{ item.price|floatformat:2 }} &nbsp;|&nbsp;
+              <a href="{{ item.url }}" style="color: #c49aa5; text-decoration: none;">View Watch</a>
+            </p>
+          </div>
+          <img class="qr-code" src="{{ item.qr_url }}" alt="QR code for {{ item.watch.name }}" title="Scan to view watch">
+        </div>
+        {% endfor %}
+
+        <p class="message" style="margin-top: 24px;">
+          Please process this order promptly. If you have any questions, reach out to the customer at <a href="mailto:{{ order.email }}" style="color: #c49aa5; text-decoration: none;">{{ order.email }}</a> or <a href="tel:{{ order.phone }}" style="color: #c49aa5; text-decoration: none;">{{ order.phone }}</a>.
+        </p>
+      </div>
+
+      <div class="footer">
+        <p>This is an automated notification from <a href="https://wristhub.com">Wrist Hub</a>.</p>
+        <p>&copy; {% now "Y" %} Wrist Hub. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

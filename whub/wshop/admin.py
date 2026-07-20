@@ -1,12 +1,15 @@
 from django.contrib import admin
 
 from .models import (
+    AnalyticsEvent,
     Brand,
     Cart,
     CartItem,
     Category,
-    AnalyticsEvent,
+    GalleryCategory,
+    GalleryItem,
     HomeHero,
+    Journal,
     Order,
     OrderItem,
     Watch,
@@ -37,6 +40,21 @@ class HomeHeroAdmin(admin.ModelAdmin):
     list_editable = ("is_active",)
     search_fields = ("title",)
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Journal)
+class JournalAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "author", "is_featured", "is_published", "published_at")
+    list_filter = ("category", "is_published", "is_featured", "published_at")
+    search_fields = ("title", "author", "excerpt")
+    prepopulated_fields = {"slug": ("title",)}
+    list_editable = ("is_published", "is_featured")
+    readonly_fields = ("published_at", "updated_at")
+    fieldsets = (
+        ("Content", {"fields": ("title", "slug", "excerpt", "content", "image")}),
+        ("Details", {"fields": ("category", "author", "is_published", "is_featured")}),
+        ("Dates", {"fields": ("published_at", "updated_at")}),
+    )
 
 
 class WatchImageInline(admin.TabularInline):
@@ -103,6 +121,31 @@ class WatchAdmin(admin.ModelAdmin):
             },
         ),
         ("Pricing", {"fields": ("price", "discount_price")}),
+        ("Dates", {"fields": ("created_at", "updated_at")}),
+    )
+
+
+@admin.register(GalleryCategory)
+class GalleryCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "is_active", "created_at")
+    list_filter = ("is_active",)
+    prepopulated_fields = {"slug": ("name",)}
+    search_fields = ("name",)
+
+
+@admin.register(GalleryItem)
+class GalleryItemAdmin(admin.ModelAdmin):
+    list_display = ("title", "category", "media_type", "is_featured", "is_published", "created_at")
+    list_filter = ("category", "media_type", "is_published", "is_featured", "created_at")
+    search_fields = ("title", "caption")
+    prepopulated_fields = {"slug": ("title",)}
+    list_editable = ("is_published", "is_featured")
+    readonly_fields = ("created_at", "updated_at")
+    fieldsets = (
+        ("Content", {"fields": ("title", "slug", "caption")}),
+        ("Category", {"fields": ("category",)}),
+        ("Media", {"fields": ("media_type", "image", "video_file", "video_url")}),
+        ("Settings", {"fields": ("is_published", "is_featured")}),
         ("Dates", {"fields": ("created_at", "updated_at")}),
     )
 

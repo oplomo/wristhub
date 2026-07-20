@@ -68,8 +68,25 @@
             backdrop-filter: blur(18px);
         }
 
+        .site-header .nav-link,
+        .site-header .nav-trigger,
+        .site-header .account-trigger,
+        .site-header .menu-toggle {
+            color: var(--color-primary);
+        }
+
+        .site-header .nav-link:hover,
+        .site-header .nav-trigger:hover,
+        .site-header .account-trigger:hover,
+        .site-header .nav-item.open > .nav-trigger,
+        .site-header .nav-item.open > .account-trigger {
+            color: var(--color-primary);
+            background: rgba(0, 0, 0, 0.06);
+        }
+
         .nav-wrap {
-            width: min(1360px, calc(100% - 32px));
+            max-width: 1600px;
+            width: calc(100% - 32px);
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -290,7 +307,8 @@
         }
 
         .page-shell {
-            width: min(1180px, calc(100% - 32px));
+            max-width: 1600px;
+            width: calc(100% - 32px);
             margin: 0 auto;
             padding: 42px 0;
         }
@@ -355,7 +373,8 @@
         }
 
         .footer-inner {
-            width: min(1180px, calc(100% - 32px));
+            max-width: 1600px;
+            width: calc(100% - 32px);
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -371,7 +390,7 @@
             width: auto;
         }
 
-        @media (min-width: 1181px) {
+        @media (min-width: 901px) {
             .nav-item:hover > .submenu {
                 opacity: 1;
                 visibility: visible;
@@ -379,10 +398,32 @@
             }
         }
 
-        @media (max-width: 1180px) {
-            .nav-wrap {
-                min-height: 68px;
-            }
+        .footer-nav {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 18px;
+          justify-content: center;
+        }
+
+        .footer-nav a {
+          color: rgba(240, 240, 240, 0.8);
+          font-size: 0.92rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: color 160ms ease;
+        }
+
+        .footer-nav a:hover {
+          color: var(--color-primary);
+        }
+
+        @media (max-width: 900px) {
+          .footer-inner {
+            display: grid;
+            gap: 18px;
+            justify-items: center;
+            text-align: center;
+          }
 
             .menu-toggle {
                 display: inline-flex;
@@ -502,6 +543,8 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'mens-watches' %}">Men's Watches</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'womens-watches' %}">Women's Watches</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'luxury-watches' %}">Luxury Watches</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'journals' %}">Journal</a></li>
+
                     <li class="nav-item">
                         <a class="nav-link cart-link" href="{% url 'cart' %}" aria-label="View cart">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -513,7 +556,7 @@
                             <span class="cart-count" id="cartCount" data-count="0">0</span>
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact Us</a></li>
+
                     <li class="nav-item has-submenu account-menu">
                         <button class="account-trigger" type="button" aria-expanded="false">
                             Account
@@ -560,8 +603,14 @@
 
     <footer class="site-footer">
         <div class="footer-inner">
-            <span>&copy; {% now "Y" %} Wrist Hub. All rights reserved.</span>
             <img src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub" class="footer-logo">
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <a href="{% url 'about' %}">About Us</a>
+                <a href="{% url 'faq' %}">FAQ</a>
+                <a href="{% url 'contact' %}">Contact Us</a>
+                <a href="{% url 'gallery' %}">Gallery</a>
+            </nav>
+            <span>&copy; {% now "Y" %} Wrist Hub. All rights reserved.</span>
             <span>Wrist Hub — time for every style.</span>
         </div>
     </footer>

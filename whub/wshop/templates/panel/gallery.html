@@ -1,0 +1,517 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.search-input,
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 140ms ease;
+}
+
+.search-input {
+    width: 260px;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    border-color: var(--blue);
+}
+
+.filter-select {
+    cursor: pointer;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-ghost {
+    color: var(--ink);
+    background: transparent;
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: rgba(15,23,42,0.04);
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+}
+
+.btn-icon {
+    padding: 6px;
+    min-width: 32px;
+    min-height: 32px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 0;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(15,23,42,0.05);
+    color: var(--ink);
+    vertical-align: middle;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+tr:hover td {
+    background: rgba(37,99,235,0.03);
+}
+
+.gallery-thumb {
+    width: 48px;
+    height: 36px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+}
+
+.gallery-thumb-placeholder {
+    width: 48px;
+    height: 36px;
+    border-radius: 6px;
+    background: #f3f4f6;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-size: 0.6rem;
+    flex-shrink: 0;
+}
+
+.media-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.media-type-image {
+    background: rgba(37,99,235,0.1);
+    color: var(--blue);
+}
+
+.media-type-video {
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-success {
+    background: rgba(34,197,94,0.1);
+    color: #16a34a;
+}
+
+.badge-default {
+    background: rgba(100,116,139,0.1);
+    color: #64748b;
+}
+
+.badge-warning {
+    background: rgba(245,158,11,0.1);
+    color: #d97706;
+}
+
+.badge-info {
+    background: rgba(37,99,235,0.1);
+    color: var(--blue);
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--muted);
+}
+
+.empty-state h3 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.1rem;
+}
+
+.category-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(37,99,235,0.06);
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.category-tag:hover {
+    background: rgba(37,99,235,0.12);
+}
+
+.category-tag.active {
+    background: var(--blue);
+    color: #ffffff;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 140ms ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--blue);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-hint {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.media-preview {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: rgba(243,244,246,0.5);
+}
+
+.media-preview img,
+.media-preview video {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 6px;
+    display: block;
+}
+
+.media-preview-empty {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue);
+}
+
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="stats-row">
+    <div class="stat-card">
+        <span class="stat-label">Total Items</span>
+        <span class="stat-value">{{ total_items }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Categories</span>
+        <span class="stat-value">{{ total_categories }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Featured</span>
+        <span class="stat-value">{{ featured_count }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Images</span>
+        <span class="stat-value">{{ image_count }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Videos</span>
+        <span class="stat-value">{{ video_count }}</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">All Gallery Items</span>
+        <a href="{% url 'panel-gallery-add' %}" class="btn btn-primary btn-sm">+ Add Item</a>
+    </div>
+    <div class="card-body">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Preview</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Featured</th>
+                        <th>Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {% if item.media_type == "video" %}
+                                {% if item.video_file %}
+                                    <video src="{{ item.video_file.url }}" muted style="width:48px;height:36px;object-fit:cover;border-radius:6px;"></video>
+                                {% elif item.video_url %}
+                                    <div class="gallery-thumb-placeholder">VID</div>
+                                {% else %}
+                                    <div class="gallery-thumb-placeholder">---</div>
+                                {% endif %}
+                            {% elif item.image %}
+                                <img class="gallery-thumb" src="{{ item.image.url }}" alt="{{ item.title }}">
+                            {% else %}
+                                <div class="gallery-thumb-placeholder">---</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'panel-gallery-edit' slug=item.slug %}" class="product-name">{{ item.title|default:"Untitled" }}</a>
+                            {% if item.caption %}
+                                <div class="product-meta">{{ item.caption|truncatechars:60 }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'panel-gallery' %}?category={{ item.category.slug }}" class="category-tag">{{ item.category.name }}</a>
+                        </td>
+                        <td>
+                            <span class="media-type-badge {% if item.media_type == 'image' %}media-type-image{% else %}media-type-video{% endif %}">
+                                {{ item.get_media_type_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if item.is_published %}
+                                <span class="badge badge-success">Published</span>
+                            {% else %}
+                                <span class="badge badge-default">Hidden</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.is_featured %}
+                                <span class="badge badge-warning">Featured</span>
+                            {% else %}
+                                <span class="badge badge-default">Standard</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ item.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <a href="{% url 'panel-gallery-edit' slug=item.slug %}" class="btn btn-secondary btn-sm">Edit</a>
+                                <form method="post" action="{% url 'panel-gallery-delete' slug=item.slug %}" style="display:inline;" onsubmit="return confirm('Delete this gallery item?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-ghost btn-sm" style="color:#dc2626;">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <h3>No gallery items yet</h3>
+                                <p>Add your first image or video to get started.</p>
+                                <a href="{% url 'panel-gallery-add' %}" class="btn btn-primary" style="margin-top:10px;">+ Add Gallery Item</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

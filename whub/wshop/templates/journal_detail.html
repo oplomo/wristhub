@@ -1,0 +1,544 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ journal.title }} | Wrist Hub Journal{% endblock %}
+
+{% block extra_css %}
+<style>
+  .journal-header {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: clamp(320px, 48vh, 460px);
+    margin: 0 0 36px;
+    padding: 64px clamp(20px, 5vw, 72px) 40px;
+    overflow: hidden;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(17, 17, 17, 0.95), rgba(31, 41, 55, 0.85)), #111111;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .journal-header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.3));
+    pointer-events: none;
+  }
+
+  .journal-header-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 14px;
+    max-width: 860px;
+  }
+
+  .journal-header .eyebrow {
+    color: var(--color-secondary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .journal-header h1 {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
+  }
+
+  .journal-meta-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .journal-meta-bar .meta-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  .journal-meta-bar a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 140ms ease;
+  }
+
+  .journal-meta-bar a:hover {
+    color: var(--color-secondary);
+  }
+
+  .journal-body-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-bottom: 64px;
+    color: var(--on-surface);
+  }
+
+  .journal-cover {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 40px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    background: #111111;
+  }
+
+  .journal-cover-fallback {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 4rem;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border-radius: var(--radius);
+    margin-bottom: 40px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  .journal-carousel {
+    position: relative;
+    margin-bottom: 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    background: #111111;
+  }
+
+  .journal-carousel-track {
+    display: flex;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .journal-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .journal-carousel-slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    display: grid;
+  }
+
+  .journal-carousel-slide img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .journal-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    background: rgba(17, 17, 17, 0.7);
+    color: #ffffff;
+    font-size: 1.4rem;
+    line-height: 1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    transition: background 140ms ease;
+  }
+
+  .journal-carousel-btn:hover {
+    background: rgba(17, 17, 17, 0.92);
+  }
+
+  .journal-carousel-btn.prev {
+    left: 14px;
+  }
+
+  .journal-carousel-btn.next {
+    right: 14px;
+  }
+
+  .journal-carousel-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 14px 18px;
+    z-index: 2;
+    color: #ffffff;
+    font-size: 0.86rem;
+    background: linear-gradient(0deg, rgba(10, 10, 10, 0.85), rgba(10, 10, 10, 0));
+  }
+
+  .journal-carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .journal-carousel-dots button {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.35);
+    transition: background 140ms ease, transform 140ms ease;
+  }
+
+  .journal-carousel-dots button.is-active {
+    background: #ffffff;
+    transform: scale(1.25);
+  }
+
+  .article-content {
+    font-size: 1.08rem;
+    line-height: 1.85;
+    color: var(--on-surface);
+  }
+
+  .article-content h2 {
+    margin: 36px 0 14px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.2;
+    color: var(--on-surface);
+  }
+
+  .article-content h3 {
+    margin: 28px 0 10px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    line-height: 1.25;
+    color: var(--on-surface);
+  }
+
+  .article-content p {
+    margin: 0 0 18px;
+    color: var(--on-surface);
+    opacity: 0.92;
+  }
+
+  .article-content ul,
+  .article-content ol {
+    margin: 0 0 18px;
+    padding-left: 24px;
+    color: var(--on-surface);
+    opacity: 0.92;
+  }
+
+  .article-content li {
+    margin-bottom: 8px;
+  }
+
+  .article-content blockquote {
+    margin: 24px 0;
+    padding: 18px 22px;
+    border-left: 3px solid var(--color-secondary);
+    background: rgba(232, 119, 74, 0.06);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--on-surface);
+    font-style: italic;
+  }
+
+  .article-content strong {
+    color: var(--on-surface);
+    font-weight: 700;
+  }
+
+  .article-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgba(196, 154, 165, 0.35);
+    transition: text-decoration-color 140ms ease, color 140ms ease;
+  }
+
+  .article-content a:hover {
+    color: var(--color-secondary);
+    text-decoration-color: var(--color-secondary);
+  }
+
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin: 24px 0;
+    border: 1px solid var(--line);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: color 140ms ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-primary);
+  }
+
+  .related-section {
+    margin-top: 56px;
+    padding-top: 36px;
+    border-top: 1px solid var(--line);
+  }
+
+  .related-section h2 {
+    margin: 0 0 20px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    line-height: 1.2;
+    color: var(--on-surface);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .related-card {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .related-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .related-card-image {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #111111;
+  }
+
+  .related-card-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 220ms ease;
+  }
+
+  .related-card:hover .related-card-image img {
+    transform: scale(1.04);
+  }
+
+  .related-card-image-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  }
+
+  .related-card-copy {
+    display: grid;
+    gap: 6px;
+    padding: 16px;
+  }
+
+  .related-card-copy .card-category {
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .related-card-copy h3 {
+    margin: 0;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .related-card-copy a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .related-card-copy a:hover h3 {
+    color: var(--color-primary);
+  }
+
+  .related-meta {
+    color: var(--on-surface-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <header class="journal-header">
+    <div class="journal-header-content">
+      <p class="eyebrow">{{ journal.get_category_display }}</p>
+      <h1>{{ journal.title }}</h1>
+      <div class="journal-meta-bar">
+        <span>{{ journal.author }}</span>
+        <span class="meta-dot"></span>
+        <span>{{ journal.published_at|date:"M d, Y" }}</span>
+        <span class="meta-dot"></span>
+        <span>{{ journal.published_at|date:"g:i A" }}</span>
+        <span class="meta-dot"></span>
+        <a href="{% url 'journals' %}">Back to Journal</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="journal-body-wrap">
+    <a class="back-link" href="{% url 'journals' %}">&larr; All articles</a>
+
+    {% with gallery=journal.images_all %}
+      {% if gallery|length > 1 %}
+        <div class="journal-carousel" data-journal-carousel>
+          <div class="journal-carousel-track">
+            {% for photo in gallery %}
+              <div class="journal-carousel-slide">
+                <img src="{% if photo.image %}{{ photo.image.url }}{% else %}{{ photo.url }}{% endif %}" alt="{{ journal.title }}{% if photo.caption %} - {{ photo.caption }}{% endif %}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              </div>
+            {% endfor %}
+          </div>
+          {% if gallery.0.caption or gallery.1.caption %}
+            <div class="journal-carousel-caption" data-carousel-caption></div>
+          {% endif %}
+          <button type="button" class="journal-carousel-btn prev" data-carousel-prev aria-label="Previous image">&#8249;</button>
+          <button type="button" class="journal-carousel-btn next" data-carousel-next aria-label="Next image">&#8250;</button>
+          <div class="journal-carousel-dots" data-carousel-dots></div>
+        </div>
+      {% elif gallery %}
+        {% if journal.image %}
+          <img class="journal-cover" src="{{ journal.image.url }}" alt="{{ journal.title }}">
+        {% else %}
+          <img class="journal-cover" src="{% if gallery.0.image %}{{ gallery.0.image.url }}{% else %}{{ gallery.0.url }}{% endif %}" alt="{{ journal.title }}">
+        {% endif %}
+      {% else %}
+        <div class="journal-cover-fallback">{{ journal.title|slice:":1" }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <article class="article-content">
+      {{ journal.content|safe }}
+    </article>
+
+    {% if related_journals %}
+      <section class="related-section">
+        <h2>More from the Journal</h2>
+        <div class="related-grid">
+          {% for related in related_journals %}
+            <article class="related-card">
+              <a class="related-card-image" href="{% url 'journal-detail' slug=related.slug %}" aria-label="Read {{ related.title }}">
+                {% if related.image %}
+                  <img src="{{ related.image.url }}" alt="{{ related.title }}" loading="lazy">
+                {% else %}
+                  <div class="related-card-image-fallback">{{ related.title|slice:":1" }}</div>
+                {% endif %}
+              </a>
+              <div class="related-card-copy">
+                <span class="card-category">{{ related.get_category_display }}</span>
+                <a href="{% url 'journal-detail' slug=related.slug %}">
+                  <h3>{{ related.title }}</h3>
+                </a>
+                <div class="related-meta">{{ related.published_at|date:"M d, Y" }}</div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  <script>
+    document.querySelectorAll("[data-journal-carousel]").forEach(function (root) {
+      const track = root.querySelector(".journal-carousel-track");
+      const slides = Array.from(track.querySelectorAll(".journal-carousel-slide"));
+      const prev = root.querySelector("[data-carousel-prev]");
+      const next = root.querySelector("[data-carousel-next]");
+      const dotsWrap = root.querySelector("[data-carousel-dots]");
+      const caption = root.querySelector("[data-carousel-caption]");
+      let index = 0;
+
+      slides.forEach(function (_, i) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        if (i === 0) dot.classList.add("is-active");
+        dot.setAttribute("aria-label", "Show image " + (i + 1));
+        dot.addEventListener("click", function () { go(i); });
+        dotsWrap.appendChild(dot);
+      });
+      const dots = Array.from(dotsWrap.children);
+
+      function go(i) {
+        index = (i + slides.length) % slides.length;
+        track.scrollTo({ left: track.clientWidth * index, behavior: "smooth" });
+        dots.forEach(function (d, di) { d.classList.toggle("is-active", di === index); });
+        if (caption) {
+          const img = slides[index].querySelector("img");
+          const text = img ? img.alt.replace(/^.*? - /, "") : "";
+          caption.textContent = (img && img.alt.split(" - ").length > 1) ? img.alt.split(" - ").slice(1).join(" - ") : "";
+        }
+      }
+
+      prev.addEventListener("click", function () { go(index - 1); });
+      next.addEventListener("click", function () { go(index + 1); });
+
+      let resizeTimer;
+      window.addEventListener("resize", function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () { track.scrollTo({ left: track.clientWidth * index }); }, 100);
+      });
+
+      go(0);
+    });
+  </script>
+{% endblock %}}

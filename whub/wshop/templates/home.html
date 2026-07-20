@@ -5,105 +5,185 @@
 
 {% block extra_css %}
 <style>
-  .video-hero {
+  .hero-section {
     position: relative;
     display: grid;
     align-items: center;
-    min-height: clamp(460px, 68vh, 640px);
+    min-height: clamp(560px, 80vh, 720px);
     margin: 0 0 36px;
-    padding: 84px clamp(20px, 5vw, 72px) 56px;
+    padding: 80px clamp(20px, 5vw, 72px) 56px;
     overflow: hidden;
     color: #ffffff;
-    background: linear-gradient(135deg, rgba(17, 17, 17, 0.92), rgba(31, 41, 55, 0.78)), #111111;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(10, 10, 10, 0.7)), #0a0a0a;
   }
 
-        .video-hero video {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-        }
+  .hero-section video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
 
-        .video-hero-fallback {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 0;
-            top: 0;
-            left: 0;
-        }
+  .hero-section .video-fallback {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    top: 0;
+    left: 0;
+  }
 
-        .video-hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            background: linear-gradient(90deg, rgba(17, 17, 17, 0.9), rgba(17, 17, 17, 0.6) 50%, rgba(17, 17, 17, 0.4)), linear-gradient(0deg, rgba(17, 17, 17, 0.7), rgba(17, 17, 17, 0.3));
-        }
+  .hero-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0.2)), linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, transparent 60%);
+  }
 
-        .video-hero-content {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            gap: 14px;
-            max-width: 640px;
-        }
+  .hero-layout {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 32px;
+    max-width: 780px;
+  }
 
-        .video-hero .eyebrow {
-            color: #ffffff;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
-        }
+  .hero-brand-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 
-        .video-hero h1 {
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(2rem, 5.5vw, 4.2rem);
-            line-height: 1.05;
-            letter-spacing: -0.02em;
-            color: var(--color-text);
-            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
-        }
+  .hero-logo {
+    height: clamp(52px, 6vw, 80px);
+    width: auto;
+    display: block;
+    border-radius: 8px;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
+  }
 
-        .video-hero p {
-            max-width: 480px;
-            margin: 0;
-            color: var(--color-text);
-            font-size: clamp(0.9rem, 1.6vw, 1.05rem);
-            line-height: 1.6;
-            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
-        }
+  .hero-brand-text {
+    display: grid;
+    gap: 2px;
+  }
 
-        .hero-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: fit-content;
-            min-height: 38px;
-            margin-top: 10px;
-            padding: 0 18px;
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            border-radius: var(--radius);
-            color: var(--color-background);
-            background: var(--color-secondary);
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
-            font-size: 0.88rem;
-            font-weight: 700;
-            transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-        }
+  .hero-brand-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+  }
 
-        .hero-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
-        }
+  .hero-motto {
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    font-weight: 600;
+    color: var(--color-secondary);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.02em;
+  }
 
-        .watch-personality {
+  .hero-tagline {
+    margin: 0;
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
+    max-width: 560px;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 24px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    border: none;
+  }
+
+  .hero-cta:hover {
+    transform: translateY(-2px);
+  }
+
+  .hero-cta.primary {
+    color: #ffffff;
+    background: #e8774a;
+    box-shadow: 0 8px 24px rgba(232, 119, 74, 0.35);
+  }
+
+  .hero-cta.primary:hover {
+    background: #d5663a;
+    box-shadow: 0 12px 32px rgba(232, 119, 74, 0.45);
+  }
+
+  .hero-cta.whatsapp {
+    color: #ffffff;
+    background: #25D366;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+  }
+
+  .hero-cta.whatsapp:hover {
+    background: #1da851;
+    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.4);
+  }
+
+  .hero-cta svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  .hero-pillars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 40px;
+    margin-top: 8px;
+    padding: 20px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .pillar {
+    display: grid;
+    gap: 4px;
+  }
+
+  .pillar-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  }
+
+  .pillar-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.78);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+  }
+
+  .watch-personality {
             display: grid;
             gap: 20px;
             padding: 20px 0 52px;
@@ -486,102 +566,76 @@
             font-size: 0.9rem;
         }
 
-        .crafted-way {
+        .our-standard {
+            position: relative;
             display: grid;
             gap: 18px;
             padding: 4px 0 52px;
         }
 
-        .material-grid {
+        .standard-track {
             display: grid;
             grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .material-card {
-            display: grid;
-            grid-template-rows: 140px 1fr;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .material-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .material-swatch {
+            gap: 0;
             position: relative;
-            overflow: hidden;
-            background: #f3f4f6;
         }
 
-        .material-swatch img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 220ms ease;
-        }
-
-        .material-card:hover .material-swatch img {
-            transform: scale(1.04);
-        }
-
-        .material-swatch::after {
+        .standard-track::before {
             content: "";
             position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent, rgba(17, 17, 17, 0.22));
-            pointer-events: none;
+            top: 24px;
+            left: 24px;
+            right: 24px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--line-strong) 10%, var(--line-strong) 90%, transparent);
+            z-index: 0;
         }
 
-        .material-copy {
+        .standard-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 0 8px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .standard-marker {
             display: grid;
-            gap: 4px;
-            padding: 14px;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 2px solid var(--blue);
+            color: var(--blue);
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
+            transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), background 220ms ease, color 220ms ease, box-shadow 220ms ease;
         }
 
-        .material-copy h3 {
+        .standard-item:hover .standard-marker {
+            transform: translateY(-6px) scale(1.12);
+            background: var(--blue);
+            color: #ffffff;
+            box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
+        }
+
+        .standard-text {
             margin: 0;
             color: var(--ink);
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.2rem;
-            line-height: 1.15;
-            letter-spacing: 0;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            max-width: 240px;
+            opacity: 0.9;
+            transition: opacity 200ms ease;
         }
 
-        .material-copy span {
-            color: var(--blue);
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .leather-material {
-            --material-bg: #3f2e26;
-        }
-
-        .metal-material {
-            --material-bg: linear-gradient(135deg, #d4d4d4, #f5f5f5 45%, #9ca3af);
-        }
-
-        .rubber-material {
-            --material-bg: #1f1f1f;
-        }
-
-        .ceramic-material {
-            --material-bg: linear-gradient(135deg, #fafafa, #d6d3d1);
-        }
-
-        .fabric-material {
-            --material-bg: #4b5563;
+        .standard-item:hover .standard-text {
+            opacity: 1;
         }
 
         .dream-watch {
@@ -970,7 +1024,7 @@
 
         .advantage-title {
             margin: 0;
-            color: var(--ink);
+            color: var(--on-surface);
             font-family: Georgia, "Times New Roman", serif;
             font-size: 1.05rem;
             line-height: 1.2;
@@ -978,19 +1032,19 @@
 
         .advantage-text {
             margin: 0;
-            color: var(--muted);
+            color: var(--on-surface-muted);
             font-size: 0.82rem;
             line-height: 1.5;
         }
 
         @media (max-width: 700px) {
-            .video-hero {
+            .hero-section {
                 min-height: 520px;
                 padding-top: 80px;
             }
 
-            .video-hero::after {
-                background: linear-gradient(0deg, rgba(17, 17, 17, 0.72), rgba(17, 17, 17, 0.28));
+            .hero-section::after {
+                background: linear-gradient(0deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.28));
             }
 
             .section-heading {
@@ -1007,24 +1061,31 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
-            .material-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .dream-watch {
+            .standard-track {
                 grid-template-columns: 1fr;
+                gap: 18px;
             }
 
-            .featured-grid {
-                grid-template-columns: 1fr;
+            .standard-track::before {
+                display: none;
             }
 
-            .advantage-grid {
-                grid-template-columns: 1fr;
+            .standard-item {
+                flex-direction: row;
+                text-align: left;
+                gap: 14px;
+                padding: 0;
             }
 
-            .watch-stage {
-                min-height: 420px;
+            .standard-marker {
+                margin: 0;
+                flex: 0 0 auto;
+            }
+
+            .standard-text {
+                margin: 0;
+                max-width: none;
+                text-align: left;
             }
         }
 
@@ -1037,8 +1098,22 @@
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
-            .material-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+            .standard-track {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+            }
+
+            .standard-track::before {
+                display: none;
+            }
+
+            .standard-item:nth-child(3) {
+                grid-column: 1 / -1;
+            }
+
+            .standard-item:nth-child(4),
+            .standard-item:nth-child(5) {
+                grid-column: auto;
             }
 
             .featured-grid {
@@ -1057,24 +1132,55 @@
 {% endblock %}
 
 {% block hero %}
-    <section class="video-hero">
-        {% if hero %}
-            {% if hero.video %}
-                <video autoplay muted loop playsinline>
-                    <source src="{{ hero.video.url }}" type="video/mp4">
-                </video>
-            {% elif hero.image %}
-                <img src="{{ hero.image.url }}" alt="{{ hero.title|default:'Hero image' }}" class="video-hero-fallback">
-            {% endif %}
-        {% endif %}
+  <section class="hero-section">
+    {% if hero %}
+      {% if hero.video %}
+        <video autoplay muted loop playsinline>
+          <source src="{{ hero.video.url }}" type="video/mp4">
+        </video>
+      {% elif hero.image %}
+        <img src="{{ hero.image.url }}" alt="{{ hero.title|default:'Hero image' }}" class="video-fallback">
+      {% endif %}
+    {% endif %}
 
-        <div class="video-hero-content">
-            <p class="eyebrow">Wrist Hub</p>
-            <h1 style="color: #ffffff;">time for every style</h1>
-            <p style="color: #ffffff;">Shop authentic watches from leading brands around the world.</p>
-            <a class="hero-button" href="/shop/">Shop Now</a>
+    <div class="hero-layout">
+      <div class="hero-brand-block">
+        <img class="hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
+        <div class="hero-brand-text">
+          <span class="hero-brand-name">Wrist Hub</span>
+          <span class="hero-motto">&ldquo;A time for every style&rdquo;</span>
         </div>
-    </section>
+      </div>
+
+      <p class="hero-tagline">Serving with quality, trust & style.</p>
+
+      <div class="hero-cta-row">
+        <a class="hero-cta primary" href="{% url 'shop' %}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          Browse Collection
+        </a>
+        <a class="hero-cta whatsapp" href="https://wa.me/254123456789" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
+      </div>
+
+      <div class="hero-pillars">
+        <div class="pillar">
+          <span class="pillar-title">Quality</span>
+          <span class="pillar-desc">Every detail matters</span>
+        </div>
+        <div class="pillar">
+          <span class="pillar-title">Trust</span>
+          <span class="pillar-desc">What you see is what you receive</span>
+        </div>
+        <div class="pillar">
+          <span class="pillar-title">Style</span>
+          <span class="pillar-desc">Accessories that become part of your story.</span>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
 
 {% block content %}
@@ -1238,166 +1344,36 @@
         </div>
     </section>
 
-    <section class="crafted-way">
+    <section class="our-standard">
         <div class="section-heading">
-            <h2>Crafted Your Way</h2>
+            <h2>Our Standard</h2>
         </div>
 
-        <div class="material-grid">
-            <a class="material-card leather-material" href="{% url 'shop' %}?strap_material=leather">
-                <div class="material-swatch">
-                    <img src="{% static 'images/leather-watch-strap.jpg' %}" alt="Leather strap">
-                </div>
-                <div class="material-copy">
-                    <h3>Leather</h3>
-                    <span>Shop leather straps</span>
-                </div>
-            </a>
-            <a class="material-card metal-material" href="{% url 'shop' %}?strap_material=metal">
-                <div class="material-swatch">
-                    <img src="{% static 'images/meta-strap.jpg' %}" alt="Metal strap">
-                </div>
-                <div class="material-copy">
-                    <h3>Metal</h3>
-                    <span>Shop metal straps</span>
-                </div>
-            </a>
-            <a class="material-card rubber-material" href="{% url 'shop' %}?strap_material=rubber">
-                <div class="material-swatch">
-                    <img src="{% static 'images/ruber-watch-strap.jpg' %}" alt="Rubber strap">
-                </div>
-                <div class="material-copy">
-                    <h3>Rubber</h3>
-                    <span>Shop rubber straps</span>
-                </div>
-            </a>
-            <a class="material-card ceramic-material" href="{% url 'shop' %}?strap_material=ceramic">
-                <div class="material-swatch">
-                    <img src="{% static 'images/cwramic-strap.jpg' %}" alt="Ceramic strap">
-                </div>
-                <div class="material-copy">
-                    <h3>Ceramic</h3>
-                    <span>Shop ceramic straps</span>
-                </div>
-            </a>
-            <a class="material-card fabric-material" href="{% url 'shop' %}?strap_material=fabric">
-                <div class="material-swatch">
-                    <img src="{% static 'images/fabric-strap.jpeg' %}" alt="Fabric strap">
-                </div>
-                <div class="material-copy">
-                    <h3>Fabric</h3>
-                    <span>Shop fabric straps</span>
-                </div>
-            </a>
+        <div class="standard-track">
+            <div class="standard-item">
+                <div class="standard-marker">1</div>
+                <p class="standard-text">We present every product honestly, with clear details and accurate imagery.</p>
+            </div>
+            <div class="standard-item">
+                <div class="standard-marker">2</div>
+                <p class="standard-text">We package every order with care, so it arrives in perfect condition.</p>
+            </div>
+            <div class="standard-item">
+                <div class="standard-marker">3</div>
+                <p class="standard-text">We verify quality before dispatch, because excellence should never be optional.</p>
+            </div>
+            <div class="standard-item">
+                <div class="standard-marker">4</div>
+                <p class="standard-text">We value every customer, not just the sale.</p>
+            </div>
+            <div class="standard-item">
+                <div class="standard-marker">5</div>
+                <p class="standard-text">We keep improving through your feedback, because small details make the biggest difference.</p>
+            </div>
         </div>
     </section>
 
-    <!-- <section class="dream-watch">
-        <div class="watch-stage">
-            <div class="custom-watch" data-custom-watch>
-                <div class="watch-strap top"></div>
-                <div class="watch-strap bottom"></div>
-                <div class="watch-case">
-                    <div class="watch-crown"></div>
-                    <div class="watch-bezel">
-                        <div class="watch-dial">
-                            <span class="watch-marker twelve"></span>
-                            <span class="watch-marker three"></span>
-                            <span class="watch-marker six"></span>
-                            <span class="watch-marker nine"></span>
-                            <span class="watch-hand hour"></span>
-                            <span class="watch-hand minute"></span>
-                            <span class="watch-pin"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="config-panel">
-            <div class="section-heading">
-                <p class="eyebrow">Interactive Configurator</p>
-                <h2>Build Your Dream Watch</h2>
-                <p>Choose the case, dial, strap, hands, and bezel to shape a watch that feels unmistakably yours.</p>
-            </div>
-
-            <div class="config-group">
-                <span class="config-label">Case</span>
-                <div class="option-row">
-                    <button class="watch-option is-active" type="button" data-watch-part="case" data-watch-color="#d9a441">
-                        <span class="option-swatch" style="--swatch: #d9a441;"></span> Gold
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="case" data-watch-color="#c8c8c8">
-                        <span class="option-swatch" style="--swatch: #c8c8c8;"></span> Silver
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="case" data-watch-color="#1f1f1f">
-                        <span class="option-swatch" style="--swatch: #1f1f1f;"></span> Black
-                    </button>
-                </div>
-            </div>
-
-            <div class="config-group">
-                <span class="config-label">Dial Color</span>
-                <div class="option-row">
-                    <button class="watch-option is-active" type="button" data-watch-part="dial" data-watch-color="#fffdf9">
-                        <span class="option-swatch" style="--swatch: #fffdf9;"></span> Ivory
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="dial" data-watch-color="#1b2328">
-                        <span class="option-swatch" style="--swatch: #1b2328;"></span> Midnight
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="dial" data-watch-color="#244b55">
-                        <span class="option-swatch" style="--swatch: #244b55;"></span> Ocean
-                    </button>
-                </div>
-            </div>
-
-            <div class="config-group">
-                <span class="config-label">Strap</span>
-                <div class="option-row">
-                    <button class="watch-option is-active" type="button" data-watch-part="strap" data-watch-color="#5b4032">
-                        <span class="option-swatch" style="--swatch: #5b4032;"></span> Leather
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="strap" data-watch-color="#202220">
-                        <span class="option-swatch" style="--swatch: #202220;"></span> Rubber
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="strap" data-watch-color="#b8b0a7">
-                        <span class="option-swatch" style="--swatch: #b8b0a7;"></span> Metal
-                    </button>
-                </div>
-            </div>
-
-            <div class="config-group">
-                <span class="config-label">Hands</span>
-                <div class="option-row">
-                    <button class="watch-option is-active" type="button" data-watch-part="hands" data-watch-color="#251c17">
-                        <span class="option-swatch" style="--swatch: #251c17;"></span> Ink
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="hands" data-watch-color="#d9a441">
-                        <span class="option-swatch" style="--swatch: #d9a441;"></span> Gold
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="hands" data-watch-color="#e9e1d4">
-                        <span class="option-swatch" style="--swatch: #e9e1d4;"></span> Light
-                    </button>
-                </div>
-            </div>
-
-            <div class="config-group">
-                <span class="config-label">Bezel</span>
-                <div class="option-row">
-                    <button class="watch-option is-active" type="button" data-watch-part="bezel" data-watch-color="#b76e3c">
-                        <span class="option-swatch" style="--swatch: #b76e3c;"></span> Copper
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="bezel" data-watch-color="#d9a441">
-                        <span class="option-swatch" style="--swatch: #d9a441;"></span> Gold
-                    </button>
-                    <button class="watch-option" type="button" data-watch-part="bezel" data-watch-color="#2f3538">
-                        <span class="option-swatch" style="--swatch: #2f3538;"></span> Graphite
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
+   
     <script>
         const personalityCarousel = document.querySelector("[data-personality-carousel]");
         const personalityPrev = document.querySelector("[data-carousel-prev]");

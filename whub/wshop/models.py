@@ -156,6 +156,63 @@ class WatchImage(models.Model):
         return f"Image for {self.watch}"
 
 
+class GalleryCategory(models.Model):
+    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name_plural = "Gallery Categories"
+
+    def __str__(self):
+        return self.name
+
+
+class GalleryItem(models.Model):
+    MEDIA_TYPE_CHOICES = [
+        ("image", "Image"),
+        ("video", "Video"),
+    ]
+
+    title = models.CharField(max_length=200, blank=True, default="")
+    slug = models.SlugField(max_length=220, unique=True, blank=True, default="")
+    category = models.ForeignKey(GalleryCategory, on_delete=models.CASCADE, related_name="items")
+    media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES, default="image")
+    image = models.ImageField(upload_to="gallery/images/", blank=True, null=True)
+    video_file = models.FileField(upload_to="gallery/videos/", blank=True, null=True)
+    video_url = models.URLField(blank=True, help_text="YouTube/Vimeo/MP4 link")
+    caption = models.TextField(blank=True)
+    is_published = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-is_featured", "-created_at"]
+
+    def __str__(self):
+        return self.title or "Untitled Gallery Item"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            import uuid
+            from django.utils.text import slugify
+            base_slug = slugify(self.title) if self.title else f"gallery-{uuid.uuid4().hex[:8]}"
+            slug = base_slug
+            counter = 1
+            qs = GalleryItem.objects.all()
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            while qs.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
 class AnalyticsEvent(models.Model):
     EVENT_CHOICES = [
         ("page_view", "Page View"),
@@ -275,6 +332,62 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.pk} - {self.full_name}"
+
+
+class Journal(models.Model):
+    CATEGORY_CHOICES = [
+        ("watch-guides", "Watch Guides"),
+        ("style", "Style & Trends"),
+        ("history", "Watch History"),
+        ("reviews", "Reviews"),
+        ("industry", "Industry News"),
+        ("lifestyle", "Lifestyle"),
+    ]
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True)
+    excerpt = models.TextField(max_length=300, help_text="Short summary for cards and SEO.")
+    content = models.TextField(help_text="Full article body (HTML supported).")
+    image = models.ImageField(upload_to="journals/", blank=True)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default="style")
+    author = models.CharField(max_length=100, default="Wrist Hub Editorial")
+    published_at = models.DateTimeField(auto_now_add=True)
+    is_published = models.BooleanField(default=True)
+    is_featured = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-published_at"]
+        verbose_name = "Journal Article"
+        verbose_name_plural = "Journal Articles"
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def images_all(self):
+        imgs = list(self.images.all())
+        if not imgs and self.image:
+            imgs = [self.image]
+        return imgs
+
+    @property
+    def has_gallery(self):
+        return self.images.exists() or bool(self.image)
+
+
+class JournalImage(models.Model):
+    journal = models.ForeignKey(Journal, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="journals/", blank=True)
+    caption = models.CharField(max_length=200, blank=True, default="")
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "created_at"]
+
+    def __str__(self):
+        return f"Image for {self.journal.title}"
 
 
 class OrderItem(models.Model):

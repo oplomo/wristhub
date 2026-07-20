@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Gallery | Wrist Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+  .page-hero {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: 20px;
+    padding: 64px clamp(20px, 5vw, 72px) 40px;
+    margin: 0 0 36px;
+    border-bottom: 1px solid var(--line);
+    background: var(--warm-white);
+  }
+
+  .page-hero-brand {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+
+  .page-hero-logo {
+    height: clamp(56px, 6vw, 80px);
+    width: auto;
+    display: block;
+    border-radius: 8px;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+  }
+
+  .page-hero-brand-name {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .page-hero-motto {
+    font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+    font-weight: 600;
+    color: var(--color-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .page-hero-title {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(2rem, 5vw, 3.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .page-hero p {
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: clamp(0.92rem, 1.5vw, 1.05rem);
+    line-height: 1.65;
+    max-width: 560px;
+  }
+
+  .page-hero-pillars {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 32px;
+    margin-top: 8px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--line);
+    max-width: 640px;
+    width: 100%;
+  }
+
+  .pillar {
+    display: grid;
+    gap: 2px;
+    text-align: center;
+  }
+
+  .pillar-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .pillar-desc {
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+
+  .gallery-layout {
+    display: grid;
+    gap: 28px;
+    padding-bottom: 64px;
+  }
+
+  .category-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .category-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 140ms ease, background 140ms ease, border-color 140ms ease, transform 140ms ease;
+  }
+
+  .category-tab:hover,
+  .category-tab.is-active {
+    color: #ffffff;
+    border-color: var(--color-primary);
+    background: var(--color-surface-high);
+    transform: translateY(-1px);
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .gallery-card {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .gallery-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .gallery-card-media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #111111;
+  }
+
+  .gallery-card-media img,
+  .gallery-card-media video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform 220ms ease;
+  }
+
+  .gallery-card:hover .gallery-card-media img,
+  .gallery-card:hover .gallery-card-media video {
+    transform: scale(1.04);
+  }
+
+  .gallery-card-media-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  }
+
+  .media-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(17, 17, 17, 0.85);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(4px);
+  }
+
+  .gallery-card-copy {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+  }
+
+  .gallery-card-category {
+    color: var(--color-primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .gallery-card-title {
+    margin: 0;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  .gallery-card-title a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .gallery-card-title a:hover {
+    color: var(--color-primary);
+  }
+
+  .gallery-card-caption {
+    margin: 0;
+    color: var(--on-surface-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .gallery-detail {
+    display: grid;
+    gap: 28px;
+    padding-bottom: 64px;
+  }
+
+  .gallery-detail-media {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    background: #111111;
+    box-shadow: var(--shadow);
+  }
+
+  .gallery-detail-media img,
+  .gallery-detail-media video {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    max-height: 520px;
+  }
+
+  .gallery-detail-copy {
+    display: grid;
+    gap: 10px;
+  }
+
+  .gallery-detail-copy .category-label {
+    color: var(--color-primary);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .gallery-detail-copy h1 {
+    margin: 0;
+    color: var(--on-surface);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    line-height: 1.15;
+  }
+
+  .gallery-detail-copy p {
+    margin: 0;
+    color: var(--on-surface);
+    opacity: 0.88;
+    line-height: 1.7;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: color 140ms ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-primary);
+  }
+
+  .related-section {
+    border-top: 1px solid var(--line);
+    padding-top: 36px;
+  }
+
+  .related-section h2 {
+    margin: 0 0 18px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    color: var(--on-surface);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 56px 24px;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .empty-state h3 {
+    margin: 0 0 8px;
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.3rem;
+  }
+
+  @media (max-width: 768px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block hero %}
+  <section class="page-hero">
+    <div class="page-hero-brand">
+      <img class="page-hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
+      <span class="page-hero-brand-name">Wrist Hub</span>
+      <span class="page-hero-motto">&ldquo;A time for every style&rdquo;</span>
+    </div>
+    <h1 class="page-hero-title">See It For Yourself</h1>
+    <p>From our quality checks to happy customers, explore the Wrist Hub experience through images and videos.</p>
+    <div class="page-hero-pillars">
+      <div class="pillar">
+        <span class="pillar-title">Quality</span>
+        <span class="pillar-desc">Every detail matters</span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-title">Trust</span>
+        <span class="pillar-desc">What you see is what you receive</span>
+      </div>
+      <div class="pillar">
+        <span class="pillar-title">Style</span>
+        <span class="pillar-desc">Accessories that become part of your story.</span>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block content %}
+  <div class="gallery-layout">
+    <nav class="category-tabs" aria-label="Gallery categories">
+      <a class="category-tab{% if not selected_category %} is-active{% endif %}" href="{% url 'gallery' %}">All</a>
+      {% for category in categories %}
+        <a class="category-tab{% if selected_category == category %} is-active{% endif %}" href="{% url 'gallery-category' category.slug %}">{{ category.name }}</a>
+      {% endfor %}
+    </nav>
+
+    <div class="gallery-grid">
+      {% for item in items %}
+        <article class="gallery-card">
+          <a class="gallery-card-media" href="{% url 'gallery-item' item.slug %}" aria-label="View {{ item.title }}">
+            {% if item.media_type == "video" %}
+              {% if item.video_file %}
+                <video src="{{ item.video_file.url }}" muted playsinline></video>
+              {% elif item.video_url %}
+                <img src="https://img.youtube.com/vi/{{ item.video_url|slice:"-11:" }}/maxresdefault.jpg" alt="{{ item.title }}" loading="lazy">
+              {% endif %}
+            {% elif item.image %}
+              <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
+            {% else %}
+              <div class="gallery-card-media-fallback">{{ item.title|default:"?" }}</div>
+            {% endif %}
+            <span class="media-badge">{{ item.get_media_type_display }}</span>
+          </a>
+          <div class="gallery-card-copy">
+            <span class="gallery-card-category">{{ item.category.name }}</span>
+            {% if item.caption %}
+              <p class="gallery-card-caption">{{ item.caption }}</p>
+            {% endif %}
+          </div>
+        </article>
+      {% empty %}
+        <div class="empty-state">
+          <h3>No media yet</h3>
+          <p>Check back soon for quality tests, delivery moments, and customer experiences.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

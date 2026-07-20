@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.html import escape
 from django.utils.text import slugify
 
-from .models import Watch, Order, OrderItem, Cart, Brand, Category, HomeHero, WatchImage, AnalyticsEvent
+from .models import Watch, Order, OrderItem, Cart, Brand, Category, GalleryCategory, GalleryItem, HomeHero, WatchImage, AnalyticsEvent, Journal, JournalImage
 
 MODEL_CHOICES = [
     ("classic", "Classic"),
@@ -924,3 +924,338 @@ def admin_settings(request):
         "settings_active": True,
     }
     return render(request, "panel/settings.html", context)
+
+
+def admin_gallery(request):
+    categories = GalleryCategory.objects.all().order_by("name")
+    category_filter = request.GET.get("category", "").strip()
+    media_filter = request.GET.get("media", "").strip()
+
+    items = GalleryItem.objects.select_related("category").order_by("-is_featured", "-created_at")
+    if category_filter:
+        items = items.filter(category__slug=category_filter)
+    if media_filter:
+        items = items.filter(media_type=media_filter)
+
+    total_items = GalleryItem.objects.count()
+    total_categories = GalleryCategory.objects.count()
+    featured_count = GalleryItem.objects.filter(is_featured=True).count()
+    image_count = GalleryItem.objects.filter(media_type="image").count()
+    video_count = GalleryItem.objects.filter(media_type="video").count()
+
+    context = {
+        "items": items,
+        "categories": categories,
+        "category_filter": category_filter,
+        "media_filter": media_filter,
+        "total_items": total_items,
+        "total_categories": total_categories,
+        "featured_count": featured_count,
+        "image_count": image_count,
+        "video_count": video_count,
+        "dashboard_title": "Gallery",
+        "gallery_active": True,
+    }
+    return render(request, "panel/gallery.html", context)
+
+
+def admin_gallery_add(request):
+    categories = GalleryCategory.objects.all().order_by("name")
+    if request.method == "POST":
+        from django import forms
+        import uuid
+
+        class GalleryItemForm(forms.ModelForm):
+            class Meta:
+                model = GalleryItem
+                fields = [
+                    "title", "slug", "category", "media_type",
+                    "image", "video_file", "video_url", "caption",
+                    "is_published", "is_featured",
+                ]
+                widgets = {
+                    "slug": forms.TextInput(attrs={"readonly": "readonly"}),
+                    "caption": forms.Textarea(attrs={"rows": 3}),
+                }
+
+        form = GalleryItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            if item.title:
+                base_slug = slugify(item.title)
+            else:
+                base_slug = f"gallery-{uuid.uuid4().hex[:8]}"
+            item.slug = base_slug
+            counter = 1
+            while GalleryItem.objects.filter(slug=item.slug).exists():
+                item.slug = f"{base_slug}-{counter}"
+                counter += 1
+            item.save()
+            display_name = item.title or f"Untitled ({item.slug})"
+            messages.success(request, f"Added '{display_name}' to gallery.")
+            return redirect("panel-gallery-edit", slug=item.slug)
+    else:
+        from django import forms
+
+        class GalleryItemForm(forms.ModelForm):
+            class Meta:
+                model = GalleryItem
+                fields = [
+                    "title", "category", "media_type",
+                    "image", "video_file", "video_url", "caption",
+                    "is_published", "is_featured",
+                ]
+                widgets = {
+                    "caption": forms.Textarea(attrs={"rows": 3}),
+                }
+
+        form = GalleryItemForm()
+
+    return render(request, "panel/gallery_add.html", {
+        "form": form,
+        "categories": categories,
+        "dashboard_title": "Add Gallery Item",
+        "gallery_active": True,
+    })
+
+
+def admin_gallery_edit(request, slug):
+    item = get_object_or_404(GalleryItem, slug=slug)
+    categories = GalleryCategory.objects.all().order_by("name")
+    if request.method == "POST":
+        from django import forms
+        import uuid
+
+        class GalleryItemForm(forms.ModelForm):
+            class Meta:
+                model = GalleryItem
+                fields = [
+                    "title", "slug", "category", "media_type",
+                    "image", "video_file", "video_url", "caption",
+                    "is_published", "is_featured",
+                ]
+                widgets = {
+                    "slug": forms.TextInput(attrs={"readonly": "readonly"}),
+                    "caption": forms.Textarea(attrs={"rows": 3}),
+                }
+
+        form = GalleryItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            item = form.save(commit=False)
+            if not item.slug:
+                if item.title:
+                    base_slug = slugify(item.title)
+                else:
+                    base_slug = f"gallery-{uuid.uuid4().hex[:8]}"
+                item.slug = base_slug
+                counter = 1
+                while GalleryItem.objects.filter(slug=item.slug).exclude(pk=item.pk).exists():
+                    item.slug = f"{base_slug}-{counter}"
+                    counter += 1
+            item.save()
+            display_name = item.title or f"Untitled ({item.slug})"
+            messages.success(request, f"Updated '{display_name}'.")
+            return redirect("panel-gallery-edit", slug=item.slug)
+    else:
+        from django import forms
+
+        class GalleryItemForm(forms.ModelForm):
+            class Meta:
+                model = GalleryItem
+                fields = [
+                    "title", "slug", "category", "media_type",
+                    "image", "video_file", "video_url", "caption",
+                    "is_published", "is_featured",
+                ]
+                widgets = {
+                    "slug": forms.TextInput(attrs={"readonly": "readonly"}),
+                    "caption": forms.Textarea(attrs={"rows": 3}),
+                }
+
+        form = GalleryItemForm(instance=item)
+
+    return render(request, "panel/gallery_edit.html", {
+        "item": item,
+        "form": form,
+        "categories": categories,
+        "dashboard_title": f"Edit {item.title or 'Untitled'}",
+        "gallery_active": True,
+    })
+
+
+def admin_gallery_delete(request, slug):
+    item = get_object_or_404(GalleryItem, slug=slug)
+    if request.method == "POST":
+        title = item.title
+        item.delete()
+        messages.success(request, f"Deleted '{title}' from gallery.")
+        return redirect("panel-gallery")
+    return redirect("panel-gallery")
+
+
+def admin_gallery_category_add(request):
+    if request.method == "POST":
+        from django.http import JsonResponse
+        import json
+        data = json.loads(request.body)
+        name = data.get("name", "").strip()
+        description = data.get("description", "").strip()
+        if not name:
+            return JsonResponse({"error": "Name is required"}, status=400)
+        category, created = GalleryCategory.objects.get_or_create(
+            name__iexact=name,
+            defaults={"name": name, "slug": slugify(name), "description": description, "is_active": True},
+        )
+        return JsonResponse({
+            "id": category.id,
+            "name": category.name,
+            "slug": category.slug,
+            "created": created,
+        })
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+def admin_journals(request):
+    category_filter = request.GET.get("category", "").strip()
+
+    journals = Journal.objects.all().order_by("-published_at")
+    if category_filter:
+        journals = journals.filter(category=category_filter)
+
+    total_journals = Journal.objects.count()
+    published_count = Journal.objects.filter(is_published=True).count()
+    draft_count = Journal.objects.filter(is_published=False).count()
+    featured_count = Journal.objects.filter(is_featured=True).count()
+
+    context = {
+        "journals": journals,
+        "categories": Journal.CATEGORY_CHOICES,
+        "category_filter": category_filter,
+        "total_journals": total_journals,
+        "published_count": published_count,
+        "draft_count": draft_count,
+        "featured_count": featured_count,
+        "dashboard_title": "Journal",
+        "journal_active": True,
+    }
+    return render(request, "panel/journal.html", context)
+
+
+def admin_journal_add(request):
+    from django import forms
+
+    class JournalForm(forms.ModelForm):
+        class Meta:
+            model = Journal
+            fields = [
+                "title", "slug", "category", "excerpt", "content",
+                "image", "author", "is_published", "is_featured",
+            ]
+            widgets = {
+                "slug": forms.TextInput(attrs={"readonly": "readonly"}),
+                "excerpt": forms.Textarea(attrs={"rows": 3}),
+                "content": forms.Textarea(attrs={"rows": 10}),
+            }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields["slug"].required = False
+
+    if request.method == "POST":
+        form = JournalForm(request.POST, request.FILES)
+        if form.is_valid():
+            journal = form.save(commit=False)
+            if journal.title:
+                base_slug = slugify(journal.title)
+            else:
+                base_slug = f"journal-{uuid.uuid4().hex[:8]}"
+            journal.slug = base_slug
+            counter = 1
+            while Journal.objects.filter(slug=journal.slug).exists():
+                journal.slug = f"{base_slug}-{counter}"
+                counter += 1
+            journal.save()
+            _save_journal_images(request, journal)
+            messages.success(request, f"Added '{journal.title}'.")
+            return redirect("panel-journal-edit", slug=journal.slug)
+    else:
+        form = JournalForm()
+
+    return render(request, "panel/journal_add.html", {
+        "form": form,
+        "journal": None,
+        "existing_images": [],
+        "dashboard_title": "Add Journal Article",
+        "journal_active": True,
+    })
+
+
+def admin_journal_edit(request, slug):
+    from django import forms
+
+    journal = get_object_or_404(Journal, slug=slug)
+
+    class JournalForm(forms.ModelForm):
+        class Meta:
+            model = Journal
+            fields = [
+                "title", "slug", "category", "excerpt", "content",
+                "image", "author", "is_published", "is_featured",
+            ]
+            widgets = {
+                "slug": forms.TextInput(attrs={"readonly": "readonly"}),
+                "excerpt": forms.Textarea(attrs={"rows": 3}),
+                "content": forms.Textarea(attrs={"rows": 10}),
+            }
+
+    if request.method == "POST":
+        form = JournalForm(request.POST, request.FILES, instance=journal)
+        if form.is_valid():
+            journal = form.save(commit=False)
+            if not journal.slug:
+                base_slug = slugify(journal.title) if journal.title else f"journal-{uuid.uuid4().hex[:8]}"
+                journal.slug = base_slug
+                counter = 1
+                while Journal.objects.filter(slug=journal.slug).exclude(pk=journal.pk).exists():
+                    journal.slug = f"{base_slug}-{counter}"
+                    counter += 1
+            journal.save()
+            _save_journal_images(request, journal)
+            _handle_journal_image_deletes(request, journal)
+            messages.success(request, f"Updated '{journal.title}'.")
+            return redirect("panel-journal-edit", slug=journal.slug)
+    else:
+        form = JournalForm(instance=journal)
+
+    return render(request, "panel/journal_edit.html", {
+        "form": form,
+        "journal": journal,
+        "existing_images": journal.images.all(),
+        "dashboard_title": f"Edit {journal.title}",
+        "journal_active": True,
+    })
+
+
+def admin_journal_delete(request, slug):
+    journal = get_object_or_404(Journal, slug=slug)
+    if request.method == "POST":
+        title = journal.title
+        journal.delete()
+        messages.success(request, f"Deleted '{title}'.")
+        return redirect("panel-journals")
+    return redirect("panel-journals")
+
+
+def _save_journal_images(request, journal):
+    files = request.FILES.getlist("gallery_images")
+    captions = request.POST.getlist("gallery_captions")
+    order = journal.images.count()
+    for idx, f in enumerate(files):
+        caption = captions[idx] if idx < len(captions) else ""
+        JournalImage.objects.create(journal=journal, image=f, caption=caption, order=order + idx)
+
+
+def _handle_journal_image_deletes(request, journal):
+    delete_ids = request.POST.getlist("delete_image_ids")
+    if delete_ids:
+        journal.images.filter(id__in=delete_ids).delete()

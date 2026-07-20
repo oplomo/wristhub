@@ -1,0 +1,6 @@
+START email for order 4
+RENDERED template for order 4, html length=7883
+SENT email for order 4 to adamssquare4@gmail.com
+START email for order 6
+RENDERED template for order 6, html length=8283
+SENT email for order 6 to adamssquare4@gmail.com

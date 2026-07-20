@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .analytics import record_analytics_event
 from .forms import LoginForm, RegisterForm
-from .models import Brand, Category, HomeHero, Order, OrderItem, Watch, Cart, CartItem
+from .models import Brand, Category, GalleryCategory, GalleryItem, HomeHero, Journal, Order, OrderItem, Watch, Cart, CartItem
+from .email import send_order_notification_email
 
 
 def get_location_data():
@@ -315,6 +316,56 @@ def _enrich_order(order):
     order.item_count = sum(item.quantity for item in order.items.all())
 
 
+def about(request):
+    return render(request, "about.html", {"theme": "unisex"})
+
+
+def faq(request):
+    faqs = [
+        {
+            "q": "Do your watches fade or lose colour over time?",
+            "a": "Not with proper care. We use high-grade stainless steel, mineral crystal glass, and quality plating on all our timepieces. To keep your watch looking its best, avoid prolonged exposure to harsh chemicals, perfumes, and extreme direct sunlight. Wipe it with a soft cloth after wear — especially in humid conditions — and it will retain its colour and shine for years.",
+        },
+        {
+            "q": "How long does delivery take?",
+            "a": "Delivery within Nairobi takes 1–2 business days. For destinations outside Nairobi (upcountry), delivery takes 2–5 business days depending on your location. We partner with reliable courier services to ensure your order arrives safely and on time. You will receive a tracking link once your order ships.",
+        },
+        {
+            "q": "Can I pay on delivery (cash on delivery)?",
+            "a": "Yes. We offer cash on delivery (M-Pesa or cash accepted) for all orders within Kenya. Simply select 'Cash on Delivery' at checkout, and pay when your watch arrives. For orders above Ksh 10,000, we may request a small deposit to confirm serious intent.",
+        },
+        {
+            "q": "Can I exchange my watch if it does not fit or I do not like it?",
+            "a": "Absolutely. We offer a 7-day exchange policy. If your watch does not meet your expectations — whether it is the size, style, or feel — you can exchange it for another timepiece of equal or lesser value. The watch must be unworn, in its original packaging, and returned within 7 days of delivery. Contact our support team to start the process.",
+        },
+        {
+            "q": "Are your watches authentic or original?",
+            "a": "We do not sell counterfeits. Every watch we list is a premium-quality piece sourced from verified distributors and trusted manufacturers. Our team inspects each unit before dispatch to ensure it meets our quality standards. We stand behind every watch we sell.",
+        },
+        {
+            "q": "Do you offer warranty?",
+            "a": "Yes. Every watch comes with a minimum 3-month warranty covering manufacturing defects such as movement failure, loose hands, or faulty crown operation. The warranty does not cover damage from water ingress (on non-diver watches), accidental drops, or normal strap wear. Extend your warranty to 12 months by registering your purchase on our site.",
+        },
+        {
+            "q": "What if my watch stops working or gets damaged?",
+            "a": "If your watch develops a fault within the warranty period, reach out to us and we will assess, repair, or replace it at no cost. Outside warranty, we offer affordable repair services — from battery replacement to strap adjustments and movement servicing. Just send us a message and we will guide you through the process.",
+        },
+        {
+            "q": "Can I adjust the strap before delivery?",
+            "a": "Yes. If you need your bracelet or strap sized before we ship, let us know your wrist measurement in centimetres during checkout, and we will adjust it for free. Most metal bracelets can be sized down to fit wrist circumferences between 15 cm and 20 cm.",
+        },
+        {
+            "q": "Do you ship outside Kenya?",
+            "a": "Currently we ship within Kenya only. International shipping is in our roadmap and will be announced soon. If you are based outside Kenya and are interested in a specific watch, reach out to us and we may be able to arrange a special delivery.",
+        },
+        {
+            "q": "How do I clean and maintain my watch?",
+            "a": "For metal bracelets and cases: use a soft toothbrush with mild soapy water, rinse gently, and dry with a lint-free cloth. For leather straps: wipe with a slightly damp cloth and let them air dry naturally — never soak leather. Avoid using alcohol-based cleaners. For water-resistant watches, rinse with fresh water after swimming in salt water or chlorine.",
+        },
+    ]
+    return render(request, "faq.html", {"faqs": faqs, "theme": "unisex"})
+
+
 def page(request, slug):
     pages = {
         "about": {
@@ -378,6 +429,64 @@ def page(request, slug):
         {
             "page": page_data,
             "orders": orders,
+            "theme": "unisex",
+        },
+    )
+
+
+def journals_list(request):
+    category_filter = request.GET.get("category", "").strip()
+    query = request.GET.get("q", "").strip()
+
+    journals = (
+        Journal.objects.filter(is_published=True)
+        .order_by("-published_at")
+    )
+
+    if category_filter:
+        journals = journals.filter(category=category_filter)
+
+    if query:
+        journals = journals.filter(
+            Q(title__icontains=query)
+            | Q(excerpt__icontains=query)
+            | Q(content__icontains=query)
+            | Q(author__icontains=query)
+        )
+
+    featured_journals = journals.filter(is_featured=True)[:1]
+    recent_journals = journals[:12]
+    categories_list = [
+        {"key": key, "label": label} for key, label in Journal.CATEGORY_CHOICES
+    ]
+    return render(
+        request,
+        "journals.html",
+        {
+            "featured_journals": featured_journals,
+            "recent_journals": recent_journals,
+            "categories": categories_list,
+            "total_journals": journals.count(),
+            "query": query,
+            "category_filter": category_filter,
+            "theme": "unisex",
+        },
+    )
+
+
+def journal_detail(request, slug):
+    journal = get_object_or_404(Journal, slug=slug, is_published=True)
+    related_journals = (
+        Journal.objects.filter(is_published=True, category=journal.category)
+        .exclude(pk=journal.pk)
+        .order_by("-published_at")[:3]
+    )
+    return render(
+        request,
+        "journal_detail.html",
+        {
+            "journal": journal,
+            "related_journals": related_journals,
             "theme": "unisex",
         },
     )
@@ -589,7 +698,17 @@ def cart_checkout(request):
 
         record_analytics_event(request, "order_placed")
         request.session["last_order_id"] = order.pk
-        messages.success(request, "Order placed successfully.")
+
+        try:
+            email_sent = send_order_notification_email(order)
+            if not email_sent:
+                messages.warning(request, "Order placed, but the notification email could not be sent.")
+            else:
+                messages.success(request, "Order placed successfully. Confirmation email sent.")
+        except Exception:
+            logger = __import__("logging").getLogger(__name__)
+            logger.exception("Order notification email failed for order %s", order.pk)
+            messages.warning(request, "Order placed, but the notification email failed to send.")
         return redirect("order-confirmation", order_id=order.pk)
 
     return render(
@@ -627,6 +746,46 @@ def order_confirmation(request, order_id):
         "order_confirmation.html",
         {
             "order": order,
+            "theme": "unisex",
+        },
+    )
+
+
+def gallery(request, category_slug=None):
+    categories = GalleryCategory.objects.filter(is_active=True).order_by("name")
+    selected_category = None
+    if category_slug:
+        selected_category = get_object_or_404(GalleryCategory, slug=category_slug, is_active=True)
+
+    items = GalleryItem.objects.filter(is_published=True).select_related("category").order_by("-is_featured", "-created_at")
+    if selected_category:
+        items = items.filter(category=selected_category)
+
+    return render(
+        request,
+        "gallery.html",
+        {
+            "categories": categories,
+            "selected_category": selected_category,
+            "items": items,
+            "theme": "unisex",
+        },
+    )
+
+
+def gallery_item(request, slug):
+    item = get_object_or_404(GalleryItem, slug=slug, is_published=True)
+    related_items = (
+        GalleryItem.objects.filter(is_published=True, category=item.category)
+        .exclude(pk=item.pk)
+        .order_by("-created_at")[:6]
+    )
+    return render(
+        request,
+        "gallery_item.html",
+        {
+            "item": item,
+            "related_items": related_items,
             "theme": "unisex",
         },
     )
