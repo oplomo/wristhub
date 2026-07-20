@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .analytics import record_analytics_event
 from .forms import LoginForm, RegisterForm
-from .models import Brand, Category, GalleryCategory, GalleryItem, HomeHero, Journal, Order, OrderItem, Watch, Cart, CartItem
+from .models import Brand, Category, GalleryCategory, GalleryItem, HomeHero, Journal, Order, OrderItem, Watch, Cart, CartItem, ProductReview, ReviewReply, ReviewLike
 from .email import send_order_notification_email
 
 
@@ -540,15 +540,156 @@ def product_detail(request, slug):
         .prefetch_related("images")
         .order_by("-created_at")[:4]
     )
+
+    reviews = (
+        ProductReview.objects.filter(watch=watch, is_approved=True)
+        .select_related("user")
+        .prefetch_related("replies__user", "likes")
+        .order_by("-created_at")
+    )
+
+    user_review = None
+    user_likes = set()
+    has_purchased = False
+    if request.user.is_authenticated:
+        user_review = ProductReview.objects.filter(
+            watch=watch, user=request.user
+        ).first()
+        user_likes = set(
+            ReviewLike.objects.filter(
+                review__in=reviews, user=request.user
+            ).values_list("review_id", flat=True)
+        )
+        has_purchased = OrderItem.objects.filter(
+            order__user=request.user,
+            watch=watch,
+            order__status__in=["delivered", "shipped", "processing", "paid"],
+        ).exists()
+
     return render(
         request,
         "product_detail.html",
         {
             "watch": watch,
             "related_watches": related_watches,
+            "reviews": reviews,
+            "user_review": user_review,
+            "user_likes": user_likes,
+            "has_purchased": has_purchased,
             "theme": watch.gender if watch.gender in ("men", "women") else "unisex",
         },
     )
+
+
+def add_review(request, slug):
+    watch = get_object_or_404(Watch, slug=slug, is_active=True)
+
+    if request.method != "POST":
+        return redirect("product-detail", slug=watch.slug)
+
+    if not request.user.is_authenticated:
+        messages.error(request, "Please sign in to leave a review.")
+        return redirect("login")
+
+    has_purchased = OrderItem.objects.filter(
+        order__user=request.user,
+        watch=watch,
+        order__status__in=["delivered", "shipped", "processing", "paid"],
+    ).exists()
+
+    if not has_purchased:
+        messages.error(request, "You can only review watches you have purchased.")
+        return redirect("product-detail", slug=watch.slug)
+
+    rating = request.POST.get("rating", "").strip()
+    content = request.POST.get("content", "").strip()
+
+    if not rating or not content:
+        messages.error(request, "Please provide both a rating and a review.")
+        return redirect("product-detail", slug=watch.slug)
+
+    try:
+        rating_val = int(rating)
+        if rating_val < 1 or rating_val > 5:
+            raise ValueError
+    except (TypeError, ValueError):
+        messages.error(request, "Rating must be between 1 and 5.")
+        return redirect("product-detail", slug=watch.slug)
+
+    review, created = ProductReview.objects.get_or_create(
+        watch=watch,
+        user=request.user,
+        defaults={"rating": rating_val, "content": content},
+    )
+
+    if not created:
+        review.rating = rating_val
+        review.content = content
+        review.save(update_fields=["rating", "content", "updated_at"])
+
+    try:
+        from .email import send_review_notification_email
+        send_review_notification_email(review)
+    except Exception:
+        pass
+
+    messages.success(request, "Thank you! Your review has been submitted.")
+    return redirect("product-detail", slug=watch.slug)
+
+
+def add_reply(request, review_id):
+    review = get_object_or_404(ProductReview, pk=review_id, is_approved=True)
+
+    if request.method != "POST":
+        return redirect("product-detail", slug=review.watch.slug)
+
+    if not request.user.is_authenticated:
+        messages.error(request, "Please sign in to reply.")
+        return redirect("login")
+
+    has_purchased = OrderItem.objects.filter(
+        order__user=request.user,
+        watch=review.watch,
+        order__status__in=["delivered", "shipped", "processing", "paid"],
+    ).exists()
+
+    if not has_purchased:
+        messages.error(request, "You can only reply to reviews for watches you have purchased.")
+        return redirect("product-detail", slug=review.watch.slug)
+
+    content = request.POST.get("content", "").strip()
+    if not content:
+        messages.error(request, "Reply cannot be empty.")
+        return redirect("product-detail", slug=review.watch.slug)
+
+    ReviewReply.objects.create(
+        review=review,
+        user=request.user,
+        content=content,
+    )
+
+    messages.success(request, "Your reply has been posted.")
+    return redirect("product-detail", slug=review.watch.slug)
+
+
+def like_review(request, review_id):
+    review = get_object_or_404(ProductReview, pk=review_id, is_approved=True)
+
+    if request.method != "POST":
+        return redirect("product-detail", slug=review.watch.slug)
+
+    if not request.user.is_authenticated:
+        messages.error(request, "Please sign in to like reviews.")
+        return redirect("login")
+
+    like, created = ReviewLike.objects.get_or_create(review=review, user=request.user)
+    if not created:
+        like.delete()
+        messages.success(request, "Like removed.")
+    else:
+        messages.success(request, "Review liked!")
+
+    return redirect("product-detail", slug=review.watch.slug)
 
 
 def cart_add(request, watch_id):

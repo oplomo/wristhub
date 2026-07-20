@@ -1161,7 +1161,7 @@
         <img class="hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
         <div class="hero-brand-text">
           <span class="hero-brand-name">Wrist Hub</span>
-          <span class="hero-motto">&ldquo;A time for every style&rdquo;</span>
+          <span class="hero-motto">&ldquo;Time for every style&rdquo;</span>
         </div>
       </div>
 
@@ -1271,7 +1271,7 @@
 
                         <div class="product-info">
                             <span class="product-brand">{{ watch.brand.name }}</span>
-                            <h3 class="product-name" style="color: #D2969E;">{{ watch.name }}</h3>
+                            <h3 class="product-name" style="color: #D2969E;"><a href="{% url 'product-detail' slug=watch.slug %}" style="color: inherit; text-decoration: none;">{{ watch.name }}</a></h3>
                             <div class="product-price-row">
                                 <span class="product-price{% if watch.discount_price %} product-price--discounted{% endif %}" style="color: white;">Ksh {{ watch.current_price }}</span>
                                 {% if watch.discount_price %}

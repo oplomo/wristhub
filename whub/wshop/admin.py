@@ -14,6 +14,9 @@ from .models import (
     OrderItem,
     Watch,
     WatchImage,
+    ProductReview,
+    ReviewReply,
+    ReviewLike,
 )
 
 
@@ -205,3 +208,33 @@ class CartItemAdmin(admin.ModelAdmin):
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ("order", "watch", "quantity", "price", "subtotal")
     search_fields = ("order__full_name", "watch__name", "watch__brand__name")
+
+
+class ReviewReplyInline(admin.TabularInline):
+    model = ReviewReply
+    extra = 0
+    readonly_fields = ("created_at",)
+
+
+@admin.register(ProductReview)
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = ("watch", "user", "rating", "is_approved", "created_at")
+    list_filter = ("is_approved", "rating", "created_at", "watch__brand")
+    search_fields = ("watch__name", "user__username", "content")
+    list_editable = ("is_approved",)
+    readonly_fields = ("created_at", "updated_at")
+    inlines = [ReviewReplyInline]
+
+
+@admin.register(ReviewReply)
+class ReviewReplyAdmin(admin.ModelAdmin):
+    list_display = ("review", "user", "created_at")
+    search_fields = ("review__watch__name", "user__username", "content")
+    readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(ReviewLike)
+class ReviewLikeAdmin(admin.ModelAdmin):
+    list_display = ("review", "user", "created_at")
+    search_fields = ("review__watch__name", "user__username")
+    readonly_fields = ("created_at",)

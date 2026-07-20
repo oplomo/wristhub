@@ -329,6 +329,363 @@
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
+
+/* Reviews */
+.reviews-section {
+    padding: 12px 0 64px;
+}
+
+.reviews-count {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.review-form-card {
+    margin-bottom: 28px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+}
+
+.review-form-title {
+    margin: 0 0 14px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+    color: var(--ink);
+}
+
+.review-stars {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.star-btn {
+    background: none;
+    border: 0;
+    font-size: 1.6rem;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 160ms ease, transform 160ms ease;
+    line-height: 1;
+}
+
+.star-btn:hover,
+.star-btn.is-active {
+    color: #fbbf24;
+    transform: scale(1.1);
+}
+
+.review-form-card textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    margin-bottom: 12px;
+}
+
+.review-form-card textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.submit-review-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.submit-review-btn:hover {
+    background: var(--blue);
+    transform: translateY(-1px);
+}
+
+.review-login-prompt {
+    padding: 24px;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.review-login-prompt a {
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.reviews-list {
+    display: grid;
+    gap: 18px;
+}
+
+.review-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+    padding: 20px;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.review-avatar {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+
+.review-date {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.review-rating {
+    display: flex;
+    gap: 2px;
+}
+
+.review-rating .star {
+    color: #d1d5db;
+    font-size: 1rem;
+}
+
+.review-rating .star.is-active {
+    color: #fbbf24;
+}
+
+.review-body p {
+    margin: 0 0 14px;
+    color: var(--ink);
+    line-height: 1.7;
+}
+
+.review-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.like-form {
+    display: inline;
+}
+
+.like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.like-btn:hover {
+    border-color: #f87171;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.06);
+}
+
+.like-btn.is-active {
+    border-color: #f87171;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+}
+
+.like-icon {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.like-count {
+    font-size: 0.82rem;
+}
+
+.reply-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #ffffff;
+    color: var(--blue);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease;
+}
+
+.reply-toggle-btn:hover {
+    background: rgba(37, 99, 235, 0.06);
+    border-color: var(--blue);
+}
+
+.reply-form {
+    display: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+}
+
+.reply-form.is-open {
+    display: block;
+}
+
+.reply-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #ffffff;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.92rem;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.reply-form textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.submit-reply-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--blue);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 160ms ease;
+}
+
+.submit-reply-btn:hover {
+    background: var(--blue-hover);
+}
+
+.replies-list {
+    margin-top: 16px;
+    padding-left: 28px;
+    border-left: 2px solid var(--line);
+    display: grid;
+    gap: 14px;
+}
+
+.reply-card {
+    position: relative;
+    padding: 14px 16px;
+    border-radius: var(--radius);
+    background: #f9fafb;
+    border: 1px solid var(--line);
+}
+
+.reply-card::before {
+    content: "";
+    position: absolute;
+    left: -32px;
+    top: 18px;
+    width: 20px;
+    height: 2px;
+    background: var(--line);
+}
+
+.reply-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.reply-header strong {
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.reply-date {
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.reply-card p {
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.reviews-empty {
+    padding: 48px 20px;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .review-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .review-actions {
+        width: 100%;
+    }
+}
 </style>
 {% endblock %}
 
@@ -443,6 +800,125 @@
         </div>
     </section>
 {% endif %}
+
+<section class="reviews-section">
+    <div class="section-heading">
+        <h2>Customer Reviews</h2>
+        {% if reviews %}
+            <span class="reviews-count">{{ reviews|length }} review{{ reviews|length|pluralize }}</span>
+        {% endif %}
+    </div>
+
+    {% if request.user.is_authenticated %}
+        {% if has_purchased %}
+            <div class="review-form-card">
+                {% if user_review %}
+                    <p class="review-form-title">Edit your review</p>
+                    <form method="post" action="{% url 'add-review' watch.slug %}">
+                        {% csrf_token %}
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                {% with star_num=i|add:"0" %}
+                                    <button type="button" class="star-btn{% if user_review.rating >= star_num %} is-active{% endif %}" data-rating="{{ star_num }}" aria-label="{{ star_num }} star{{ star_num|pluralize }}">★</button>
+                                {% endwith %}
+                            {% endfor %}
+                            <input type="hidden" name="rating" value="{{ user_review.rating }}" required>
+                        </div>
+                        <textarea name="content" placeholder="Share your thoughts about this watch..." required>{{ user_review.content }}</textarea>
+                        <button type="submit" class="submit-review-btn">Update Review</button>
+                    </form>
+                {% else %}
+                    <p class="review-form-title">Write a review</p>
+                    <form method="post" action="{% url 'add-review' watch.slug %}">
+                        {% csrf_token %}
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                {% with star_num=i|add:"0" %}
+                                    <button type="button" class="star-btn" data-rating="{{ star_num }}" aria-label="{{ star_num }} star{{ star_num|pluralize }}">★</button>
+                                {% endwith %}
+                            {% endfor %}
+                            <input type="hidden" name="rating" value="" required>
+                        </div>
+                        <textarea name="content" placeholder="Share your thoughts about this watch..." required></textarea>
+                        <button type="submit" class="submit-review-btn">Submit Review</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="review-login-prompt">
+                <p>Only customers who have purchased this watch can leave a review.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="review-login-prompt">
+            <p>Please <a href="{% url 'login' %}?next={{ request.path }}">sign in</a> to leave a review.</p>
+        </div>
+    {% endif %}
+
+    <div class="reviews-list">
+        {% for review in reviews %}
+            <article class="review-card" data-review-id="{{ review.pk }}">
+                <div class="review-header">
+                    <div class="review-author">
+                        <div class="review-avatar">{{ review.user.username|first|upper }}</div>
+                        <div>
+                            <strong>{{ review.user.get_full_name|default:review.user.username }}</strong>
+                            <div class="review-date">{{ review.created_at|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                    <div class="review-rating">
+                        {% for i in "12345" %}
+                            {% with star_num=i|add:"0" %}
+                                <span class="star{% if review.rating >= star_num %} is-active{% endif %}">★</span>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="review-body">
+                    <p>{{ review.content|linebreaks }}</p>
+                </div>
+                <div class="review-actions">
+                    <form method="post" action="{% url 'like-review' review.pk %}" class="like-form">
+                        {% csrf_token %}
+                        <button type="submit" class="like-btn{% if review.pk in user_likes %} is-active{% endif %}" aria-label="Like review">
+                            <span class="like-icon">♥</span>
+                            <span class="like-count">{{ review.likes.count }}</span>
+                        </button>
+                    </form>
+                    {% if has_purchased %}
+                        <button type="button" class="reply-toggle-btn" data-review-id="{{ review.pk }}">Reply</button>
+                    {% endif %}
+                </div>
+                {% if has_purchased %}
+                    <div class="reply-form" id="reply-form-{{ review.pk }}">
+                        <form method="post" action="{% url 'add-reply' review.pk %}">
+                            {% csrf_token %}
+                            <textarea name="content" placeholder="Write a reply..." required></textarea>
+                            <button type="submit" class="submit-reply-btn">Post Reply</button>
+                        </form>
+                    </div>
+                {% endif %}
+                {% if review.replies.all %}
+                    <div class="replies-list">
+                        {% for reply in review.replies.all %}
+                            <div class="reply-card">
+                                <div class="reply-header">
+                                    <strong>{{ reply.user.get_full_name|default:reply.user.username }}</strong>
+                                    <span class="reply-date">{{ reply.created_at|date:"M d, Y" }}</span>
+                                </div>
+                                <p>{{ reply.content|linebreaks }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </article>
+        {% empty %}
+            <div class="reviews-empty">
+                <p>No reviews yet. Be the first to share your experience!</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}
 
 {% block extra_js %}
@@ -487,5 +963,45 @@ function initProductCarousel(carousel) {
 }
 
 document.querySelectorAll('[data-product-carousel]').forEach(initProductCarousel);
+
+/* Review star rating */
+document.querySelectorAll('.review-stars').forEach(function (container) {
+    const buttons = container.querySelectorAll('.star-btn');
+    const hidden = container.querySelector('input[name="rating"]');
+
+    buttons.forEach(function (btn) {
+        btn.addEventListener('mouseenter', function () {
+            const val = Number(btn.dataset.rating);
+            buttons.forEach(function (b) {
+                b.classList.toggle('is-active', Number(b.dataset.rating) <= val);
+            });
+        });
+
+        btn.addEventListener('click', function () {
+            const val = Number(btn.dataset.rating);
+            hidden.value = val;
+            buttons.forEach(function (b) {
+                b.classList.toggle('is-active', Number(b.dataset.rating) <= val);
+            });
+        });
+    });
+
+    container.addEventListener('mouseleave', function () {
+        const active = Number(hidden.value) || 0;
+        buttons.forEach(function (b) {
+            b.classList.toggle('is-active', Number(b.dataset.rating) <= active);
+        });
+    });
+});
+
+/* Reply toggle */
+document.querySelectorAll('.reply-toggle-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const reviewId = btn.dataset.reviewId;
+        const form = document.getElementById('reply-form-' + reviewId);
+        const isOpen = form.classList.toggle('is-open');
+        btn.textContent = isOpen ? 'Cancel Reply' : 'Reply';
+    });
+});
 </script>
 {% endblock %}
