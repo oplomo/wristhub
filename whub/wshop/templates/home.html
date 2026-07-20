@@ -1061,6 +1061,19 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .featured-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-card {
+                min-height: auto;
+                grid-template-rows: 220px auto;
+            }
+
+            .advantage-grid {
+                grid-template-columns: 1fr;
+            }
+
             .standard-track {
                 grid-template-columns: 1fr;
                 gap: 18px;
@@ -1260,7 +1273,7 @@
                             <span class="product-brand">{{ watch.brand.name }}</span>
                             <h3 class="product-name" style="color: #D2969E;">{{ watch.name }}</h3>
                             <div class="product-price-row">
-                                <span class="product-price{% if watch.discount_price %} product-price--discounted{% endif %}" style="color: white;>ksh {{ watch.current_price }}</span>
+                                <span class="product-price{% if watch.discount_price %} product-price--discounted{% endif %}" style="color: white;">Ksh {{ watch.current_price }}</span>
                                 {% if watch.discount_price %}
                                     <span class="product-old-price">Ksh {{ watch.price }}</span>
                                 {% endif %}
