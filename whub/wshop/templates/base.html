@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Wrist Hub{% endblock %}</title>
+    <script>try{if(sessionStorage.getItem('wristhub-loader-seen'))document.documentElement.classList.add('wh-loader-seen')}catch(e){}</script>
     <link rel="icon" type="image/jpeg" href="{% static 'images/wristhublogo1.jpeg' %}">
     <link rel="stylesheet" href="{% static 'css/themes.css' %}">
     <style>
@@ -496,6 +497,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    {% block page_loader %}{% endblock %}
     <header class="site-header">
         <nav class="nav-wrap" aria-label="Main navigation">
             <a class="brand" href="/">

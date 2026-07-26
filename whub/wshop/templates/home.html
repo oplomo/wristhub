@@ -6,6 +6,27 @@
 {% block extra_css %}
 <style>
     /* ---------- WristHub Home ---------- */
+    .wh-page-loader{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:hidden;color:#fff;background:#090909;opacity:1;visibility:visible;transition:opacity .5s ease,visibility .5s ease;}
+    .wh-page-loader::before,.wh-page-loader::after{content:"";position:absolute;width:44rem;height:44rem;border-radius:50%;filter:blur(12px);opacity:.48;animation:wh-loader-float 6s ease-in-out infinite;}
+    .wh-page-loader::before{top:-25rem;left:-12rem;background:radial-gradient(circle,#c49aa5 0,transparent 66%);}
+    .wh-page-loader::after{right:-15rem;bottom:-27rem;background:radial-gradient(circle,#e8774a 0,transparent 65%);animation-delay:-3s;}
+    .wh-loader-seen .wh-page-loader,.wh-page-loader.is-finished{opacity:0;visibility:hidden;pointer-events:none;}
+    .wh-loader__stage{position:relative;z-index:1;display:grid;justify-items:center;text-align:center;}
+    .wh-loader__orb{position:relative;display:grid;place-items:center;width:9.5rem;height:9.5rem;border:1px solid rgba(255,255,255,.25);border-radius:50%;box-shadow:0 0 0 14px rgba(255,255,255,.03),0 20px 70px rgba(0,0,0,.55);}
+    .wh-loader__orb::before,.wh-loader__orb::after{content:"";position:absolute;border:1px solid rgba(255,255,255,.28);border-radius:50%;}
+    .wh-loader__orb::before{inset:-.75rem;border-top-color:var(--color-primary);animation:wh-loader-spin 2s linear infinite;}
+    .wh-loader__orb::after{inset:.55rem;border-bottom-color:var(--color-secondary);animation:wh-loader-spin 1.5s linear infinite reverse;}
+    .wh-loader__logo{position:relative;z-index:1;width:5.9rem;height:5.9rem;object-fit:cover;border-radius:50%;box-shadow:0 8px 28px rgba(0,0,0,.5);}
+    .wh-loader__brand{margin:2rem 0 .45rem;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2rem,5vw,3rem);letter-spacing:.08em;line-height:1;}
+    .wh-loader__message{margin:0;color:rgba(255,255,255,.72);font-size:.76rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;}
+    .wh-loader__word{display:inline-block;min-width:5.7em;text-align:left;animation:wh-loader-pulse 1.2s ease-in-out infinite;}
+    .wh-loader__progress{width:min(15rem,62vw);height:2px;margin-top:1.65rem;overflow:hidden;background:rgba(255,255,255,.16);}
+    .wh-loader__progress span{display:block;width:45%;height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-secondary),#fff);animation:wh-loader-progress 1.45s ease-in-out infinite;}
+    @keyframes wh-loader-spin{to{transform:rotate(360deg)}}
+    @keyframes wh-loader-float{50%{transform:translate(4rem,3rem) scale(1.1)}}
+    @keyframes wh-loader-pulse{50%{opacity:.45;letter-spacing:.32em}}
+    @keyframes wh-loader-progress{0%{transform:translateX(-130%)}100%{transform:translateX(320%)}}
+    @media (prefers-reduced-motion:reduce){.wh-page-loader::before,.wh-page-loader::after,.wh-loader__orb::before,.wh-loader__orb::after,.wh-loader__word,.wh-loader__progress span{animation:none;}}
     .wh-btn-primary{
         display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
         padding:.9rem 1.6rem;background:var(--color-primary);color:#fff;
@@ -151,6 +172,17 @@
         background:#25D366;box-shadow:0 8px 24px rgba(0,0,0,.35);text-decoration:none;
     }
 </style>
+{% endblock %}
+
+{% block page_loader %}
+<div class="wh-page-loader" id="whPageLoader" role="status" aria-label="Loading Wrist Hub">
+    <div class="wh-loader__stage">
+        <div class="wh-loader__orb"><img class="wh-loader__logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub"></div>
+        <div class="wh-loader__brand">Wrist Hub</div>
+        <p class="wh-loader__message"><span class="wh-loader__word">Loading</span> your next moment</p>
+        <div class="wh-loader__progress" aria-hidden="true"><span></span></div>
+    </div>
+</div>
 {% endblock %}
 
 {% block hero %}
@@ -348,6 +380,26 @@
     carousel.addEventListener('pointercancel', () => { startX = null; });
     show(0);
   });
+})();
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(() => {
+    const loader = document.getElementById('whPageLoader');
+    if (!loader || document.documentElement.classList.contains('wh-loader-seen')) return;
+    const startedAt = Date.now();
+    let finished = false;
+    const finish = () => {
+        if (finished) return;
+        finished = true;
+        loader.classList.add('is-finished');
+        try { sessionStorage.setItem('wristhub-loader-seen', '1'); } catch (error) {}
+        window.setTimeout(() => loader.remove(), 550);
+    };
+    window.addEventListener('load', () => window.setTimeout(finish, Math.max(0, 4000 - (Date.now() - startedAt))), { once: true });
+    window.setTimeout(finish, 4500);
 })();
 </script>
 {% endblock %}
