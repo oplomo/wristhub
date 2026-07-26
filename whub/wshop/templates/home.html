@@ -1,1591 +1,353 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Home | Wrist Hub{% endblock %}
+{% block title %}WristHub — Time for every style{% endblock %}
 
 {% block extra_css %}
 <style>
-  .hero-section {
-    position: relative;
-    display: grid;
-    align-items: center;
-    min-height: clamp(560px, 80vh, 720px);
-    margin: 0 0 36px;
-    padding: 80px clamp(20px, 5vw, 72px) 56px;
-    overflow: hidden;
-    color: #ffffff;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.88), rgba(10, 10, 10, 0.7)), #0a0a0a;
-  }
-
-  .hero-section video {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-  }
-
-  .hero-section .video-fallback {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 0;
-    top: 0;
-    left: 0;
-  }
-
-  .hero-section::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.45) 60%, rgba(0, 0, 0, 0.2)), linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, transparent 60%);
-  }
-
-  .hero-layout {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    gap: 32px;
-    max-width: 780px;
-  }
-
-  .hero-brand-block {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .hero-logo {
-    height: clamp(52px, 6vw, 80px);
-    width: auto;
-    display: block;
-    border-radius: 8px;
-    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.6));
-  }
-
-  .hero-brand-text {
-    display: grid;
-    gap: 2px;
-  }
-
-  .hero-brand-name {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
-    font-weight: 700;
-    letter-spacing: 0;
-    line-height: 1.1;
-    color: #ffffff;
-    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
-  }
-
-  .hero-motto {
-    font-size: clamp(1rem, 1.6vw, 1.25rem);
-    font-weight: 600;
-    color: var(--color-secondary);
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
-    letter-spacing: 0.02em;
-  }
-
-  .hero-tagline {
-    margin: 0;
-    font-size: clamp(1rem, 1.8vw, 1.2rem);
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.9);
-    max-width: 560px;
-  }
-
-  .hero-cta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 4px;
-  }
-
-  .hero-cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 0 24px;
-    border-radius: 999px;
-    font-size: 0.92rem;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-    border: none;
-  }
-
-  .hero-cta:hover {
-    transform: translateY(-2px);
-  }
-
-  .hero-cta.primary {
-    color: #ffffff;
-    background: #e8774a;
-    box-shadow: 0 8px 24px rgba(232, 119, 74, 0.35);
-  }
-
-  .hero-cta.primary:hover {
-    background: #d5663a;
-    box-shadow: 0 12px 32px rgba(232, 119, 74, 0.45);
-  }
-
-  .hero-cta.whatsapp {
-    color: #ffffff;
-    background: #25D366;
-    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
-  }
-
-  .hero-cta.whatsapp:hover {
-    background: #1da851;
-    box-shadow: 0 12px 32px rgba(37, 211, 102, 0.4);
-  }
-
-  .hero-cta svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-
-  .hero-pillars {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px 40px;
-    margin-top: 8px;
-    padding: 20px 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .pillar {
-    display: grid;
-    gap: 4px;
-  }
-
-  .pillar-title {
-    font-size: 0.85rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #ffffff;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
-  }
-
-  .pillar-desc {
-    font-size: 0.82rem;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.78);
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
-  }
-
-  .watch-personality {
-            display: grid;
-            gap: 20px;
-            padding: 20px 0 52px;
-        }
-
-        .section-heading {
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 14px;
-        }
-
-        .section-heading h2 {
-            max-width: 560px;
-            margin: 0;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: clamp(1.4rem, 3vw, 2.2rem);
-            line-height: 1.15;
-            letter-spacing: -0.01em;
-            color: var(--ink);
-        }
-
-        .carousel-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .carousel-button {
-            display: inline-grid;
-            place-items: center;
-            width: 36px;
-            height: 36px;
-            border: 1px solid var(--line);
-            border-radius: 50%;
-            color: #ffffff;
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            font-size: 1.1rem;
-            line-height: 1;
-            transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
-        }
-
-        .carousel-button:hover {
-            color: var(--color-background);
-            background: var(--color-text);
-            border-color: var(--color-text);
-        }
-
-        .carousel-button:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-        }
-
-        .carousel-button:disabled:hover {
-            color: #ffffff;
-            background: var(--surface);
-            border-color: var(--line);
-        }
-
-        .personality-carousel-shell {
-            overflow: hidden;
-            padding: 6px 2px 16px;
-        }
-
-        .personality-carousel {
-            display: flex;
-            gap: 16px;
-            transition: transform 280ms ease;
-            will-change: transform;
-            touch-action: pan-y;
-            cursor: grab;
-        }
-
-        .personality-carousel.is-dragging {
-            cursor: grabbing;
-            transition: none;
-        }
-
-        .personality-carousel a {
-            -webkit-user-drag: none;
-            user-select: none;
-        }
-
-        .personality-card {
-            flex: 0 0 calc((100% - 32px) / 3);
-            display: grid;
-            grid-template-rows: 170px 1fr;
-            min-height: 340px;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            color: var(--ink);
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .personality-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .personality-image {
-            position: relative;
-            overflow: hidden;
-            background: #f3f4f6;
-        }
-
-        .personality-image img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 220ms ease;
-        }
-
-        .personality-card:hover .personality-image img {
-            transform: scale(1.03);
-        }
-
-        .personality-image-fallback {
-            display: grid;
-            place-items: center;
-            height: 100%;
-            padding: 14px;
-            color: var(--muted);
-            background: #f3f4f6;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .personality-copy {
-            display: grid;
-            align-content: start;
-            gap: 6px;
-            padding: 16px;
-            background: var(--surface);
-        }
-
-        .personality-copy span {
-            color: var(--blue);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .personality-copy h3 {
-            margin: 0;
-            color: #ffffff;
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: 0;
-        }
-
-        .personality-copy p {
-            margin: 0;
-            color: rgba(255, 255, 255, 0.74);
-            font-size: 0.88rem;
-            line-height: 1.5;
-        }
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .carousel-dot {
-            width: 7px;
-            height: 7px;
-            padding: 0;
-            border: 0;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.35);
-            cursor: pointer;
-            transition: width 160ms ease, background 160ms ease;
-        }
-
-        .carousel-dot.is-active {
-            width: 22px;
-            background: var(--blue);
-        }
-
-        .carousel-dot.is-hidden {
-            display: none;
-        }
-
-        .recent-watches {
-            display: grid;
-            gap: 18px;
-            padding: 6px 0 52px;
-        }
-
-        .recent-grid {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        .product-card {
-            display: grid;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .product-carousel {
-            position: relative;
-            display: block;
-            aspect-ratio: 4 / 5;
-            overflow: hidden;
-            background: #f3f4f6;
-        }
-
-        .product-carousel-stage {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .product-carousel-slide {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            opacity: 0;
-            transform: scale(1.01);
-            transition: opacity 200ms ease, transform 220ms ease;
-        }
-
-        .product-carousel-slide.is-active {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .product-carousel-arrow {
-            position: absolute;
-            top: 50%;
-            z-index: 2;
-            display: grid;
-            place-items: center;
-            width: 32px;
-            height: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            color: var(--ink);
-            background: rgba(255, 255, 255, 0.82);
-            cursor: pointer;
-            transform: translateY(-50%);
-            transition: background 140ms ease, color 140ms ease;
-        }
-
-        .product-carousel-arrow:hover {
-            color: var(--color-background);
-            background: var(--color-text);
-            border-color: var(--color-text);
-        }
-
-        .product-carousel-arrow.prev {
-            left: 10px;
-        }
-
-        .product-carousel-arrow.next {
-            right: 10px;
-        }
-
-        .product-carousel-dots {
-            position: absolute;
-            left: 50%;
-            bottom: 10px;
-            z-index: 2;
-            display: flex;
-            gap: 5px;
-            transform: translateX(-50%);
-        }
-
-        .product-carousel-dot {
-            width: 6px;
-            height: 6px;
-            padding: 0;
-            border: 0;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.35);
-            cursor: pointer;
-        }
-
-        .product-carousel-dot.is-active {
-            width: 18px;
-            background: var(--color-text);
-        }
-
-
-        .product-info {
-            display: grid;
-            gap: 6px;
-            padding: 14px;
-        }
-
-        .product-brand {
-            color: var(--blue);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .product-name {
-            margin: 0;
-            color: var(--ink);
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.05rem;
-            line-height: 1.2;
-            letter-spacing: 0;
-        }
-
-        .product-price-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 22px;
-        }
-
-        .product-price {
-            color: var(--ink);
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        .product-price--discounted {
-            color: var(--red);
-        }
-
-        .product-old-price {
-            color: var(--muted);
-            font-size: 0.85rem;
-            text-decoration: line-through;
-        }
-
-        .add-cart-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 34px;
-            padding: 0 14px;
-            border-radius: var(--radius);
-            background: var(--ink);
-            color: var(--color-background);
-            font-size: 0.8rem;
-            font-weight: 700;
-            transition: background 160ms ease, transform 160ms ease;
-        }
-
-        .add-cart-button:hover {
-            background: var(--blue);
-            color: var(--color-background);
-            transform: translateY(-1px);
-        }
-
-        .empty-products {
-            padding: 24px;
-            border: 1px dashed var(--line);
-            border-radius: var(--radius);
-            color: var(--muted);
-            background: rgba(243, 244, 246, 0.5);
-            font-size: 0.9rem;
-        }
-
-        .our-standard {
-            position: relative;
-            display: grid;
-            gap: 18px;
-            padding: 4px 0 52px;
-        }
-
-        .standard-track {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 0;
-            position: relative;
-        }
-
-        .standard-track::before {
-            content: "";
-            position: absolute;
-            top: 24px;
-            left: 24px;
-            right: 24px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--line-strong) 10%, var(--line-strong) 90%, transparent);
-            z-index: 0;
-        }
-
-        .standard-item {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding: 0 8px;
-            text-align: center;
-            z-index: 1;
-        }
-
-        .standard-marker {
-            display: grid;
-            place-items: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 2px solid var(--blue);
-            color: var(--blue);
-            font-weight: 800;
-            font-size: 1.1rem;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.22);
-            transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), background 220ms ease, color 220ms ease, box-shadow 220ms ease;
-        }
-
-        .standard-item:hover .standard-marker {
-            transform: translateY(-6px) scale(1.12);
-            background: var(--blue);
-            color: #ffffff;
-            box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
-        }
-
-        .standard-text {
-            margin: 0;
-            color: var(--ink);
-            font-size: 0.95rem;
-            line-height: 1.55;
-            max-width: 240px;
-            opacity: 0.9;
-            transition: opacity 200ms ease;
-        }
-
-        .standard-item:hover .standard-text {
-            opacity: 1;
-        }
-
-        .dream-watch {
-            display: grid;
-            grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
-            gap: 22px;
-            align-items: center;
-            padding: 4px 0 52px;
-        }
-
-        .watch-stage {
-            display: grid;
-            place-items: center;
-            min-height: 480px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.94), rgba(243, 244, 246, 0.7) 42%, rgba(17, 17, 17, 0.06) 72%), #f9fafb;
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6), var(--shadow);
-        }
-
-        .custom-watch {
-            --case-color: #d9a441;
-            --dial-color: #fffdf9;
-            --strap-color: #5b4032;
-            --hands-color: #251c17;
-            --bezel-color: #b76e3c;
-            position: relative;
-            width: min(300px, 70vw);
-            height: 440px;
-        }
-
-        .watch-strap {
-            position: absolute;
-            left: 50%;
-            width: 80px;
-            height: 150px;
-            transform: translateX(-50%);
-            background: var(--strap-color);
-            box-shadow: inset 8px 0 14px rgba(255, 255, 255, 0.12), inset -10px 0 14px rgba(0, 0, 0, 0.18);
-        }
-
-        .watch-strap.top {
-            top: 0;
-            border-radius: 24px 24px 10px 10px;
-        }
-
-        .watch-strap.bottom {
-            bottom: 0;
-            border-radius: 10px 10px 24px 24px;
-        }
-
-        .watch-strap::before {
-            content: "";
-            position: absolute;
-            inset: 14px 14px;
-            border-left: 2px solid rgba(255, 255, 255, 0.18);
-            border-right: 2px solid rgba(0, 0, 0, 0.14);
-        }
-
-        .watch-case {
-            position: absolute;
-            inset: 118px 0 auto;
-            margin: 0 auto;
-            display: grid;
-            place-items: center;
-            width: 260px;
-            height: 260px;
-            border-radius: 50%;
-            background: var(--case-color);
-            box-shadow: inset 14px 14px 22px rgba(255, 255, 255, 0.2), inset -16px -18px 28px rgba(0, 0, 0, 0.2), 0 20px 36px rgba(17, 17, 17, 0.22);
-        }
-
-        .watch-crown {
-            position: absolute;
-            right: -14px;
-            top: 118px;
-            width: 24px;
-            height: 38px;
-            border-radius: 6px;
-            background: var(--case-color);
-            box-shadow: inset -5px 0 8px rgba(0, 0, 0, 0.18);
-        }
-
-        .watch-bezel {
-            display: grid;
-            place-items: center;
-            width: 212px;
-            height: 212px;
-            border-radius: 50%;
-            background: var(--bezel-color);
-            box-shadow: inset 8px 8px 14px rgba(255, 255, 255, 0.16), inset -10px -12px 18px rgba(0, 0, 0, 0.16);
-        }
-
-        .watch-dial {
-            position: relative;
-            display: grid;
-            place-items: center;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: var(--dial-color);
-            box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.1);
-        }
-
-        .watch-marker {
-            position: absolute;
-            width: 3px;
-            height: 14px;
-            border-radius: 99px;
-            background: var(--hands-color);
-            opacity: 0.5;
-        }
-
-        .watch-marker.twelve {
-            top: 12px;
-        }
-
-        .watch-marker.three {
-            right: 18px;
-            transform: rotate(90deg);
-        }
-
-        .watch-marker.six {
-            bottom: 12px;
-        }
-
-        .watch-marker.nine {
-            left: 18px;
-            transform: rotate(90deg);
-        }
-
-        .watch-hand {
-            position: absolute;
-            left: 50%;
-            bottom: 50%;
-            width: 5px;
-            border-radius: 99px;
-            transform-origin: bottom center;
-            background: var(--hands-color);
-        }
-
-        .watch-hand.hour {
-            height: 46px;
-            transform: translateX(-50%) rotate(45deg);
-        }
-
-        .watch-hand.minute {
-            height: 66px;
-            transform: translateX(-50%) rotate(310deg);
-        }
-
-        .watch-pin {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--hands-color);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
-            z-index: 2;
-        }
-
-        .config-panel {
-            display: grid;
-            gap: 16px;
-            padding: 22px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(255, 255, 255, 0.76);
-            box-shadow: var(--shadow);
-        }
-
-        .config-panel .section-heading {
-            display: grid;
-            gap: 6px;
-        }
-
-        .config-panel p {
-            max-width: 480px;
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.88rem;
-            line-height: 1.55;
-        }
-
-        .config-group {
-            display: grid;
-            gap: 8px;
-        }
-
-        .config-label {
-            color: var(--ink);
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .option-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .watch-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            min-height: 34px;
-            padding: 0 10px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            color: var(--ink);
-            background: var(--surface);
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: color 140ms ease, background 140ms ease, border-color 140ms ease;
-        }
-
-        .watch-option:hover {
-            border-color: var(--blue);
-            color: var(--blue);
-        }
-
-        .watch-option.is-active {
-            border-color: var(--blue);
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--blue);
-        }
-
-        .option-swatch {
-            width: 16px;
-            height: 16px;
-            border: 1px solid rgba(17, 17, 17, 0.16);
-            border-radius: 50%;
-            background: var(--swatch);
-        }
-
-        .featured-section {
-            display: grid;
-            gap: 18px;
-            padding: 6px 0 52px;
-        }
-
-        .featured-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-        }
-
-        .featured-card {
-            position: relative;
-            display: grid;
-            grid-template-rows: 1fr auto;
-            min-height: 380px;
-            overflow: hidden;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .featured-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .featured-image {
-            position: relative;
-            display: block;
-            aspect-ratio: 4 / 3;
-            overflow: hidden;
-            background: #f3f4f6;
-        }
-
-        .featured-image img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-            transition: transform 220ms ease;
-        }
-
-        .featured-card:hover .featured-image img {
-            transform: scale(1.03);
-        }
-
-        .featured-badge {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            background: var(--red);
-            color: var(--color-background);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .featured-info {
-            display: grid;
-            gap: 6px;
-            padding: 14px;
-        }
-
-        .featured-brand {
-            color: var(--blue);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .featured-name {
-            margin: 0;
-            color: var(--ink);
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.15rem;
-            line-height: 1.2;
-        }
-
-        .featured-price {
-            color: var(--ink);
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        .featured-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-            color: var(--blue);
-            font-size: 0.82rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: gap 160ms ease, color 160ms ease;
-        }
-
-        .featured-link:hover {
-            color: var(--blue-hover);
-            gap: 10px;
-        }
-
-        .advantage-section {
-            display: grid;
-            gap: 18px;
-            padding: 6px 0 52px;
-        }
-
-        .advantage-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 14px;
-        }
-
-        .advantage-card {
-            display: grid;
-            gap: 10px;
-            padding: 22px 18px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: transform 160ms ease, box-shadow 160ms ease;
-        }
-
-        .advantage-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .advantage-icon {
-            display: grid;
-            place-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--blue);
-            font-weight: 800;
-            font-size: 1rem;
-        }
-
-        .advantage-title {
-            margin: 0;
-            color: var(--on-surface);
-            font-family: Georgia, "Times New Roman", serif;
-            font-size: 1.05rem;
-            line-height: 1.2;
-        }
-
-        .advantage-text {
-            margin: 0;
-            color: var(--on-surface-muted);
-            font-size: 0.82rem;
-            line-height: 1.5;
-        }
-
-        @media (max-width: 700px) {
-            .hero-section {
-                min-height: 520px;
-                padding-top: 80px;
-            }
-
-            .hero-section::after {
-                background: linear-gradient(0deg, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.28));
-            }
-
-            .section-heading {
-                align-items: start;
-                display: grid;
-            }
-
-            .personality-card {
-                flex-basis: 100%;
-                grid-template-rows: 200px 1fr;
-            }
-
-            .recent-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .featured-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .featured-card {
-                min-height: auto;
-                grid-template-rows: 220px auto;
-            }
-
-            .advantage-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .standard-track {
-                grid-template-columns: 1fr;
-                gap: 18px;
-            }
-
-            .standard-track::before {
-                display: none;
-            }
-
-            .standard-item {
-                flex-direction: row;
-                text-align: left;
-                gap: 14px;
-                padding: 0;
-            }
-
-            .standard-marker {
-                margin: 0;
-                flex: 0 0 auto;
-            }
-
-            .standard-text {
-                margin: 0;
-                max-width: none;
-                text-align: left;
-            }
-        }
-
-        @media (min-width: 701px) and (max-width: 980px) {
-            .personality-card {
-                flex-basis: calc((100% - 16px) / 2);
-            }
-
-            .recent-grid {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-
-            .standard-track {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 18px;
-            }
-
-            .standard-track::before {
-                display: none;
-            }
-
-            .standard-item:nth-child(3) {
-                grid-column: 1 / -1;
-            }
-
-            .standard-item:nth-child(4),
-            .standard-item:nth-child(5) {
-                grid-column: auto;
-            }
-
-            .featured-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .advantage-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .dream-watch {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    /* ---------- WristHub Home ---------- */
+    .wh-btn-primary{
+        display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+        padding:.9rem 1.6rem;background:var(--color-primary);color:#fff;
+        font-weight:600;letter-spacing:.04em;border-radius:4px;
+        transition:background .2s ease, transform .2s ease;border:0;cursor:pointer;
+    }
+    .wh-btn-primary:hover{background:var(--blue-hover);transform:translateY(-1px);}
+    .wh-btn-ghost{
+        display:inline-flex;align-items:center;gap:.5rem;padding:.9rem 1.6rem;
+        border:1px solid #fff;color:#fff;border-radius:4px;font-weight:500;
+    }
+    .wh-btn-whatsapp{background:#25D366;border-color:#25D366;font-weight:600;}
+    .wh-btn-whatsapp:hover{background:#1da851;border-color:#1da851;color:#fff;transform:translateY(-1px);}
+    .wh-btn-whatsapp svg{width:1.05rem;height:1.05rem;fill:currentColor;}
+    .wh-eyebrow{
+        text-transform:uppercase;letter-spacing:.28em;font-size:.72rem;
+        color:var(--color-primary);font-weight:600;
+    }
+    .wh-serif{
+        font-family:"Cormorant Garamond","Playfair Display",Georgia,serif;
+        font-weight:500;letter-spacing:-.01em;line-height:1.05;
+    }
+    .wh-wrap{max-width:1400px;margin:0 auto;padding:0 1.5rem;}
+
+    /* HERO (homepage-1 inspired, image OR video background) */
+    .wh-hero{position:relative;height:620px;overflow:hidden;background:#000;}
+    .wh-hero__media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+    .wh-hero__overlay{
+        position:absolute;inset:0;
+        background:linear-gradient(to right, rgba(0,0,0,.72), rgba(0,0,0,.4), transparent);
+    }
+    .wh-hero__inner{
+        position:absolute;inset:0;display:flex;align-items:center;
+        max-width:1400px;margin:0 auto;padding:0 1.5rem;color:#fff;
+    }
+    .wh-hero__copy{max-width:36rem;}
+    .wh-hero__title{margin:1rem 0 0;font-size:clamp(2.4rem,5vw,3.75rem);}
+    .wh-hero__text{margin-top:1rem;color:rgba(255,255,255,.82);line-height:1.6;}
+    .wh-hero__cta{margin-top:2rem;display:flex;gap:.75rem;flex-wrap:wrap;}
+
+    /* ARTICLE (homepage-2 inspired) */
+    .wh-article{padding:6rem 0;background:var(--color-background);}
+    .wh-article__grid{display:grid;gap:3rem;grid-template-columns:1fr;align-items:center;}
+    @media (min-width:900px){.wh-article__grid{grid-template-columns:1fr 1fr;gap:5rem;}}
+    .wh-article__img{display:block;width:min(100%,520px);aspect-ratio:1;object-fit:cover;border-radius:6px;}
+    .wh-article__grid > div:first-child{display:flex;justify-content:center;}
+    .wh-article__title{font-size:clamp(2rem,4vw,3rem);margin:1rem 0 .75rem;}
+    .wh-article__meta{display:flex;flex-wrap:wrap;gap:.45rem 1rem;margin:0 0 1.5rem;color:var(--color-muted);font-size:.8rem;}
+    .wh-article__meta span + span::before{content:"\2022";margin-right:1rem;color:var(--color-primary);}
+    .wh-article__body p{color:var(--color-muted);line-height:1.8;margin:0 0 1.5rem;}
+    .wh-article__link{display:inline-flex;align-items:center;gap:.4rem;color:var(--color-primary);font-weight:700;text-decoration:none;}
+    .wh-article__link:hover{text-decoration:underline;}
+
+    /* HOUSES (homepage-4 inspired) */
+    .wh-houses{padding:5rem 0;background:var(--color-surface);color:#f0f0f0;}
+    .wh-houses .wh-wrap{max-width:none;padding:0;}
+    .wh-houses__head{display:flex;justify-content:space-between;align-items:end;
+        flex-wrap:wrap;gap:1rem;margin:0 1.5rem 2.5rem;}
+    .wh-houses__title{font-size:clamp(2rem,4vw,3rem);color:#fff;}
+    .wh-houses__grid{display:grid;gap:1.25rem;grid-template-columns:repeat(3,minmax(0,1fr));}
+    .wh-house{
+        position:relative;height:360px;border-radius:6px;overflow:hidden;
+        background:#1a1a1a;transition:transform .35s ease;
+    }
+    .wh-house:hover{transform:translateY(-4px);}
+    .wh-house img{width:100%;height:100%;object-fit:cover;opacity:.7;transition:opacity .35s;}
+    .wh-house:hover img{opacity:.9;}
+    .wh-house__overlay{
+        position:absolute;inset:0;display:flex;flex-direction:column;
+        justify-content:flex-end;padding:1.5rem;
+        background:linear-gradient(to top, rgba(0,0,0,.85), transparent 60%);
+    }
+    .wh-house__kicker{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+        color:var(--color-primary);margin-bottom:.4rem;}
+    .wh-house__name{font-family:"Cormorant Garamond",serif;font-size:1.75rem;color:#fff;}
+    @media (max-width:700px){.wh-houses__grid{grid-template-columns:1fr;}.wh-house{height:320px;}}
+
+    /* FEATURED WATCH CAROUSEL */
+    .wh-featured{padding:5rem 0;background:var(--color-background);}
+    .wh-featured__carousel{position:relative;}
+    .wh-featured__viewport{overflow:hidden;border-radius:8px;touch-action:pan-y;}
+    .wh-featured__track{display:flex;transition:transform .45s ease;}
+    .wh-featured__slide{flex:0 0 100%;min-width:0;}
+    .wh-featured__inner{display:grid;min-height:540px;gap:2rem;grid-template-columns:1fr;align-items:stretch;background:var(--color-surface);border-radius:8px;overflow:hidden;}
+    @media (min-width:900px){.wh-featured__inner{grid-template-columns:1.1fr .9fr;}}
+    .wh-featured__media{position:relative;min-height:520px;background:#161616;overflow:hidden;}
+    .wh-featured__photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease;}
+    .wh-featured__photo.is-active{opacity:1;}
+    .wh-featured__copy{padding:3rem;color:#f0f0f0;display:flex;flex-direction:column;justify-content:center;}
+    .wh-featured__copy h3{font-family:"Cormorant Garamond",serif;font-size:clamp(2rem,4vw,2.4rem);color:#fff;margin:.75rem 0 1rem;}
+    .wh-featured__copy p{color:rgba(240,240,240,.75);line-height:1.7;margin:0 0 1.5rem;}
+    .wh-featured__list{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:0 0 2rem;padding:0;list-style:none;}
+    .wh-featured__list li{font-size:.85rem;color:rgba(240,240,240,.7);padding-left:1rem;position:relative;}
+    .wh-featured__list li::before{content:"";position:absolute;left:0;top:.55rem;width:6px;height:6px;background:var(--color-primary);border-radius:50%;}
+    .wh-carousel-control{position:absolute;z-index:3;display:grid;place-items:center;width:2.75rem;height:2.75rem;border:1px solid rgba(255,255,255,.35);border-radius:50%;color:#fff;background:rgba(0,0,0,.45);cursor:pointer;transition:background .2s ease,transform .2s ease;}
+    .wh-carousel-control:hover{background:var(--color-primary);transform:scale(1.06);}
+    .wh-featured__image-control{top:50%;transform:translateY(-50%);}.wh-featured__image-control:hover{transform:translateY(-50%) scale(1.06);}
+    .wh-featured__image-control--prev{left:1rem;}.wh-featured__image-control--next{right:1rem;}
+    .wh-featured__watch-nav{display:flex;align-items:center;justify-content:center;gap:.85rem;margin-top:1.25rem;}
+    .wh-featured__watch-control{position:static;background:var(--color-surface);}.wh-featured__watch-control[disabled]{opacity:.4;cursor:not-allowed;}.wh-featured__watch-control[disabled]:hover{background:var(--color-surface);transform:none;}
+    .wh-featured__position{padding:.35rem .65rem;border-radius:999px;color:#fff;background:var(--color-surface);font-size:.75rem;}
+    @media (max-width:700px){.wh-featured__inner{min-height:0;}.wh-featured__media{min-height:380px;}.wh-featured__copy{padding:2rem 1.5rem;}}
+
+    /* STANDARDS (homepage-1 dark-band inspired) */
+    .wh-standards{background:var(--color-surface);color:#f0f0f0;padding:5rem 0;}
+    .wh-standards .wh-wrap{max-width:none;padding:0 1.5rem;}
+    .wh-standards__title{font-family:"Cormorant Garamond",serif;font-size:clamp(2rem,4vw,3rem);color:#fff;}
+    .wh-standards__grid{margin-top:2.5rem;display:grid;gap:1.25rem;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+    .wh-standard{border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:1.75rem;
+        transition:border-color .3s;}
+    .wh-standard:hover{border-color:var(--color-primary);}
+    .wh-standard__num{font-family:"Cormorant Garamond",serif;font-size:2.5rem;
+        color:var(--color-primary);line-height:1;}
+    .wh-standard__text{margin-top:.75rem;color:rgba(240,240,240,.75);line-height:1.6;font-size:.95rem;}
+
+    /* BRAND TICKER (homepage-1 marquee) */
+    .wh-ticker-wrap{overflow:hidden;border-top:1px solid rgba(0,0,0,.08);
+        border-bottom:1px solid rgba(0,0,0,.08);background:#fff;padding:2rem 0;}
+    .wh-ticker{display:flex;gap:4rem;width:max-content;white-space:nowrap;
+        padding:0 1.5rem;animation:wh-ticker 30s linear infinite;}
+    .wh-ticker span{font-size:1.4rem;letter-spacing:.25em;color:#888;font-weight:300;}
+    @keyframes wh-ticker{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+
+    /* NEWSLETTER */
+    .wh-news{padding:5rem 1.5rem;text-align:center;}
+    .wh-news h2{font-family:"Cormorant Garamond",serif;font-size:clamp(2rem,4vw,3rem);margin:0;}
+    .wh-news p{color:var(--color-muted);max-width:28rem;margin:.75rem auto 0;}
+    .wh-news form{max-width:28rem;margin:1.5rem auto 0;display:flex;gap:.5rem;}
+    .wh-news input{flex:1;padding:.9rem 1rem;border:1px solid rgba(0,0,0,.15);border-radius:4px;font-size:.9rem;}
+
+    /* WHATSAPP FAB */
+    .wh-fab{
+        position:fixed;bottom:1.5rem;right:1.5rem;z-index:60;
+        display:inline-flex;align-items:center;gap:.5rem;
+        padding:.85rem 1.15rem;border-radius:999px;color:#fff;font-weight:600;
+        background:#25D366;box-shadow:0 8px 24px rgba(0,0,0,.25);text-decoration:none;
+    }
+    .wh-fab__hero{
+        position:absolute;bottom:2rem;right:2rem;z-index:5;
+        display:inline-flex;align-items:center;gap:.5rem;
+        padding:.75rem 1.1rem;border-radius:999px;color:#fff;font-weight:600;
+        background:#25D366;box-shadow:0 8px 24px rgba(0,0,0,.35);text-decoration:none;
+    }
+</style>
 {% endblock %}
 
 {% block hero %}
-  <section class="hero-section">
-    {% if hero %}
-      {% if hero.video %}
-        <video autoplay muted loop playsinline>
-          <source src="{{ hero.video.url }}" type="video/mp4">
+<section class="wh-hero">
+    {# Flexible hero: video if provided, else image, else static fallback #}
+    {% if hero and hero.video %}
+        <video class="wh-hero__media" autoplay muted loop playsinline
+               {% if hero.image %}poster="{{ hero.image.url }}"{% endif %}>
+            <source src="{{ hero.video.url }}" type="video/mp4">
         </video>
-      {% elif hero.image %}
-        <img src="{{ hero.image.url }}" alt="{{ hero.title|default:'Hero image' }}" class="video-fallback">
-      {% endif %}
+    {% elif hero and hero.image %}
+        <img class="wh-hero__media" src="{{ hero.image.url }}" alt="{{ hero.title }}">
+    {% else %}
+        <img class="wh-hero__media"
+             src="{% static 'images/hero-default.jpg' %}" alt="WristHub featured watch">
     {% endif %}
 
-    <div class="hero-layout">
-      <div class="hero-brand-block">
-        <img class="hero-logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub">
-        <div class="hero-brand-text">
-          <span class="hero-brand-name">Wrist Hub</span>
-          <span class="hero-motto">&ldquo;Time for every style&rdquo;</span>
-        </div>
-      </div>
+    <div class="wh-hero__overlay"></div>
 
-      <p class="hero-tagline">Serving with quality, trust & style.</p>
-
-      <div class="hero-cta-row">
-        <a class="hero-cta primary" href="{% url 'shop' %}">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          Browse Collection
-        </a>
-        <a class="hero-cta whatsapp" href="https://wa.me/254123456789" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Chat on WhatsApp
-        </a>
-      </div>
-
-      <div class="hero-pillars">
-        <div class="pillar">
-          <span class="pillar-title">Quality</span>
-          <span class="pillar-desc">Every detail matters</span>
+    <div class="wh-hero__inner">
+        <div class="wh-hero__copy">
+            <span class="wh-eyebrow" style="color:#fff">WristHub · New Season</span>
+            <h1 class="wh-serif wh-hero__title">Time for every style.</h1>
+            <p class="wh-hero__text">
+                Handpicked chronographs, dress and smart watches from the world's most
+                trusted names — delivered anywhere in Kenya within 48 hours.
+            </p>
+            <div class="wh-hero__cta">
+                <a href="{% url 'shop' %}" class="wh-btn-primary">Shop Now →</a>
+                        <a class="wh-btn-ghost wh-btn-whatsapp"
+                   href="https://wa.me/254700000000?text=Hi%20WristHub"
+                   target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+                    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.7a10.7 10.7 0 0 1-5.4-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7Zm5.9-8c-.3-.1-1.7-.8-2-.9s-.5-.1-.7.2-.8.9-1 1.1-.4.3-.7.1a8.7 8.7 0 0 1-2.6-1.6 9.8 9.8 0 0 1-1.8-2.3c-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.5s-1.2 1.1-1.2 2.8 1.2 3.3 1.3 3.5a12.2 12.2 0 0 0 4.7 4.2c.6.3 1.1.5 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.7-.7 1.9-1.4s.2-1.3.2-1.4-.2-.2-.5-.3Z"/></svg>
+                    Chat with us
+                </a>
+            </div>
         </div>
-        <div class="pillar">
-          <span class="pillar-title">Trust</span>
-          <span class="pillar-desc">What you see is what you receive</span>
-        </div>
-        <div class="pillar">
-          <span class="pillar-title">Style</span>
-          <span class="pillar-desc">Accessories that become part of your story.</span>
-        </div>
-      </div>
     </div>
-  </section>
+
+</section>
 {% endblock %}
 
 {% block content %}
-    <section class="watch-personality">
-        <div class="section-heading">
-            <h2>What Kind of Watch Wearer Are You?</h2>
-            <div class="carousel-controls" aria-label="Watch personality carousel controls">
-                <button class="carousel-button" type="button" data-carousel-prev aria-label="Previous personality">&lt;</button>
-                <button class="carousel-button" type="button" data-carousel-next aria-label="Next personality">&gt;</button>
+{# ---------- 2. ARTICLE  ---------- #}
+<section class="wh-article">
+    <div class="wh-wrap">
+        <div class="wh-article__grid">
+            <div>
+                {% if home_journal and home_journal.image %}
+                    <img class="wh-article__img" src="{{ home_journal.image.url }}" alt="{{ home_journal.title }}">
+                {% else %}
+                    <img class="wh-article__img" src="{% static 'images/article-default.jpg' %}" alt="Wrist Hub journal">
+                {% endif %}
             </div>
-        </div>
-
-        <div class="personality-carousel-shell">
-            <div class="personality-carousel" data-personality-carousel>
-                {% for personality in personalities %}
-                    <a class="personality-card" href="/shop/?personality={{ personality.slug }}">
-                        <div class="personality-image">
-                            {% if personality.image %}
-                                <img src="{{ personality.image }}" alt="{{ personality.title }}">
-                            {% elif personality.category and personality.category.image %}
-                                <img src="{{ personality.category.image.url }}" alt="{{ personality.title }}">
-                            {% else %}
-                                <div class="personality-image-fallback">{{ personality.title }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="personality-copy">
-                            <span>{{ personality.eyebrow }}</span>
-                            <h3>{{ personality.title }}</h3>
-                            <p>{{ personality.text }}</p>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="carousel-dots" data-carousel-dots aria-label="Watch personality carousel pages">
-            {% for personality in personalities %}
-                <button class="carousel-dot" type="button" data-carousel-dot="{{ forloop.counter0 }}" aria-label="Show {{ personality.title }}"></button>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section class="recent-watches">
-        <div class="section-heading">
-            <h2>Recently Added</h2>
-            <a class="hero-button" href="/shop/">View All</a>
-        </div>
-
-        {% if recent_watches %}
-            <div class="recent-grid">
-                {% for watch in recent_watches %}
-                    <article class="product-card">
-                        <a class="product-carousel" href="{% url 'product-detail' slug=watch.slug %}" data-product-carousel aria-label="View {{ watch.name }}">
-                            {% with images=watch.images.all %}
-                                {% if images %}
-                                    <div class="product-carousel-stage">
-                                        {% for image in images %}
-                                            <img class="product-carousel-slide{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-product-carousel-slide>
-                                        {% endfor %}
-                                    </div>
-                                    {% if images|length > 1 %}
-                                        <button class="product-carousel-arrow prev" type="button" data-product-carousel-prev aria-label="Previous image">&lt;</button>
-                                        <button class="product-carousel-arrow next" type="button" data-product-carousel-next aria-label="Next image">&gt;</button>
-                                        <div class="product-carousel-dots" aria-label="Product image carousel pages">
-                                            {% for image in images %}
-                                                <button class="product-carousel-dot{% if forloop.first %} is-active{% endif %}" type="button" data-product-carousel-dot="{{ forloop.counter0 }}" aria-label="Show image {{ forloop.counter }}"></button>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                {% else %}
-                                    <div class="product-image-fallback" data-product-carousel-slide>{{ watch.name }}</div>
-                                {% endif %}
-                            {% endwith %}
-                        </a>
-
-                        <div class="product-info">
-                            <span class="product-brand">{{ watch.brand.name }}</span>
-                            <h3 class="product-name" style="color: #D2969E;"><a href="{% url 'product-detail' slug=watch.slug %}" style="color: inherit; text-decoration: none;">{{ watch.name }}</a></h3>
-                            <div class="product-price-row">
-                                <span class="product-price{% if watch.discount_price %} product-price--discounted{% endif %}" style="color: white;">Ksh {{ watch.current_price }}</span>
-                                {% if watch.discount_price %}
-                                    <span class="product-old-price">Ksh {{ watch.price }}</span>
-                                {% endif %}
-                            </div>
-                            <form method="post" action="{% url 'cart-add' watch.id %}">
-                                {% csrf_token %}
-                                <button class="add-cart-button" type="submit">Add to Cart</button>
-                            </form>
-                        </div>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-products">No watches have been added yet.</div>
-        {% endif %}
-    </section>
-
-    <section class="featured-section">
-        <div class="section-heading">
-            <h2>Featured Picks</h2>
-            <a class="hero-button" href="/shop/">Explore All</a>
-        </div>
-
-        <div class="featured-grid">
-            {% for watch in featured_watches %}
-                <article class="featured-card">
-                    <a class="featured-image" href="{% url 'product-detail' slug=watch.slug %}">
-                        {% with images=watch.images.all %}
-                            {% if images %}
-                                <img src="{{ images.0.image.url }}" alt="{{ watch.name }}">
-                            {% else %}
-                                <div class="product-image-fallback">{{ watch.name }}</div>
-                            {% endif %}
-                        {% endwith %}
-                        {% if watch.discount_price %}
-                            <span class="featured-badge">Sale</span>
-                        {% endif %}
-                    </a>
-                    <div class="featured-info">
-                        <span class="featured-brand">{{ watch.brand.name }}</span>
-                        <h3 class="featured-name" style="color: #D2969E;">{{ watch.name }}</h3>
-                        <div class="product-price-row">
-                            <span style="color: white;" class="featured-price{% if watch.discount_price %} product-price--discounted{% endif %}">Ksh {{ watch.current_price }}</span>
-                            {% if watch.discount_price %}
-                                <span class="product-old-price">Ksh {{ watch.price }}</span>
-                            {% endif %}
-                        </div>
-                        <a class="featured-link" href="{% url 'product-detail' slug=watch.slug %}">View details &rarr;</a>
+            <div>
+                {% if home_journal %}
+                    <span class="wh-eyebrow">From the Journal</span>
+                    <h2 class="wh-serif wh-article__title">{{ home_journal.title }}</h2>
+                    <div class="wh-article__meta" aria-label="Article details">
+                        <span>{{ home_journal.get_category_display }}</span>
+                        <span>By {{ home_journal.author }}</span>
+                        <span>{{ home_journal.published_at|date:"M j, Y" }}</span>
                     </div>
-                </article>
+                    <div class="wh-article__body"><p>{{ home_journal.excerpt }}</p></div>
+                {% else %}
+                    <span class="wh-eyebrow">From the Journal</span>
+                    <h2 class="wh-serif wh-article__title">Stories for people who notice the details.</h2>
+                    <div class="wh-article__body"><p>Explore watch guides, style notes, and practical care advice from the Wrist Hub journal.</p></div>
+                {% endif %}
+                <a href="{% url 'journals' %}" class="wh-article__link">Read more <span aria-hidden="true">&rarr;</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ---------- 3. THE FOUR HOUSES / POPULAR COLLECTIONS  ---------- #}
+<section class="wh-houses">
+    <div class="wh-wrap">
+        <div class="wh-houses__head">
+            <div>
+                <span class="wh-eyebrow">Popular Collections</span>
+                <h2 class="wh-serif wh-houses__title">Shop by Style</h2>
+            </div>
+            <a href="{% url 'shop' %}" style="color:#fff;font-size:.85rem;">View all →</a>
+        </div>
+
+        <div class="wh-houses__grid">
+            {% for p in personalities %}
+                <a class="wh-house"
+                   href="{% if p.category %}{% url 'shop' %}?category={{ p.category.name|urlencode }}{% else %}{% url 'shop' %}{% endif %}">
+                    {% if p.image %}
+                        <img src="{{ p.image }}" alt="{{ p.title }}">
+                    {% else %}
+                        <img src="{% static 'images/house-default.jpg' %}" alt="{{ p.title }}">
+                    {% endif %}
+                    <div class="wh-house__overlay">
+                        <div class="wh-house__kicker">{{ p.eyebrow }}</div>
+                        <div class="wh-house__name">{{ p.title }}</div>
+                    </div>
+                </a>
+            {% empty %}
+                {% for label in "Sports Office Luxury Classic"|slice:":4" %}{% endfor %}
+                {% for label in "Sports,Office,Luxury,Classic"|slice:":" %}{% endfor %}
+                {# Fallback tiles if no personalities #}
+                {% for label in "Sports|Office|Luxury|Classic"|slice:":" %}{% endfor %}
             {% endfor %}
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="advantage-section">
-        <div class="section-heading">
-            <h2>Why Choose Us</h2>
-        </div>
+{# ---------- 4. FEATURED WATCHES ---------- #}
+<section class="wh-featured"><div class="wh-wrap">
+{% if featured_watches %}
+<div class="wh-featured__carousel" data-featured-carousel><div class="wh-featured__viewport"><div class="wh-featured__track" data-featured-track>
+{% for watch in featured_watches %}<article class="wh-featured__slide"><div class="wh-featured__inner">
+<div class="wh-featured__media" data-image-carousel>{% with watch_images=watch.images.all %}{% for image in watch_images %}<img class="wh-featured__photo{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ watch.name }} - image {{ forloop.counter }}" data-featured-photo>{% empty %}<img class="wh-featured__photo is-active" src="{% static 'images/featured-default.jpg' %}" alt="{{ watch.name }}">{% endfor %}{% if watch_images|length > 1 %}<button class="wh-carousel-control wh-featured__image-control wh-featured__image-control--prev" type="button" aria-label="Previous image" data-image-prev>&#8592;</button><button class="wh-carousel-control wh-featured__image-control wh-featured__image-control--next" type="button" aria-label="Next image" data-image-next>&#8594;</button>{% endif %}{% endwith %}</div>
+<div class="wh-featured__copy"><span class="wh-eyebrow">Featured This Month</span><h3>{{ watch.brand.name }} {{ watch.name }}</h3><p>{{ watch.description|default:"A carefully selected timepiece with dependable quality and everyday presence."|truncatechars:190 }}</p><ul class="wh-featured__list"><li>{{ watch.category.name }}</li><li>{{ watch.movement|default:"Quality movement" }}</li><li>Ksh {{ watch.current_price }}</li><li>Available now</li></ul><div><a href="{% url 'product-detail' slug=watch.slug %}" class="wh-btn-primary">View watch &#8594;</a></div></div>
+</div></article>{% endfor %}</div></div>
+{% if featured_watches|length > 1 %}<div class="wh-featured__watch-nav"><button class="wh-carousel-control wh-featured__watch-control" type="button" aria-label="Previous featured watch" data-featured-prev>&#8592;</button><div class="wh-featured__position" aria-live="polite"><span data-featured-current>1</span> / {{ featured_watches|length }}</div><button class="wh-carousel-control wh-featured__watch-control" type="button" aria-label="Next featured watch" data-featured-next>&#8594;</button></div>{% endif %}
+</div>
+{% else %}<div class="wh-featured__inner"><div class="wh-featured__media"><img class="wh-featured__photo is-active" src="{% static 'images/featured-default.jpg' %}" alt="Featured watch"></div><div class="wh-featured__copy"><span class="wh-eyebrow">Featured This Month</span><h3>New arrivals coming soon.</h3><p>Browse the shop to see our latest watch collection.</p><div><a href="{% url 'shop' %}" class="wh-btn-primary">Shop watches &#8594;</a></div></div></div>{% endif %}
+</div></section>
 
-        <div class="advantage-grid">
-            <div class="advantage-card">
-                <div class="advantage-icon">&#10003;</div>
-                <h3 class="advantage-title">Authenticity Guaranteed</h3>
-                <p class="advantage-text">Every timepiece is verified and sourced from authorized partners.</p>
-            </div>
-            <div class="advantage-card">
-                <div class="advantage-icon">&#9742;</div>
-                <h3 class="advantage-title">Expert Support</h3>
-                <p class="advantage-text">Real watch specialists ready to help you find the right fit.</p>
-            </div>
-            <div class="advantage-card">
-                <div class="advantage-icon">&#128666;</div>
-                <h3 class="advantage-title">Fast Shipping</h3>
-                <p class="advantage-text">Secure packaging and tracked delivery to your door.</p>
-            </div>
-            <div class="advantage-card">
-                <div class="advantage-icon">&#128260;</div>
-                <h3 class="advantage-title">Easy Returns</h3>
-                <p class="advantage-text">Hassle-free returns within 14 days if it is not the one.</p>
-            </div>
-        </div>
-    </section>
+{# ---------- 5. OUR STANDARD (homepage-1 dark-band inspired) ---------- #}
+<section class="wh-standards">
+    <div class="wh-wrap">
+        <span class="wh-eyebrow">What we promise</span>
+        <h2 class="wh-standards__title">Our Standard</h2>
 
-    <section class="our-standard">
-        <div class="section-heading">
-            <h2>Our Standard</h2>
-        </div>
-
-        <div class="standard-track">
-            <div class="standard-item">
-                <div class="standard-marker">1</div>
-                <p class="standard-text">We present every product honestly, with clear details and accurate imagery.</p>
+        <div class="wh-standards__grid">
+            <div class="wh-standard">
+                <div class="wh-standard__num">01</div>
+                <p class="wh-standard__text">We present every product honestly, with clear details and accurate imagery.</p>
             </div>
-            <div class="standard-item">
-                <div class="standard-marker">2</div>
-                <p class="standard-text">We package every order with care, so it arrives in perfect condition.</p>
+            <div class="wh-standard">
+                <div class="wh-standard__num">02</div>
+                <p class="wh-standard__text">We package every order with care, so it arrives in perfect condition.</p>
             </div>
-            <div class="standard-item">
-                <div class="standard-marker">3</div>
-                <p class="standard-text">We verify quality before dispatch, because excellence should never be optional.</p>
+            <div class="wh-standard">
+                <div class="wh-standard__num">03</div>
+                <p class="wh-standard__text">We verify quality before dispatch, because excellence should never be optional.</p>
             </div>
-            <div class="standard-item">
-                <div class="standard-marker">4</div>
-                <p class="standard-text">We value every customer, not just the sale.</p>
+            <div class="wh-standard">
+                <div class="wh-standard__num">04</div>
+                <p class="wh-standard__text">We value every customer, not just the sale.</p>
             </div>
-            <div class="standard-item">
-                <div class="standard-marker">5</div>
-                <p class="standard-text">We keep improving through your feedback, because small details make the biggest difference.</p>
+            <div class="wh-standard">
+                <div class="wh-standard__num">05</div>
+                <p class="wh-standard__text">We keep improving through your feedback, because small details make the biggest difference.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-   
-    <script>
-        const personalityCarousel = document.querySelector("[data-personality-carousel]");
-        const personalityPrev = document.querySelector("[data-carousel-prev]");
-        const personalityNext = document.querySelector("[data-carousel-next]");
-        const personalityDots = document.querySelectorAll("[data-carousel-dot]");
-        const customWatch = document.querySelector("[data-custom-watch]");
-        const watchOptions = document.querySelectorAll("[data-watch-part]");
-        let personalityIndex = 0;
-        let currentTranslate = 0;
-
-        function carouselStep() {
-            const card = personalityCarousel.querySelector(".personality-card");
-            const styles = getComputedStyle(personalityCarousel);
-            const gap = parseFloat(styles.columnGap || styles.gap || "16");
-            return card ? card.offsetWidth + gap : 0;
-        }
-
-        function visiblePersonalityCards() {
-            const card = personalityCarousel.querySelector(".personality-card");
-            if (!card) {
-                return 1;
-            }
-
-            const cardWidth = card.offsetWidth;
-            const shell = personalityCarousel.parentElement;
-            const shellStyles = getComputedStyle(shell);
-            const shellPadX = parseFloat(shellStyles.paddingLeft) + parseFloat(shellStyles.paddingRight);
-            const shellWidth = shell.clientWidth - shellPadX;
-            const styles = getComputedStyle(personalityCarousel);
-            const gap = parseFloat(styles.columnGap || styles.gap || "16");
-            return Math.max(1, Math.round((shellWidth + gap) / (cardWidth + gap)));
-        }
-
-        function updatePersonalityCarousel(nextIndex, animate) {
-            if (!personalityCarousel) {
-                return;
-            }
-
-            const cards = personalityCarousel.querySelectorAll(".personality-card");
-            if (!cards.length) {
-                return;
-            }
-
-            const visibleCards = visiblePersonalityCards();
-            const maxIndex = Math.max(cards.length - visibleCards, 0);
-            personalityIndex = Math.min(Math.max(nextIndex, 0), maxIndex);
-            currentTranslate = -personalityIndex * carouselStep();
-
-            personalityCarousel.style.transition = animate === false ? "none" : "transform 280ms ease";
-            personalityCarousel.style.transform = `translateX(${currentTranslate}px)`;
-
-            personalityDots.forEach((dot, index) => {
-                dot.classList.toggle("is-active", index === personalityIndex);
-                dot.classList.toggle("is-hidden", index > maxIndex);
-            });
-
-            if (personalityPrev && personalityNext) {
-                personalityPrev.disabled = personalityIndex === 0;
-                personalityNext.disabled = personalityIndex === maxIndex;
-            }
-        }
-
-        let isDragging = false;
-        let isPointerDown = false;
-        let startX = 0;
-
-        if (personalityCarousel) {
-            personalityCarousel.addEventListener("pointerdown", (event) => {
-                isPointerDown = true;
-                isDragging = false;
-                startX = event.clientX;
-                personalityCarousel.classList.add("is-dragging");
-                personalityCarousel.setPointerCapture(event.pointerId);
-            });
-
-            personalityCarousel.addEventListener("pointermove", (event) => {
-                if (!isPointerDown) {
-                    return;
-                }
-
-                const deltaX = event.clientX - startX;
-                if (Math.abs(deltaX) > 6) {
-                    isDragging = true;
-                }
-
-                personalityCarousel.style.transform = `translateX(${currentTranslate + deltaX}px)`;
-            });
-
-            function endDrag(event) {
-                if (!isPointerDown) {
-                    return;
-                }
-
-                isPointerDown = false;
-                personalityCarousel.classList.remove("is-dragging");
-
-                const deltaX = event.clientX - startX;
-                const step = carouselStep();
-                const threshold = step * 0.18;
-
-                let nextIndex = personalityIndex;
-                if (deltaX <= -threshold) {
-                    nextIndex = personalityIndex + 1;
-                } else if (deltaX >= threshold) {
-                    nextIndex = personalityIndex - 1;
-                }
-
-                updatePersonalityCarousel(nextIndex);
-            }
-
-            personalityCarousel.addEventListener("pointerup", endDrag);
-            personalityCarousel.addEventListener("pointercancel", endDrag);
-
-            personalityCarousel.addEventListener("click", (event) => {
-                if (isDragging) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    isDragging = false;
-                }
-            }, true);
-        }
-
-        function initProductCarousel(carousel) {
-            const slides = Array.from(carousel.querySelectorAll("[data-product-carousel-slide]"));
-            const dots = Array.from(carousel.querySelectorAll("[data-product-carousel-dot]"));
-            const prev = carousel.querySelector("[data-product-carousel-prev]");
-            const next = carousel.querySelector("[data-product-carousel-next]");
-            let index = 0;
-
-            function showSlide(nextIndex) {
-                if (!slides.length) {
-                    return;
-                }
-
-                index = (nextIndex + slides.length) % slides.length;
-                slides.forEach((slide, slideIndex) => {
-                    slide.classList.toggle("is-active", slideIndex === index);
-                });
-                dots.forEach((dot, dotIndex) => {
-                    dot.classList.toggle("is-active", dotIndex === index);
-                });
-            }
-
-            if (prev) {
-                prev.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    showSlide(index - 1);
-                });
-            }
-
-            if (next) {
-                next.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    showSlide(index + 1);
-                });
-            }
-
-            dots.forEach((dot) => {
-                dot.addEventListener("click", (event) => {
-                    event.stopPropagation();
-                    showSlide(Number(dot.dataset.productCarouselDot));
-                });
-            });
-        }
-
-        document.querySelectorAll("[data-product-carousel]").forEach(initProductCarousel);
+{# ---------- BRAND MARQUEE ---------- #}
+<section class="wh-ticker-wrap">
+    <div class="wh-ticker">
+        {% for b in "Rolex Casio Seiko Citizen Fossil Curren Naviforce Tissot Rolex Casio Seiko Citizen Fossil Curren Naviforce Tissot"|slice:":" %}{% endfor %}
+        <span>ROLEX</span><span>CASIO</span><span>SEIKO</span><span>CITIZEN</span>
+        <span>FOSSIL</span><span>CURREN</span><span>NAVIFORCE</span><span>TISSOT</span>
+        <span>ROLEX</span><span>CASIO</span><span>SEIKO</span><span>CITIZEN</span>
+        <span>FOSSIL</span><span>CURREN</span><span>NAVIFORCE</span><span>TISSOT</span>
+    </div>
+</section>
 
 
-        if (personalityPrev && personalityNext) {
-            personalityPrev.addEventListener("click", () => updatePersonalityCarousel(personalityIndex - 1));
-            personalityNext.addEventListener("click", () => updatePersonalityCarousel(personalityIndex + 1));
-        }
+{# ---------- FLOATING WHATSAPP ---------- #}
+<a class="wh-fab"
+   href="https://wa.me/254700000000?text=Hi%20WristHub"
+   target="_blank" rel="noopener">
+    <span>💬</span> Chat with us
+</a>
 
-        personalityDots.forEach((dot) => {
-            dot.addEventListener("click", () => {
-                updatePersonalityCarousel(Number(dot.dataset.carouselDot));
-            });
-        });
-
-        window.addEventListener("resize", () => updatePersonalityCarousel(personalityIndex));
-        updatePersonalityCarousel(0);
-
-        watchOptions.forEach((option) => {
-            option.addEventListener("click", () => {
-                const part = option.dataset.watchPart;
-                const color = option.dataset.watchColor;
-
-                if (!customWatch || !part || !color) {
-                    return;
-                }
-
-                customWatch.style.setProperty(`--${part}-color`, color);
-
-                watchOptions.forEach((otherOption) => {
-                    if (otherOption.dataset.watchPart === part) {
-                        otherOption.classList.toggle("is-active", otherOption === option);
-                    }
-                });
-            });
-        });
-    </script>
+<script>
+(() => {
+  document.querySelectorAll('[data-image-carousel]').forEach((carousel) => {
+    const photos = [...carousel.querySelectorAll('[data-featured-photo]')];
+    let index = 0;
+    const show = (nextIndex) => { index = (nextIndex + photos.length) % photos.length; photos.forEach((photo, photoIndex) => photo.classList.toggle('is-active', photoIndex === index)); };
+    carousel.querySelector('[data-image-prev]')?.addEventListener('click', (event) => { event.stopPropagation(); show(index - 1); });
+    carousel.querySelector('[data-image-next]')?.addEventListener('click', (event) => { event.stopPropagation(); show(index + 1); });
+  });
+  document.querySelectorAll('[data-featured-carousel]').forEach((carousel) => {
+    const track = carousel.querySelector('[data-featured-track]');
+    const slides = [...track.children];
+    const previous = carousel.querySelector('[data-featured-prev]');
+    const next = carousel.querySelector('[data-featured-next]');
+    const current = carousel.querySelector('[data-featured-current]');
+    let index = 0, startX = null;
+    const show = (nextIndex) => { index = Math.max(0, Math.min(nextIndex, slides.length - 1)); track.style.transform = `translateX(-${index * 100}%)`; if (current) current.textContent = index + 1; if (previous) previous.disabled = index === 0; if (next) next.disabled = index === slides.length - 1; };
+    previous?.addEventListener('click', () => show(index - 1));
+    next?.addEventListener('click', () => show(index + 1));
+    carousel.addEventListener('pointerdown', (event) => { startX = event.clientX; });
+    carousel.addEventListener('pointerup', (event) => { if (startX === null) return; const distance = event.clientX - startX; if (Math.abs(distance) > 45) show(index + (distance < 0 ? 1 : -1)); startX = null; });
+    carousel.addEventListener('pointercancel', () => { startX = null; });
+    show(0);
+  });
+})();
+</script>
 {% endblock %}

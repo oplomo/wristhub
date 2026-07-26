@@ -37,46 +37,25 @@ def get_location_data():
 
 PERSONALITIES = [
     {
-        "slug": "athlete",
-        "title": "The Athlete",
-        "eyebrow": "Engineered for motion",
+        "slug": "sport",
+        "title": "Sport",
+        "eyebrow": "Built for movement",
         "text": "Sport watches built to keep pace with training, travel, and the everyday grind - durable, legible, and ready when you are.",
         "category_slug": "sport",
     },
     {
         "slug": "executive",
-        "title": "The Executive",
-        "eyebrow": "Quietly powerful",
-        "text": "Luxury timepieces for the moments that matter - boardrooms, celebrations, and the quiet confidence of wearing something rare.",
-        "category_slug": "luxury",
-    },
-    {
-        "slug": "adventurer",
-        "title": "The Adventurer",
-        "eyebrow": "Timeless by design",
-        "text": "Classic watches that never go out of style - clean, versatile companions for every chapter of your story.",
-        "category_slug": "classic",
-    },
-    {
-        "slug": "voyager",
-        "title": "The Voyager",
-        "eyebrow": "Built for the deep",
-        "text": "Diver watches made for water, weather, and the unknown - rugged companions for anyone who prefers the unbeaten path.",
-        "category_slug": "diver",
-    },
-    {
-        "slug": "professional",
-        "title": "The Professional",
-        "eyebrow": "Sharp under pressure",
-        "text": "Slim dress watches that finish a tailored look - refined details for meetings, dinners, and everything in between.",
+        "title": "Executive",
+        "eyebrow": "Made for the office",
+        "text": "Refined dress watches that bring a polished finish to the workday and every important occasion.",
         "category_slug": "dress",
     },
     {
-        "slug": "maestro",
-        "title": "The Maestro",
-        "eyebrow": "Precision in motion",
-        "text": "Chronographs for people who measure the moment - complications that turn timekeeping into a craft.",
-        "category_slug": "chronograph",
+        "slug": "luxury",
+        "title": "Luxury",
+        "eyebrow": "Made to stand apart",
+        "text": "Luxury timepieces for the moments that matter - distinctive pieces with lasting presence.",
+        "category_slug": "luxury",
     },
 ]
 
@@ -201,6 +180,11 @@ def home(request):
         .prefetch_related("images")
         .order_by("-price")[:3]
     )
+    home_journal = (
+        Journal.objects.filter(is_published=True)
+        .order_by("-is_featured", "-published_at")
+        .first()
+    )
 
     return render(
         request,
@@ -210,6 +194,7 @@ def home(request):
             "personalities": personalities,
             "recent_watches": recent_watches,
             "featured_watches": featured_watches,
+            "home_journal": home_journal,
             "theme": "unisex",
         },
     )
