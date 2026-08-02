@@ -518,6 +518,15 @@ def product_detail(request, slug):
         slug=slug,
         is_active=True,
     )
+    color_options = []
+    seen_colors = set()
+    for image in watch.images.all():
+        color = (image.color or "").strip()
+        color_key = color.casefold()
+        if color and color_key not in seen_colors:
+            seen_colors.add(color_key)
+            color_options.append({"name": color, "key": color_key})
+
     related_watches = (
         Watch.objects.filter(is_active=True, category=watch.category)
         .exclude(pk=watch.pk)
@@ -556,6 +565,7 @@ def product_detail(request, slug):
         "product_detail.html",
         {
             "watch": watch,
+            "color_options": color_options,
             "related_watches": related_watches,
             "reviews": reviews,
             "user_review": user_review,

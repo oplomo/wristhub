@@ -250,6 +250,29 @@
     cursor: pointer;
 }
 
+.image-color-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.image-color-row input {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.78rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.image-color-row input:focus {
+    border-color: var(--blue);
+}
+
 .image-item .image-actions {
     display: grid;
     gap: 6px;
@@ -397,6 +420,14 @@
                 {% for image in images %}
                     <div class="image-item{% if image.is_primary %} is-primary{% endif %}">
                         <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-full="{{ image.image.url }}" onclick="openLightbox(this)">
+                        <div class="image-color-row">
+                            <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="image_id" value="{{ image.id }}">
+                                <input type="text" name="image_color" value="{{ image.color }}" placeholder="Colour" size="12">
+                                <button type="submit" name="action" value="update_image_color" class="btn btn-sm btn-ghost" style="padding:2px 8px;font-size:0.72rem;">{{ image.color|default:'Set' }}</button>
+                            </form>
+                        </div>
                         <div class="image-actions">
                             <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}">
                                 {% csrf_token %}
@@ -421,6 +452,7 @@
             <form method="post" action="{% url 'panel-product-edit' slug=watch.slug %}" enctype="multipart/form-data" class="upload-zone">
                 {% csrf_token %}
                 <input type="file" name="new_image" accept="image/*">
+                <input type="text" name="image_colors" placeholder="Colour (optional)" style="flex:1;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font-size:0.82rem;outline:none;">
                 <button type="submit" class="btn btn-primary" name="action" value="upload">Upload</button>
             </form>
         </div>

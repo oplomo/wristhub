@@ -63,7 +63,7 @@ class JournalAdmin(admin.ModelAdmin):
 class WatchImageInline(admin.TabularInline):
     model = WatchImage
     extra = 1
-    fields = ("image", "alt_text", "is_main")
+    fields = ("image", "color", "alt_text", "is_main")
 
 
 @admin.register(Watch)
@@ -155,8 +155,8 @@ class GalleryItemAdmin(admin.ModelAdmin):
 
 @admin.register(WatchImage)
 class WatchImageAdmin(admin.ModelAdmin):
-    list_display = ("watch", "is_main", "created_at")
-    list_filter = ("is_main", "created_at")
+    list_display = ("watch", "color", "is_main", "created_at")
+    list_filter = ("color", "is_main", "created_at")
     search_fields = ("watch__name", "watch__brand__name", "alt_text")
 
 

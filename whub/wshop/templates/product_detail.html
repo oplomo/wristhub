@@ -120,6 +120,51 @@
     object-fit: cover;
 }
 
+.color-palette {
+    display: flex;
+    gap: 8px;
+    padding: 12px 10px 0;
+    background: #ffffff;
+}
+
+.color-swatch {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #f3f4f6;
+    color: var(--ink);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 140ms ease;
+}
+
+.color-swatch:hover {
+    border-color: var(--blue);
+}
+
+.color-swatch.is-active {
+    background: var(--blue);
+    color: var(--color-background);
+    border-color: var(--blue);
+}
+
+.color-swatch .color-dot {
+    width: 8px;
+    height: 8px;
+    flex: none;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+}
+
+.color-swatch.is-active .color-dot {
+    border-color: var(--color-background);
+}
+
 .product-info {
     display: grid;
     gap: 20px;
@@ -327,6 +372,15 @@
     }
     .gallery-thumbs {
         grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .color-palette {
+        padding: 8px 10px 0;
+    }
+    .color-swatch {
+        flex: 1;
+        justify-content: center;
+        font-size: 0.72rem;
+        padding: 5px 8px;
     }
 }
 
@@ -697,20 +751,32 @@
                 {% with images=watch.images.all %}
                     {% if images %}
                         {% for image in images %}
-                            <img class="gallery-slide{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-product-carousel-slide>
+                            <img class="gallery-slide{% if forloop.first %} is-active{% endif %}" src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" data-product-carousel-slide data-image-color="{{ image.color|default:''|lower }}">
                         {% endfor %}
                     {% else %}
                         <div class="gallery-fallback" data-product-carousel-slide>{{ watch.name }}</div>
                     {% endif %}
                 {% endwith %}
             </div>
+            {% if color_options %}
+            <div class="color-palette">
+                <button type="button" class="color-swatch is-active" data-color-swatch data-color="" aria-label="All colors">
+                    <span class="color-dot"></span> All
+                </button>
+                {% for color in color_options %}
+                <button type="button" class="color-swatch" data-color-swatch data-color="{{ color.key }}" aria-label="Show {{ color.name }}">
+                    <span class="color-dot"></span> {{ color.name }}
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% with images=watch.images.all %}
                 {% if images|length > 1 %}
                     <button class="gallery-arrow prev" type="button" data-product-carousel-prev aria-label="Previous image">&lt;</button>
                     <button class="gallery-arrow next" type="button" data-product-carousel-next aria-label="Next image">&gt;</button>
                     <div class="gallery-thumbs">
                         {% for image in images %}
-                            <button class="gallery-thumb{% if forloop.first %} is-active{% endif %}" type="button" data-product-carousel-dot="{{ forloop.counter0 }}" aria-label="Show image {{ forloop.counter }}">
+                            <button class="gallery-thumb{% if forloop.first %} is-active{% endif %}" type="button" data-product-carousel-dot="{{ forloop.counter0 }}" data-image-color="{{ image.color|default:''|lower }}" aria-label="Show image {{ forloop.counter }}">
                                 <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}">
                             </button>
                         {% endfor %}
@@ -926,18 +992,36 @@
 function initProductCarousel(carousel) {
     const slides = Array.from(carousel.querySelectorAll('[data-product-carousel-slide]'));
     const dots = Array.from(carousel.querySelectorAll('[data-product-carousel-dot]'));
+    const swatches = Array.from(carousel.querySelectorAll('[data-color-swatch]'));
     const prev = carousel.querySelector('[data-product-carousel-prev]');
     const next = carousel.querySelector('[data-product-carousel-next]');
-    let index = 0;
 
     if (!slides.length) {
         return;
     }
 
+    let index = 0;
+    let activeColor = '';
+
+    function visibleSlides() {
+        return slides.filter((slide) => {
+            const slideColor = (slide.dataset.imageColor || '').toLowerCase();
+            return activeColor === '' || slideColor === activeColor;
+        });
+    }
+
     function showSlide(nextIndex) {
-        index = (nextIndex + slides.length) % slides.length;
-        slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === index));
-        dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === index));
+        const vs = visibleSlides();
+        if (!vs.length) {
+            return;
+        }
+        index = ((nextIndex % vs.length) + vs.length) % vs.length;
+        slides.forEach((slide) => slide.classList.toggle('is-active', vs[index] === slide));
+        dots.forEach((dot, dotIndex) => {
+            const dotSlide = slides[dotIndex];
+            dot.classList.toggle('is-active', vs[index] === dotSlide);
+            dot.style.display = dotSlide && vs.includes(dotSlide) ? '' : 'none';
+        });
     }
 
     if (prev) {
@@ -957,9 +1041,28 @@ function initProductCarousel(carousel) {
     dots.forEach((dot) => {
         dot.addEventListener('click', (event) => {
             event.stopPropagation();
-            showSlide(Number(dot.dataset.productCarouselDot));
+            const slide = slides[Number(dot.dataset.productCarouselDot)];
+            if (!slide) {
+                return;
+            }
+            const vs = visibleSlides();
+            const newIndex = vs.indexOf(slide);
+            if (newIndex >= 0) {
+                showSlide(newIndex);
+            }
         });
     });
+
+    swatches.forEach((swatch) => {
+        swatch.addEventListener('click', () => {
+            swatches.forEach((s) => s.classList.remove('is-active'));
+            swatch.classList.add('is-active');
+            activeColor = (swatch.dataset.color || '').toLowerCase();
+            showSlide(0);
+        });
+    });
+
+    showSlide(0);
 }
 
 document.querySelectorAll('[data-product-carousel]').forEach(initProductCarousel);

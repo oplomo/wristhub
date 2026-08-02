@@ -366,6 +366,11 @@
     color: #b91c1c;
 }
 
+.action-icon.colors {
+    background: rgba(135,20,222,0.08);
+    color: #7c3aed;
+}
+
 .empty-state {
     padding: 28px 20px;
     text-align: center;
@@ -523,6 +528,10 @@
                     <a href="{% url 'panel-product-edit' slug=watch.slug %}" class="action-card">
                         <span class="action-icon edit">✎</span>
                         <span>Edit Product</span>
+                    </a>
+                    <a href="{% url 'panel-product-colors' slug=watch.slug %}" class="action-card">
+                        <span class="action-icon colors">🎨</span>
+                        <span>Manage Colors</span>
                     </a>
                     <a href="{% url 'panel-product-delete' slug=watch.slug %}" class="action-card" onclick="return confirm('Delete {{ watch.name }}?');">
                         <span class="action-icon delete">🗑</span>

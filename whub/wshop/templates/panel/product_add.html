@@ -382,6 +382,27 @@
     display: none;
 }
 
+.image-preview .color-input {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    right: 4px;
+    padding: 3px 6px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 0.62rem;
+    font-family: inherit;
+    outline: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.image-preview .color-input:focus {
+    border-color: var(--blue);
+    background: #ffffff;
+}
+
 .generated-field {
     background: #f8fafc;
     padding: 9px 12px;
@@ -745,9 +766,11 @@ document.addEventListener('keydown', function(e) {
 const imageInput = document.getElementById('imageInput');
 const imagePreviews = document.getElementById('imagePreviews');
 let uploadedImages = [];
+let colorValues = [];
 
 imageInput.addEventListener('change', function() {
     uploadedImages = Array.from(imageInput.files);
+    colorValues = new Array(uploadedImages.length).fill('');
     renderImagePreviews();
 });
 
@@ -757,6 +780,7 @@ function renderImagePreviews() {
             <img src="${URL.createObjectURL(file)}" alt="${file.name}">
             <button type="button" class="remove-btn" onclick="event.stopPropagation(); removeImage(${idx});">✕</button>
             <span class="main-badge ${idx === 0 ? '' : 'is-hidden'}" data-badge="${idx}">PRIMARY</span>
+            <input type="text" name="image_colors" data-idx="${idx}" class="color-input" placeholder="Colour" value="${colorValues[idx] || ''}" onclick="event.stopPropagation()">
         </div>
     `).join('');
     updatePrimaryBadge();
@@ -764,9 +788,12 @@ function renderImagePreviews() {
 
 function setPrimary(idx) {
     const file = uploadedImages[idx];
+    const color = colorValues[idx] || '';
     if (!file) return;
     uploadedImages.splice(idx, 1);
     uploadedImages.unshift(file);
+    colorValues.splice(idx, 1);
+    colorValues.unshift(color);
     const dt = new DataTransfer();
     uploadedImages.forEach(f => dt.items.add(f));
     imageInput.files = dt.files;
@@ -777,6 +804,11 @@ function updatePrimaryBadge() {
     document.querySelectorAll('.main-badge').forEach((badge, idx) => {
         badge.classList.toggle('is-hidden', idx !== 0);
     });
+    document.querySelectorAll('.color-input').forEach((input) => {
+        input.addEventListener('input', function() {
+            colorValues[Number(this.dataset.idx)] = this.value;
+        });
+    });
     const primaryIdInput = document.getElementById('primaryImageId');
     if (primaryIdInput) {
         primaryIdInput.value = uploadedImages.length > 0 ? '0' : '';
@@ -785,6 +817,7 @@ function updatePrimaryBadge() {
 
 function removeImage(idx) {
     uploadedImages.splice(idx, 1);
+    colorValues.splice(idx, 1);
     const dt = new DataTransfer();
     uploadedImages.forEach(f => dt.items.add(f));
     imageInput.files = dt.files;

@@ -1,0 +1,284 @@
+{% extends "panel/base.html" %}
+
+{% block extra_css %}
+<style>
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.page-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 140ms ease;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background: var(--blue);
+    border-color: var(--blue);
+}
+
+.btn-primary:hover {
+    background: var(--blue-hover);
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-ghost {
+    color: var(--muted);
+    background: transparent;
+    border-color: var(--line);
+}
+
+.btn-ghost:hover {
+    color: var(--ink);
+    border-color: var(--line-strong);
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+}
+
+.card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.card-body {
+    padding: 18px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+    border: 1px solid rgba(22,163,74,0.2);
+}
+
+.image-color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.color-image {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #f3f4f6;
+}
+
+.color-input-wrapper {
+    margin-top: 8px;
+}
+
+.color-input-wrapper label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.color-input-wrapper input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 140ms ease;
+}
+
+.color-input-wrapper input:focus {
+    border-color: var(--blue);
+}
+
+.color-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(135,20,222,0.08);
+    color: #7c3aed;
+}
+
+.empty-state {
+    padding: 28px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+@media (max-width: 700px) {
+    .image-color-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'panel-product-detail' slug=watch.slug %}" class="back-link">← Back to Product</a>
+</div>
+
+<div class="page-title-row">
+    <div>
+        <h1 class="page-title">{{ watch.name }}</h1>
+        <p class="page-subtitle">Assign colours to each watch image</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{% url 'panel-product-edit' slug=watch.slug %}" class="btn btn-secondary">Edit Product</a>
+    </div>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+{% if images %}
+<form method="post" action="{% url 'panel-product-colors' slug=watch.slug %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="save_colors">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Image Colours</span>
+        </div>
+        <div class="card-body">
+            <datalist id="colorSuggestions">
+                {% for color in existing_colors %}
+                <option value="{{ color }}">
+                {% endfor %}
+            </datalist>
+            <div class="image-color-grid">
+                {% for image in images %}
+                <div class="color-image-item">
+                    <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:watch.name }}" class="color-image">
+                    <div class="color-input-wrapper">
+                        <label>Colour</label>
+                        <input type="text" name="color_{{ image.id }}" list="colorSuggestions" placeholder="e.g. Black, Silver, Rose Gold" value="{{ image.color }}">
+                    </div>
+                    {% if image.color %}
+                    <span class="color-badge">{{ image.color }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="form-actions">
+        <a href="{% url 'panel-products' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Save All Colours</button>
+    </div>
+</form>
+{% else %}
+<div class="card">
+    <div class="card-body">
+        <div class="empty-state">
+            No images uploaded yet.
+            <a href="{% url 'panel-product-edit' slug=watch.slug %}#images-section" class="btn-ghost">Add Images</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

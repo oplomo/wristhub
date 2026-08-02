@@ -53,6 +53,7 @@ urlpatterns = [
     path("panel/products/<slug:slug>/toggle-featured/", views_admin.admin_product_toggle_featured, name="panel-product-toggle-featured"),
     path("panel/products/<slug:slug>/toggle-active/", views_admin.admin_product_toggle_active, name="panel-product-toggle-active"),
     path("panel/products/<slug:slug>/edit/", views_admin.admin_product_edit, name="panel-product-edit"),
+    path("panel/products/<slug:slug>/colors/", views_admin.admin_product_colors, name="panel-product-colors"),
     path("panel/products/<slug:slug>/delete/", views_admin.admin_product_delete, name="panel-product-delete"),
     path("panel/products/<slug:slug>/", views_admin.admin_product_detail, name="panel-product-detail"),
     path("panel/orders/", views_admin.admin_orders, name="panel-orders"),

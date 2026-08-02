@@ -144,6 +144,7 @@ class Watch(models.Model):
 class WatchImage(models.Model):
     watch = models.ForeignKey(Watch, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(upload_to="watches/")
+    color = models.CharField(max_length=50, blank=True, default="", help_text="Colour or finish shown in this image, e.g. Black or Rose Gold.")
     alt_text = models.CharField(max_length=160, blank=True)
     is_main = models.BooleanField(default=False)
     is_primary = models.BooleanField(default=False)

@@ -611,6 +611,7 @@ def admin_product_add(request):
             watch.sku = f"{watch.brand.name[:3].upper()}-{watch.name[:3].upper()}-{uuid.uuid4().hex[:8].upper()}"
             watch.save()
             uploaded_files = request.FILES.getlist("new_images")
+            image_colors = request.POST.getlist("image_colors")
             primary_index = request.POST.get("primary_image_id", "0")
             try:
                 primary_index = int(primary_index)
@@ -620,6 +621,7 @@ def admin_product_add(request):
                 WatchImage.objects.create(
                     watch=watch,
                     image=uploaded_file,
+                    color=(image_colors[idx].strip() if idx < len(image_colors) else ""),
                     alt_text=watch.name,
                     is_primary=(idx == primary_index),
                 )
@@ -628,7 +630,7 @@ def admin_product_add(request):
                 first.is_primary = True
                 first.save()
             messages.success(request, f"Created {watch.name}.")
-            return redirect("panel-product-edit", slug=watch.slug)
+            return redirect("panel-product-colors", slug=watch.slug)
     else:
         from django import forms
 
@@ -736,6 +738,12 @@ def admin_add_strap_color(request):
 def admin_product_edit(request, slug):
     watch = get_object_or_404(Watch, slug=slug)
     images = watch.images.all()
+    if request.method == "POST" and request.POST.get("action") == "update_image_color":
+        image = get_object_or_404(WatchImage, id=request.POST.get("image_id"), watch=watch)
+        image.color = request.POST.get("image_color", "").strip()
+        image.save(update_fields=["color"])
+        messages.success(request, "Image colour updated.")
+        return redirect("panel-product-edit", slug=watch.slug)
     if request.method == "POST":
         from django import forms
 
@@ -754,10 +762,12 @@ def admin_product_edit(request, slug):
         if form.is_valid():
             form.save()
             uploaded_files = request.FILES.getlist("new_images")
+            image_colors = request.POST.getlist("image_colors")
             for idx, uploaded_file in enumerate(uploaded_files):
                 WatchImage.objects.create(
                     watch=watch,
                     image=uploaded_file,
+                    color=(image_colors[idx].strip() if idx < len(image_colors) else ""),
                     alt_text=watch.name,
                     is_primary=(idx == 0 and not watch.images.filter(is_primary=True).exists()),
                 )
@@ -799,6 +809,44 @@ def admin_product_edit(request, slug):
         "form": form,
         "images": images,
         "dashboard_title": f"Edit {watch.name}",
+        "products_active": True,
+    })
+
+
+def admin_product_colors(request, slug):
+    watch = get_object_or_404(Watch, slug=slug)
+    images = watch.images.all()
+
+    if request.method == "POST" and request.POST.get("action") == "save_colors":
+        for image in images:
+            color = (request.POST.get(f"color_{image.id}", "") or "").strip()
+            if image.color != color:
+                image.color = color
+                image.save(update_fields=["color"])
+        messages.success(request, f"Colors updated for {watch.name}.")
+        return redirect("panel-product-colors", slug=watch.slug)
+
+    if request.method == "POST" and request.POST.get("action") == "update_image_color":
+        image = get_object_or_404(WatchImage, id=request.POST.get("image_id"), watch=watch)
+        image.color = request.POST.get("image_color", "").strip()
+        image.save(update_fields=["color"])
+        messages.success(request, "Image colour updated.")
+        return redirect("panel-product-colors", slug=watch.slug)
+
+    existing_colors = []
+    seen = set()
+    for image in images:
+        color = image.color.strip()
+        color_key = color.lower()
+        if color and color_key not in seen:
+            seen.add(color_key)
+            existing_colors.append(color)
+
+    return render(request, "panel/product_colors.html", {
+        "watch": watch,
+        "images": images,
+        "existing_colors": existing_colors,
+        "dashboard_title": f"Colors - {watch.name}",
         "products_active": True,
     })
 
