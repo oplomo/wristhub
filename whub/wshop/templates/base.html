@@ -499,6 +499,13 @@
         .brand span { color: #111111; }
         .menu-toggle { border-color: #b85d26; background: transparent; }
         .menu-lines, .menu-lines::before, .menu-lines::after { background: #b85d26; }
+        @media (max-width: 600px) {
+            .nav-wrap { min-height: 64px; gap: 8px; }
+            .brand-mark { height: 32px; }
+            .brand-text span:first-child { font-size: 1rem; }
+            .brand-text span:last-child { font-size: .55rem; }
+            .cart-pill { width: 36px; height: 36px; }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
