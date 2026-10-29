@@ -97,7 +97,7 @@
     display: grid;
     grid-template-rows: auto 1fr;
     border-radius: var(--radius);
-    background: #111111;
+    background: #f7f1e5;
     transition: transform 140ms ease;
 }
 
@@ -203,9 +203,11 @@
 }
 
 .watch-body {
-    display: grid;
-    gap: 6px;
-    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px;
 }
 
 .watch-brand {
@@ -219,15 +221,15 @@
 .watch-name {
     margin: 0;
     font-family: Georgia, 'Times New Roman', serif;
-    font-size: 1rem;
+    font-size: .85rem;
     font-weight: 600;
-    color: var(--blue);
+    color: #111111;
     line-height: 1.25;
 }
 
 .watch-price {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: .8rem;
     font-weight: 700;
     color: var(--ink);
 }
@@ -348,6 +350,15 @@
             </select>
         </div>
         <div class="filter-group">
+            <label class="filter-label" for="genderFilter">Gender</label>
+            <select class="filter-select" id="genderFilter">
+                <option value="">All</option>
+                <option value="men"{% if active_filters.gender == "men" %} selected{% endif %}>Men</option>
+                <option value="women"{% if active_filters.gender == "women" %} selected{% endif %}>Women</option>
+                <option value="unisex"{% if active_filters.gender == "unisex" %} selected{% endif %}>Unisex</option>
+            </select>
+        </div>
+        <div class="filter-group">
             <label class="filter-label" for="priceFilter">Price</label>
             <select class="filter-select" id="priceFilter">
                 <option value="">Any Price</option>
@@ -384,14 +395,14 @@
                         {% endif %}
                     </div>
                     <div class="watch-body">
-                        <span class="watch-brand"  style="color:white">{{ watch.brand.name }}</span>
-                        <h3 class="watch-name" >{{ watch.name }}</h3>
-                        <p class="watch-price"  style="color:white;font-size:1.3em;">ksh {{ watch.current_price|floatformat:2 }} &nbsp;&nbsp; {% if watch.discount_price %}<small> <span class="watch-old-price"  style="color:wheat"> {{ watch.price|floatformat:2 }}</span>{% endif %}</small></p>
-                       
-                        <a class="watch-link" href="{% url 'product-detail' slug=watch.slug %}">View details &rarr;</a>
+                        <div style="display:flex;flex-direction:column;gap:2px;">
+                            <span class="watch-brand" style="color:#111">{{ watch.brand.name }}</span>
+                            <h3 class="watch-name"><a href="{% url 'product-detail' slug=watch.slug %}" style="color:inherit;text-decoration:none;">{{ watch.name }}</a></h3>
+                            <p class="watch-price" style="color:#111;font-size:1.3em;">ksh {{ watch.current_price|floatformat:2 }} &nbsp;&nbsp; {% if watch.discount_price %}<small> <span class="watch-old-price" style="color:#555"> {{ watch.price|floatformat:2 }}</span>{% endif %}</small></p>
+                        </div>
                         <form method="post" action="{% url 'cart-add' watch.id %}">
                             {% csrf_token %}
-                            <button class="add-cart-button" type="submit">Add to Cart</button>
+                            <button class="add-cart-button" type="submit" style="width:32px;height:32px;border-radius:50%;padding:0;font-size:1.2rem;line-height:1;">+</button>
                         </form>
                     </div>
                 </article>
@@ -408,7 +419,7 @@
 const searchInput = document.getElementById('shopSearch');
 const brandFilter = document.getElementById('brandFilter');
 const categoryFilter = document.getElementById('categoryFilter');
-const strapFilter = document.getElementById('strapFilter');
+const genderFilter = document.getElementById('genderFilter');
 const priceFilter = document.getElementById('priceFilter');
 const shopGrid = document.getElementById('shopGrid');
 const cartAddUrl = '{% url "cart-add" 0 %}'.replace('/0/', '/');
@@ -444,12 +455,14 @@ function buildCard(item) {
     return '<article class="watch-card">' +
         buildCarousel(item.images || [], item.name) +
         '<div class="watch-body">' +
-            '<span class="watch-brand">' + escapeHtml(item.brand) + '</span>' +
-            '<h3 class="watch-name">' + escapeHtml(item.name) + '</h3>' +
-            '<p class="watch-price">ksh ' + escapeHtml(item.price) + oldPrice + '</p>' +
-            '<a class="watch-link" href="{% url "product-detail" slug="__slug__" %}">View details &rarr;</a>'.replace('__slug__', encodeURIComponent(item.slug)) +
+            '<div style="display:flex;flex-direction:column;gap:2px;">' +
+                '<span class="watch-brand">' + escapeHtml(item.brand) + '</span>' +
+                '<h3 class="watch-name"><a href="{% url "product-detail" slug="__slug__" %}" style="color:inherit;text-decoration:none;">'.replace('__slug__', encodeURIComponent(item.slug)) + escapeHtml(item.name) + '</a></h3>' +
+                '<p class="watch-price">ksh ' + escapeHtml(item.price) + oldPrice + '</p>' +
+            '</div>' +
             '<form method="post" action="' + cartAddUrl + item.id + '/">' +
-                '<button class="add-cart-button" type="submit">Add to Cart</button>' +
+                '<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">' +
+                '<button class="add-cart-button" type="submit" style="width:32px;height:32px;border-radius:50%;padding:0;font-size:1.2rem;line-height:1;">+</button>' +
             '</form>' +
         '</div>' +
     '</article>';
@@ -502,7 +515,7 @@ function buildQuery() {
     if (searchInput.value) params.set('q', searchInput.value);
     if (brandFilter.value) params.set('brand', brandFilter.value);
     if (categoryFilter.value) params.set('category', categoryFilter.value);
-    if (strapFilter.value) params.set('strap_material', strapFilter.value);
+    if (genderFilter.value) params.set('gender', genderFilter.value);
     if (priceFilter.value) params.set('price', priceFilter.value);
     ['movement', 'model', 'gender', 'strap_material'].forEach((key) => {
         if (activeParams.get(key)) params.set(key, activeParams.get(key));
@@ -530,7 +543,7 @@ function updateShop() {
 }
 
 let shopTimeout = null;
-[searchInput, brandFilter, categoryFilter, strapFilter, priceFilter].forEach(el => {
+[searchInput, brandFilter, categoryFilter, strapFilter, genderFilter, priceFilter].forEach(el => {
     el.addEventListener('input', () => {
         clearTimeout(shopTimeout);
         shopTimeout = setTimeout(updateShop, 250);

@@ -315,6 +315,7 @@
     border-radius: var(--radius);
     background: #ffffff;
     box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+    scroll-snap-align: start;
 }
 
 .related-image {
@@ -368,7 +369,26 @@
         grid-template-columns: 1fr;
     }
     .related-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .related-grid::-webkit-scrollbar {
+        height: 4px;
+    }
+    .related-grid::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .related-grid::-webkit-scrollbar-thumb {
+        background: var(--line);
+        border-radius: 2px;
+    }
+    .related-card {
+        flex: 0 0 75%;
+        max-width: 75%;
     }
     .gallery-thumbs {
         grid-template-columns: repeat(4, minmax(0, 1fr));

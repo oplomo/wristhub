@@ -700,6 +700,8 @@ def cart_add(request, watch_id):
         item.quantity = item.quantity + 1
     item.save()
     record_analytics_event(request, "cart_add", watch=watch)
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return JsonResponse({"count": get_cart_count(cart)})
     messages.success(request, f"Added {watch.name} to cart.")
     return redirect("cart")
 
