@@ -203,16 +203,7 @@
 </style>
 {% endblock %}
 
-{% block page_loader %}
-<div class="wh-page-loader" id="whPageLoader" role="status" aria-label="Loading Wrist Hub">
-    <div class="wh-loader__stage">
-        <div class="wh-loader__orb"><img class="wh-loader__logo" src="{% static 'images/wristhublogo1.jpeg' %}" alt="Wrist Hub"></div>
-        <div class="wh-loader__brand">Wrist Hub</div>
-        <p class="wh-loader__message"><span class="wh-loader__word">Loading</span> your next moment</p>
-        <div class="wh-loader__progress" aria-hidden="true"><span></span></div>
-    </div>
-</div>
-{% endblock %}
+{% block page_loader %}{% endblock %}
 
 {% block hero %}
 {# ===== OLD HERO (commented out, preserved for reference) ===== #}

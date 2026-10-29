@@ -506,6 +506,14 @@
             .brand-text span:last-child { font-size: .55rem; }
             .cart-pill { width: 36px; height: 36px; }
         }
+        .site-header { background: #f7f1e5 !important; backdrop-filter: none !important; z-index: 5000 !important; }
+        .nav-menu { background: transparent !important; }
+        .nav-panel { background: #f7f1e5 !important; }
+        .submenu { background: #f7f1e5 !important; }
+        .nav-panel, .nav-menu { background: #f7f1e5 !important; }
+        @media (max-width: 900px) {
+            .nav-panel:not(.is-open) { display: none !important; }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
